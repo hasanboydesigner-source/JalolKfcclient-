@@ -3,6 +3,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
+axios.defaults.baseURL = 'https://jalolkfc.onrender.com'
 
 // Modular Components
 import Sidebar from './components/Sidebar'
