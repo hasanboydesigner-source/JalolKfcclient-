@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Icon } from './Icons'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, PieChart, Pie, LineChart, Line } from 'recharts'
 import { useLanguage } from '../context/LanguageContext'
 
 const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
@@ -14,13 +14,22 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
 
   if (loading) return <div style={{ padding: '40px', textAlign: 'center', fontWeight: 600, color: 'var(--pos-text-dim)' }}>{t('loading')}...</div>
 
-  const { overall, daily, topProducts, recentOrders, weeklyTrend = [] } = stats
+  const { overall, daily, topProducts, recentOrders, weeklyTrend = [], categoryDistribution = [], peakHours = [] } = stats
 
-  // Format trend data for recharts
   const chartData = weeklyTrend.map(item => ({
     name: new Date(item._id).toLocaleDateString(language === 'en' ? 'en-US' : language === 'ru' ? 'ru-RU' : 'uz-UZ', { day: '2-digit', month: 'short' }),
     revenue: item.revenue
   }));
+
+  const peakHoursData = Array.from({ length: 24 }, (_, i) => {
+    const hourData = peakHours.find(h => h._id === i)
+    return {
+      hour: `${i}:00`,
+      count: hourData ? hourData.count : 0
+    }
+  })
+
+  const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
 
   // Pagination logic
   const totalPages = Math.ceil(recentOrders.length / itemsPerPage);
@@ -122,46 +131,97 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
         </div>
       </div>
 
-      {/* Charts Section */}
-      {weeklyTrend.length > 0 && (
-        <div className="revenue-trend-box" style={{ 
-          background: 'var(--pos-surface)', 
-          borderRadius: '20px', 
-          padding: '24px', 
-          border: '1px solid var(--pos-border-subtle)', 
-          marginBottom: '32px' 
+        <div className="analytics-charts-grid" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+          gap: '24px',
+          marginBottom: '32px'
         }}>
-          <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800 }}>{t('revenue_7d')}</h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--pos-text-muted)', fontWeight: 600 }}>{t('revenue_desc')}</p>
+          {/* Weekly Revenue Trend */}
+          <div className="chart-box" style={{ 
+            background: 'var(--pos-surface)', 
+            borderRadius: '20px', 
+            padding: '24px', 
+            border: '1px solid var(--pos-border-subtle)'
+          }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '20px' }}>{t('revenue_7d')}</h3>
+            <div style={{ width: '100%', height: 260 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--slate-100)" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={40}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? 'var(--brand-primary)' : 'var(--slate-300)'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div style={{ width: '100%', height: 260 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--slate-100)" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--pos-text-muted)' }} 
-                  dy={10}
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: 'var(--pos-text-muted)' }}
-                />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--slate-50)' }} />
-                <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={40}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? 'var(--brand-primary)' : 'var(--slate-300)'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+
+          {/* Peak Hours Analysis */}
+          <div className="chart-box" style={{ 
+            background: 'var(--pos-surface)', 
+            borderRadius: '20px', 
+            padding: '24px', 
+            border: '1px solid var(--pos-border-subtle)'
+          }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '20px' }}>Tig'iz vaqtlar (24s)</h3>
+            <div style={{ width: '100%', height: 260 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={peakHoursData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--slate-100)" />
+                  <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: 'var(--pos-text-muted)' }} interval={2} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="count" stroke="var(--brand-primary)" strokeWidth={3} dot={{ r: 4, fill: 'var(--brand-primary)' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Category Distribution */}
+          <div className="chart-box" style={{ 
+            background: 'var(--pos-surface)', 
+            borderRadius: '20px', 
+            padding: '24px', 
+            border: '1px solid var(--pos-border-subtle)'
+          }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '20px' }}>Kategoriyalar ulushi</h3>
+            <div style={{ width: '100%', height: 260 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                    nameKey="_id"
+                  >
+                    {categoryDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginTop: '10px' }}>
+                {categoryDistribution.map((entry, index) => (
+                  <div key={entry._id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: COLORS[index % COLORS.length] }}></div>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--pos-text-muted)' }}>{t(entry._id) || entry._id}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      )}
 
       {/* Metrics Grid */}
       <div className="metrics-grid" style={{ 
