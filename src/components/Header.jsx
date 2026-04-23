@@ -15,7 +15,8 @@ const Header = ({
   isCustomerView,
   tableParam,
   pendingOrders,
-  onCompleteOrder
+  onCompleteOrder,
+  isOnline
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isPendingOpen, setIsPendingOpen] = useState(false)
@@ -54,6 +55,12 @@ const Header = ({
       </div>
       
       <div className="header-right-tools">
+        {!isOnline && (
+          <div className="offline-badge">
+            <Icon name="clock" size={14} />
+            <span>Oflayn</span>
+          </div>
+        )}
         {/* Language Selection Select */}
         <div className="language-selector-wrapper">
           <select

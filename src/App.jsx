@@ -60,6 +60,7 @@ function App() {
   const [isSplashExiting, setIsSplashExiting] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
 
   const handleLogin = async (pin) => {
     try {
@@ -149,7 +150,42 @@ function App() {
     if (currentView === 'stats') {
       fetchStats()
     }
+
+    const handleOnline = () => {
+      setIsOnline(true)
+      toast.success('Internet tiklandi!')
+      syncOfflineOrders()
+    }
+    const handleOffline = () => {
+      setIsOnline(false)
+      toast.warning('Internet uzildi. Oflayn rejimda ishlayapsiz.')
+    }
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
   }, [currentView, statsDate])
+
+  const syncOfflineOrders = async () => {
+    const queue = JSON.parse(localStorage.getItem('offline_orders') || '[]')
+    if (queue.length === 0) return
+
+    toast.info(`${queue.length} ta oflayn buyurtma sinxronizatsiya qilinmoqda...`)
+    
+    for (const order of queue) {
+      try {
+        await axios.post('/api/orders', order)
+      } catch (err) {
+        console.error('Sync failed for order', order, err)
+      }
+    }
+    
+    localStorage.removeItem('offline_orders')
+    toast.success('Barcha buyurtmalar serverga yuborildi!')
+  }
 
   const fetchStats = async () => {
     setStatsLoading(true)
@@ -168,8 +204,14 @@ function App() {
     try {
       const res = await axios.get('/api/products')
       setProducts(res.data)
+      localStorage.setItem('jalol_products_cache', JSON.stringify(res.data))
     } catch (err) {
       console.error('Error fetching products:', err)
+      const cached = localStorage.getItem('jalol_products_cache')
+      if (cached) {
+        setProducts(JSON.parse(cached))
+        toast.info('Oflayn rejim: Keshdan yuklandi')
+      }
     } finally {
       setLoading(false)
     }
@@ -305,8 +347,18 @@ function App() {
     }
 
     try {
+      if (!isOnline) {
+        const queue = JSON.parse(localStorage.getItem('offline_orders') || '[]')
+        queue.push(orderData)
+        localStorage.setItem('offline_orders', JSON.stringify(queue))
+        toast.info('Internet yo\'q. Buyurtma saqlandi va internet tiklanganda yuboriladi.', { icon: '💾' })
+        setCart([])
+        return
+      }
+
       const res = await axios.post('/api/orders', orderData)
       const savedOrder = res.data
+      // ... rest of the logic
 
       toast.success(t('order_success'), {
         icon: '🚀',
@@ -361,6 +413,7 @@ function App() {
               tableParam={tableParam}
               pendingOrders={pendingOrders}
               onCompleteOrder={handleCompletePending}
+              isOnline={isOnline}
             />
 
             <main className="pos-viewport">
