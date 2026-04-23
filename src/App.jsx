@@ -20,6 +20,7 @@ import PosPage from './pages/PosPage'
 import AdminPage from './pages/AdminPage'
 import StatsPage from './pages/StatsPage'
 import KitchenPage from './pages/KitchenPage'
+import StatusPage from './pages/StatusPage'
 import Receipt from './components/Receipt'
 
 import { useLanguage } from './context/LanguageContext'
@@ -411,6 +412,7 @@ function App() {
                     <Route path="/kitchen" element={<KitchenPage />} />
                   </>
                 )}
+                <Route path="/status" element={<StatusPage />} />
                 <Route path="*" element={<PosPage
                   activeCategory={activeCategory}
                   setActiveCategory={setActiveCategory}
