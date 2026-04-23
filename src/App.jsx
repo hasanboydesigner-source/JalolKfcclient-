@@ -198,6 +198,21 @@ function App() {
   const tax = subtotal * 0.05
   const total = subtotal + tax
   const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.qty, 0), [cart])
+  
+  // Smart Recommendations Logic
+  const recommendedProducts = useMemo(() => {
+    if (cart.length === 0) return []
+    const cartCategories = new Set(cart.map(item => item.category))
+    const needsDrinks = !cartCategories.has('drinks')
+    const needsSides = !cartCategories.has('sides')
+    
+    return products.filter(p => {
+      if (cart.find(item => item._id === p._id)) return false
+      if (needsDrinks && p.category === 'drinks') return true
+      if (needsSides && p.category === 'sides') return true
+      return false
+    }).slice(0, 4)
+  }, [cart, products])
 
   // Filtering
   const filteredProducts = useMemo(() => {
@@ -427,6 +442,8 @@ function App() {
                 handlePlaceOrder={handlePlaceOrder}
                 setShowMobileCart={setShowMobileCart}
                 isCustomerView={isCustomerView}
+                recommendedProducts={recommendedProducts}
+                addToCart={addToCart}
               />
             </div>
           )}

@@ -1,7 +1,22 @@
 import { Icon } from './Icons'
 import { useLanguage } from '../context/LanguageContext'
 
-const Cart = ({ cart, updateQty, subtotal, tax, total, orderType, setOrderType, paymentMethod, setPaymentMethod, handlePlaceOrder, setShowMobileCart, isCustomerView }) => {
+const Cart = ({ 
+  cart, 
+  updateQty, 
+  subtotal, 
+  tax, 
+  total, 
+  orderType, 
+  setOrderType, 
+  paymentMethod, 
+  setPaymentMethod, 
+  handlePlaceOrder, 
+  setShowMobileCart, 
+  isCustomerView,
+  recommendedProducts,
+  addToCart
+}) => {
   const { t, language } = useLanguage()
 
   // Localized Labels for Tabs
@@ -63,24 +78,50 @@ const Cart = ({ cart, updateQty, subtotal, tax, total, orderType, setOrderType, 
             <p>{t('empty_cart_msg')}</p>
           </div>
         ) : (
-          cart.map(item => (
-            <div key={item._id} className="cart-item">
-              <img src={item.image} alt={item.name} className="cart-item-thumb" />
-              <div className="cart-item-info">
-                <div className="cart-item-name">{item.name}</div>
-                <div className="cart-item-price">{(item.price * item.qty).toLocaleString()} {t('sum')}</div>
-              </div>
-              <div className="qty-control">
-                <button className="qty-btn" onClick={() => updateQty(item._id, -1)}>
-                  <Icon name="minus" size={12} />
-                </button>
-                <span className="qty-val">{item.qty}</span>
-                <button className="qty-btn" onClick={() => updateQty(item._id, 1)}>
-                  <Icon name="plus" size={12} />
-                </button>
-              </div>
+          <>
+            <div className="cart-items-list">
+              {cart.map(item => (
+                <div key={item._id} className="cart-item">
+                  <img src={item.image} alt={item.name} className="cart-item-thumb" />
+                  <div className="cart-item-info">
+                    <div className="cart-item-name">{item.name}</div>
+                    <div className="cart-item-price">{(item.price * item.qty).toLocaleString()} {t('sum')}</div>
+                  </div>
+                  <div className="qty-control">
+                    <button className="qty-btn" onClick={() => updateQty(item._id, -1)}>
+                      <Icon name="minus" size={12} />
+                    </button>
+                    <span className="qty-val">{item.qty}</span>
+                    <button className="qty-btn" onClick={() => updateQty(item._id, 1)}>
+                      <Icon name="plus" size={12} />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))
+
+            {/* Recommendations Section */}
+            {recommendedProducts && recommendedProducts.length > 0 && (
+              <div className="cart-recommendations">
+                <h4 className="recommendation-title">Sizga yoqishi mumkin</h4>
+                <div className="recommendation-scroll">
+                  {recommendedProducts.map(product => (
+                    <div key={product._id} className="recommendation-card">
+                      <img src={product.image} alt={product.name} className="rec-img" />
+                      <div className="rec-info">
+                        <div className="rec-name">{product.name}</div>
+                        <div className="rec-price">{product.price.toLocaleString()} {t('sum')}</div>
+                        <button className="rec-add-btn" onClick={() => addToCart(product)}>
+                          <Icon name="plus" size={12} />
+                          <span>Qo'shish</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
