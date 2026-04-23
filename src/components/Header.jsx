@@ -53,31 +53,13 @@ const Header = ({
         )}
       </div>
       
-      <div className="header-right-tools" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div className="header-right-tools">
         {/* Language Selection Select */}
-        <div className="language-selector-wrapper" style={{ 
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center'
-        }}>
+        <div className="language-selector-wrapper">
           <select
             value={language}
             onChange={(e) => changeLanguage(e.target.value)}
-            style={{
-              padding: '8px 36px 8px 12px',
-              borderRadius: '12px',
-              border: 'none',
-              background: 'var(--slate-100)',
-              color: 'var(--pos-text)',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              appearance: 'none',
-              outline: 'none',
-              transition: 'all 0.2s',
-              textTransform: 'uppercase',
-              minWidth: '70px'
-            }}
+            className="language-selector"
           >
             <option value="uz">UZ</option>
             <option value="ru">RU</option>
@@ -98,41 +80,14 @@ const Header = ({
 
         <button 
           onClick={toggleDarkMode}
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
-            background: 'var(--slate-100)',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            color: 'var(--pos-text)'
-          }}
-          className="theme-toggle"
+          className="theme-toggle header-tool-btn"
         >
           <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
         </button>
 
         <button 
-          className="mobile-cart-toggle show-mobile" 
+          className={`mobile-cart-toggle header-tool-btn ${showMobileCart ? 'active' : ''}`}
           onClick={() => setShowMobileCart(!showMobileCart)}
-          style={{ 
-            width: '40px', 
-            height: '40px', 
-            borderRadius: '10px', 
-            background: showMobileCart ? 'var(--brand-primary)' : 'var(--slate-100)',
-            color: showMobileCart ? 'white' : 'var(--pos-text)',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
         >
           <Icon name="cart" size={22} />
           {cartCount > 0 && (

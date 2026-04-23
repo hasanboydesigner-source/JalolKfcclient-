@@ -21,6 +21,10 @@ const Cart = ({ cart, updateQty, subtotal, tax, total, orderType, setOrderType, 
     <aside className="pos-cart-panel">
       <div className="cart-header">
         <div className="cart-title-row">
+          <button className="cart-back-btn show-mobile" onClick={() => setShowMobileCart(false)}>
+            <Icon name="chevron_left" size={20} />
+            <span>{t('back')}</span>
+          </button>
           <div>
             <div className="cart-order-num">{t('order_num')} #0482</div>
             <h2 className="cart-title">{t('cart_title')}</h2>
