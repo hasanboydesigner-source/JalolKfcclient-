@@ -520,8 +520,8 @@ img {
 
 @media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
     padding: 0 0 100px 0;
   }
 }
