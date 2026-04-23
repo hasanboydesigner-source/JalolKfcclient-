@@ -184,9 +184,6 @@ function App() {
       }
       return [...prev, { ...product, qty: 1 }]
     })
-    if (!isCustomerView) {
-      setShowMobileCart(true)
-    }
   }
 
   const updateQty = (id, delta) => {
