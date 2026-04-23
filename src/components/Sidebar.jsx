@@ -41,6 +41,13 @@ const Sidebar = ({ user }) => {
               <Icon name="chart" size={22} />
               <span className="nav-label">{t('stats')}</span>
             </div>
+            <div 
+              className={`nav-item ${currentView === 'kitchen' ? 'active' : ''}`}
+              onClick={() => navigate('/kitchen')}
+            >
+              <Icon name="pizza" size={22} />
+              <span className="nav-label">Oshxona</span>
+            </div>
           </>
         )}
       </nav>

@@ -19,6 +19,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import PosPage from './pages/PosPage'
 import AdminPage from './pages/AdminPage'
 import StatsPage from './pages/StatsPage'
+import KitchenPage from './pages/KitchenPage'
 import Receipt from './components/Receipt'
 
 import { useLanguage } from './context/LanguageContext'
@@ -40,7 +41,7 @@ function App() {
     { id: 'sides', name: t('sides'), icon: 'side' },
   ]
 
-  const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : 'pos'
+  const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : location.pathname === '/kitchen' ? 'kitchen' : 'pos'
   const [activeCategory, setActiveCategory] = useState('all')
   const [products, setProducts] = useState([])
   const [cart, setCart] = useState([])
@@ -299,7 +300,7 @@ function App() {
       paymentMethod: paymentMethod === 'cash' ? 'Naqd' : paymentMethod === 'card' ? 'Karta' : 'QR',
       source: isCustomerView ? 'Customer' : 'POS',
       tableNumber: tableParam || null,
-      status: isCustomerView ? 'Pending' : 'Completed'
+      status: isCustomerView ? 'Pending' : 'Preparing'
     }
 
     try {
@@ -407,6 +408,7 @@ function App() {
                         />
                       }
                     />
+                    <Route path="/kitchen" element={<KitchenPage />} />
                   </>
                 )}
                 <Route path="*" element={<PosPage

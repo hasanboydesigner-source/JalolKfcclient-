@@ -2362,4 +2362,239 @@ img {
     margin: 0;
     size: auto;
   }
+}/* Kitchen Display System (KDS) */
+.kitchen-container {
+  height: 100vh;
+  background: var(--slate-900);
+  color: white;
+  display: flex;
+  flex-direction: column;
 }
+
+.kitchen-header {
+  height: 80px;
+  background: var(--slate-800);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--slate-700);
+}
+
+.kitchen-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kitchen-title h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+}
+
+.kitchen-stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-400);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+}
+
+.stat-value.ready {
+  color: #10b981;
+}
+
+.kitchen-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.kitchen-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  background: var(--slate-800);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-title.preparing {
+  color: #f59e0b;
+  border-left: 4px solid #f59e0b;
+}
+
+.section-title.ready {
+  color: #10b981;
+  border-left: 4px solid #10b981;
+}
+
+.orders-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 8px;
+}
+
+.kitchen-order-card {
+  background: var(--slate-800);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  border: 1px solid var(--slate-700);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  transition: all 0.2s;
+}
+
+.kitchen-order-card.ready {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--slate-700);
+}
+
+.order-id {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: white;
+}
+
+.order-time {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--slate-400);
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kitchen-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-qty {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+  background: rgba(244, 4, 43, 0.1);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  min-width: 40px;
+  text-align: center;
+}
+
+.item-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--slate-100);
+}
+
+.btn-ready {
+  width: 100%;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.btn-ready:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.btn-complete {
+  width: 100%;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-complete:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.empty-kitchen {
+  text-align: center;
+  padding: 40px;
+  color: var(--slate-500);
+  font-weight: 600;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--slate-700);
+}
+
+.kitchen-loading {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--slate-900);
+  color: white;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .kitchen-grid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
