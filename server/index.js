@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import Product from './models/Product.js';
 import Order from './models/Order.js';
 import Setting from './models/Setting.js';
@@ -399,6 +402,18 @@ app.use((err, req, res, next) => {
     error: err.message 
   });
 });
+
+// Serve frontend in production
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+  app.use(express.static(path.join(__dirname, '../dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../dist', 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
