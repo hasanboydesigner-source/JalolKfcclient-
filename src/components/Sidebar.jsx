@@ -7,7 +7,10 @@ const Sidebar = ({ user }) => {
   const location = useLocation()
   const { t } = useLanguage()
   
-  const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : 'pos'
+  const currentView = 
+    location.pathname === '/admin' ? 'admin' : 
+    location.pathname === '/stats' ? 'stats' : 
+    location.pathname === '/kitchen' ? 'kitchen' : 'pos'
   const isAdmin = user?.role === 'admin'
 
   return (

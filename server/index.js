@@ -1,8 +1,10 @@
-import express from 'express'; // triggered restart
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import Product from './models/Product.js';
 import Order from './models/Order.js';
 import Setting from './models/Setting.js';
@@ -12,8 +14,22 @@ import upload from './middleware/upload.js';
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  }
+});
+
 app.use(cors());
 app.use(express.json());
+
+// Socket.io Connection
+io.on('connection', (socket) => {
+  console.log('🔌 Client connected:', socket.id);
+  socket.on('disconnect', () => console.log('🔌 Client disconnected'));
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -239,6 +255,9 @@ app.post('/api/orders', async (req, res) => {
     // Send Telegram Notification
     sendTelegramNotification(savedOrder);
 
+    // Emit socket event
+    io.emit('newOrder', savedOrder);
+
     res.status(201).json(savedOrder);
   } catch (err) {
     console.error('POST /api/orders Error:', err);
@@ -261,6 +280,10 @@ app.put('/api/orders/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
     const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    
+    // Emit socket event
+    io.emit('orderStatusUpdated', order);
+
     res.json(order);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -378,4 +401,4 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

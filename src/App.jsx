@@ -22,8 +22,11 @@ import StatsPage from './pages/StatsPage'
 import KitchenPage from './pages/KitchenPage'
 import StatusPage from './pages/StatusPage'
 import Receipt from './components/Receipt'
+import { useSocket } from './hooks/useSocket'
 
 import { useLanguage } from './context/LanguageContext'
+
+const READY_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3';
 
 function App() {
   const location = useLocation()
@@ -32,6 +35,32 @@ function App() {
   const searchParams = new URLSearchParams(location.search)
   const tableParam = searchParams.get('table')
   const isCustomerView = !!tableParam
+
+  // Real-time Status Notifications for Customers
+  const handleNewOrder = () => {}; // App doesn't need to handle new orders generally
+  const handleStatusUpdate = (updatedOrder) => {
+    if (isCustomerView && updatedOrder.tableNumber === tableParam) {
+      if (updatedOrder.status === 'Ready') {
+        const audio = new Audio(READY_SOUND);
+        audio.play().catch(e => console.log('Audio blocked:', e));
+        toast.success(
+          <div style={{ padding: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Buyurtmangiz tayyor! 🍔</h3>
+            <p style={{ margin: '5px 0 0', opacity: 0.8 }}>Marhamat, uni qabul qilib oling.</p>
+          </div>,
+          { 
+            position: "top-center",
+            autoClose: false,
+            closeOnClick: true,
+            theme: "dark",
+            icon: "🚀"
+          }
+        );
+      }
+    }
+  };
+
+  useSocket(handleNewOrder, handleStatusUpdate);
 
   const INITIAL_CATEGORIES = [
     { id: 'all', name: t('all'), icon: 'all' },
