@@ -64,12 +64,16 @@
   --slate-600: #cbd5e1;
   --slate-700: #e2e8f0;
   --slate-800: #f1f5f9;
-  --slate-900: rgba(255, 255, 255, 0.1); /* Oqni 90% ga kamaytirdik */
-  --slate-950: rgba(255, 255, 255, 0.2); /* Oqni 80% ga kamaytirdik */
+  --slate-900: rgba(255, 255, 255, 0.1);
+  --slate-950: rgba(255, 255, 255, 0.2);
 
-  --brand-primary: rgba(255, 255, 255, 0.15); /* Asosiy oq tugmalar endi 85% xira */
-  --brand-hover: rgba(255, 255, 255, 0.25);
+  --brand-primary: #ffffff;
+  /* Narxlar va matnlar uchun yorqin oq */
+  --brand-hover: rgba(255, 255, 255, 0.9);
   --brand-accent: #ff4d4d;
+
+  --btn-glass-bg: rgba(255, 255, 255, 0.15);
+  /* Tugmalar uchun xira fon */
 
   --pos-bg: #020617;
   --pos-surface: #0f172a;
@@ -196,7 +200,8 @@ img {
 }
 
 [data-theme='dark'] .logo-badge {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 .logo-badge:hover {
@@ -260,7 +265,8 @@ img {
 }
 
 [data-theme='dark'] .nav-item.active {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 @media (max-width: 768px) {
@@ -499,7 +505,8 @@ img {
 }
 
 [data-theme='dark'] .category-pill.active {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 .pill-icon {
@@ -585,7 +592,8 @@ img {
 }
 
 [data-theme='dark'] .product-visual {
-  background: rgba(255, 255, 255, 0.12) !important; /* 50% juda yorqin bo'lgani uchun 12% qildim, xohlasangiz buni oshirishimiz mumkin */
+  background: rgba(255, 255, 255, 0.12) !important;
+  /* 50% juda yorqin bo'lgani uchun 12% qildim, xohlasangiz buni oshirishimiz mumkin */
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -617,11 +625,19 @@ img {
   line-height: 1.2;
 }
 
+[data-theme='dark'] .product-name-label {
+  color: #ffffff !important;
+}
+
 .product-price-label {
   font-size: 1rem;
   font-weight: 800;
   color: var(--brand-primary);
   margin-top: 2px;
+}
+
+[data-theme='dark'] .product-price-label {
+  color: #ffffff !important;
 }
 
 .card-action-area {
@@ -697,7 +713,8 @@ img {
 }
 
 [data-theme='dark'] .add-action-btn {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 .add-action-btn:hover {
@@ -1038,6 +1055,10 @@ img {
   color: var(--brand-primary);
 }
 
+[data-theme='dark'] .rec-price {
+  color: #ffffff !important;
+}
+
 .rec-add-btn {
   margin-top: 4px;
   width: 100%;
@@ -1190,7 +1211,8 @@ img {
 }
 
 [data-theme='dark'] .checkout-btn {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 .checkout-btn:hover {
@@ -1409,6 +1431,10 @@ img {
   color: var(--brand-primary);
 }
 
+[data-theme='dark'] .table-price {
+  color: #ffffff !important;
+}
+
 .action-stack {
   display: flex;
   gap: 8px;
@@ -1518,7 +1544,8 @@ img {
 .splash-overlay {
   position: fixed;
   inset: 0;
-  background: var(--pos-bg); /* slate-950 o'rniga pos-bg ishlatamiz, chunki slate-950 darkda oq edi */
+  background: var(--pos-bg);
+  /* slate-950 o'rniga pos-bg ishlatamiz, chunki slate-950 darkda oq edi */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1576,7 +1603,8 @@ img {
   left: 0;
   height: 100%;
   width: 40%;
-  background: var(--brand-primary); /* oq/xira oq o'rniga brand rangini beramiz */
+  background: var(--brand-primary);
+  /* oq/xira oq o'rniga brand rangini beramiz */
   animation: splashLoading 1.5s infinite ease-in-out;
 }
 
@@ -1892,7 +1920,8 @@ img {
 
 [data-theme='dark'] .payment-tab.active,
 [data-theme='dark'] .payment-method-card.active {
-  color: #ffffff;
+  background: var(--btn-glass-bg) !important;
+  color: #ffffff !important;
 }
 
 /* Bottom Nav (mobile) */
@@ -2552,9 +2581,16 @@ img {
   flex-direction: column;
   gap: 16px;
 }
+
 /* Ensure the scrollbar is always visible for clarity */
-.kds-scroll-area::-webkit-scrollbar { width: 6px; }
-.kds-scroll-area::-webkit-scrollbar-thumb { background: var(--kds-border); border-radius: 10px; }
+.kds-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kds-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--kds-border);
+  border-radius: 10px;
+}
 
 .kds-ticket {
   background: var(--kds-surface);
@@ -2571,7 +2607,7 @@ img {
 .kds-ticket:hover {
   border-color: #3f3f46;
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px -10px rgba(0,0,0,0.5);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme='light'] .kds-ticket {
@@ -2698,7 +2734,8 @@ img {
   color: #334155;
 }
 
-.kds-card-footer, .kds-ticket-footer {
+.kds-card-footer,
+.kds-ticket-footer {
   padding: 16px;
   background: rgba(255, 255, 255, 0.01);
   border-top: 1px solid var(--kds-border);
@@ -2721,7 +2758,7 @@ img {
   justify-content: center;
   gap: 10px;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 10px;
 }
 
@@ -2770,24 +2807,31 @@ img {
   animation: kdsSpin 0.8s linear infinite;
 }
 
-@keyframes kdsSpin { to { transform: rotate(360deg); } }
+@keyframes kdsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @media (max-width: 900px) {
-  .kds-main { 
-    flex-direction: column; 
+  .kds-main {
+    flex-direction: column;
     overflow-y: auto;
     padding: 12px;
     gap: 16px;
   }
+
   .kds-shelf {
     min-height: 500px;
   }
+
   .kds-header {
     height: auto;
     padding: 12px;
     flex-wrap: wrap;
     gap: 12px;
   }
+
   .kds-stats-center {
     order: 3;
     width: 100%;
@@ -2870,7 +2914,7 @@ img {
   color: white;
   text-align: center;
   padding: 20px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   font-family: monospace;
 }
@@ -2982,8 +3026,13 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.preparing .panel-header { color: #f59e0b; }
-.ready .panel-header { color: #10b981; }
+.preparing .panel-header {
+  color: #f59e0b;
+}
+
+.ready .panel-header {
+  color: #10b981;
+}
 
 .panel-header h2 {
   font-size: 1.5rem;
@@ -3033,9 +3082,20 @@ img {
 }
 
 @keyframes cdsPulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  50% { transform: scale(1.05); box-shadow: 0 0 50px 20px rgba(16, 185, 129, 0.2); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px 20px rgba(16, 185, 129, 0.2);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
 }
 
 .cds-footer {
@@ -3062,15 +3122,29 @@ img {
 }
 
 @keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 /* Customer Display Animation Keyframes */
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 .animate-pulse {
@@ -3078,10 +3152,21 @@ img {
 }
 
 @media (max-width: 1024px) {
-  .status-grid { grid-template-columns: 1fr; }
-  .status-column { padding: 30px; }
-  .status-header h2 { font-size: 2rem; }
-  .status-number { font-size: 3rem; }
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-column {
+    padding: 30px;
+  }
+
+  .status-header h2 {
+    font-size: 2rem;
+  }
+
+  .status-number {
+    font-size: 3rem;
+  }
 }
 
 /* Offline Badge */
@@ -3103,8 +3188,8 @@ img {
   .offline-badge span {
     display: none;
   }
+
   .offline-badge {
     padding: 8px;
   }
 }
-

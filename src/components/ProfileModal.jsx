@@ -73,14 +73,14 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
           overflow: 'hidden'
         }}
       >
-        <div style={{ padding: '20px', borderBottom: '1px solid var(--pos-border-subtle)', background: 'var(--slate-50)' }}>
+        <div style={{ padding: '20px', borderBottom: '1px solid var(--pos-border-subtle)', background: 'var(--slate-100)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="profile-avatar" style={{ width: '36px', height: '36px' }}>
-              <Icon name="user" size={18} strokeWidth={2.5} />
+            <div className="profile-avatar" style={{ width: '40px', height: '40px', background: 'var(--brand-primary)', color: '#fff' }}>
+              <Icon name="user" size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{user?.name || t('profile')}</div>
-              <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--pos-text-muted)', textTransform: 'capitalize' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800 }}>{user?.name || t('profile')}</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--pos-text-muted)', textTransform: 'capitalize' }}>
                 {user?.role === 'admin' ? t('administrator') : t('cashier')}
               </div>
             </div>
@@ -92,7 +92,7 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
             <>
               <button 
                 className="nav-item" 
-                style={{ height: '40px', border: 'none', background: 'none' }}
+                style={{ height: '44px', border: 'none', background: 'none', width: '100%', cursor: 'pointer', borderRadius: '10px' }}
                 onClick={() => setShowPassForm(true)}
               >
                 <Icon name="settings" size={16} /> 
@@ -100,7 +100,7 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
               </button>
               <button 
                 className="nav-item" 
-                style={{ height: '40px', border: 'none', background: 'none', color: 'var(--pos-danger)' }}
+                style={{ height: '44px', border: 'none', background: 'none', width: '100%', cursor: 'pointer', borderRadius: '10px', color: '#ef4444' }}
                 onClick={onLogout}
               >
                 <Icon name="logout" size={16} /> 
@@ -110,36 +110,36 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
           ) : (
             <form onSubmit={handleUpdatePasscode} style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem' }}>{t('old_passcode')}</label>
+                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('old_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '36px', padding: '8px 12px', fontSize: '0.9rem' }}
+                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.oldPin}
                   onChange={(e) => setPassData({...passData, oldPin: e.target.value})}
                   required 
                 />
               </div>
               <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem' }}>{t('new_passcode')}</label>
+                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('new_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '36px', padding: '8px 12px', fontSize: '0.9rem' }}
+                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.newPin}
                   onChange={(e) => setPassData({...passData, newPin: e.target.value})}
                   required 
                 />
               </div>
               <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem' }}>{t('confirm_passcode')}</label>
+                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('confirm_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '36px', padding: '8px 12px', fontSize: '0.9rem' }}
+                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.confirmPin}
                   onChange={(e) => setPassData({...passData, confirmPin: e.target.value})}
                   required 
@@ -148,8 +148,8 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
               <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                 <button 
                   type="button" 
-                  className="qty-btn" 
-                  style={{ flex: 1, height: '36px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                  className="mini-action-btn" 
+                  style={{ flex: 1, height: '38px', fontSize: '0.75rem', borderRadius: '10px' }} 
                   onClick={() => setShowPassForm(false)}
                 >
                   {t('back')}
@@ -157,7 +157,7 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
                 <button 
                   type="submit" 
                   className="checkout-btn" 
-                  style={{ flex: 1.5, height: '36px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                  style={{ flex: 1.5, height: '38px', fontSize: '0.75rem', borderRadius: '10px' }} 
                   disabled={loading}
                 >
                   {loading ? '...' : t('save')}
