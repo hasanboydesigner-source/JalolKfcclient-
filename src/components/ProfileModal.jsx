@@ -55,109 +55,82 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
   }
 
   return (
-    <div style={{ 
-      position: 'absolute',
-      top: 'calc(100% + 12px)',
-      right: '0',
-      zIndex: 5000,
-      animation: 'slideUp 0.2s ease'
-    }}>
-      <div 
-        ref={modalRef}
-        style={{ 
-          width: '280px',
-          background: 'var(--pos-surface)',
-          borderRadius: 'var(--radius-xl)',
-          boxShadow: 'var(--shadow-premium)',
-          border: '1px solid var(--pos-border-subtle)',
-          overflow: 'hidden'
-        }}
-      >
-        <div style={{ padding: '20px', borderBottom: '1px solid var(--pos-border-subtle)', background: 'var(--slate-100)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="profile-avatar" style={{ width: '40px', height: '40px', background: 'var(--brand-primary)', color: '#fff' }}>
-              <Icon name="user" size={20} strokeWidth={2.5} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 800 }}>{user?.name || t('profile')}</div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--pos-text-muted)', textTransform: 'capitalize' }}>
-                {user?.role === 'admin' ? t('administrator') : t('cashier')}
-              </div>
-            </div>
+    <div className="profile-modal-overlay">
+      <div ref={modalRef} className="profile-modal-content">
+        <div className="profile-modal-header">
+          <div className="profile-modal-avatar">
+            <Icon name="user" size={32} strokeWidth={2.5} />
+          </div>
+          <div className="profile-modal-name">{user?.name || t('profile')}</div>
+          <div className="profile-modal-role">
+            {user?.role === 'admin' ? t('administrator') : t('cashier')}
           </div>
         </div>
 
-        <div style={{ padding: '8px' }}>
+        <div className="profile-modal-body">
           {!showPassForm ? (
             <>
               <button 
-                className="nav-item" 
-                style={{ height: '44px', border: 'none', background: 'none', width: '100%', cursor: 'pointer', borderRadius: '10px' }}
+                className="profile-action-btn" 
                 onClick={() => setShowPassForm(true)}
               >
-                <Icon name="settings" size={16} /> 
-                <span className="nav-label" style={{ fontSize: '0.85rem' }}>{t('change_passcode')}</span>
+                <Icon name="settings" size={20} /> 
+                <span>{t('change_passcode')}</span>
               </button>
               <button 
-                className="nav-item" 
-                style={{ height: '44px', border: 'none', background: 'none', width: '100%', cursor: 'pointer', borderRadius: '10px', color: '#ef4444' }}
+                className="profile-action-btn logout" 
                 onClick={onLogout}
               >
-                <Icon name="logout" size={16} /> 
-                <span className="nav-label" style={{ fontSize: '0.85rem' }}>{t('logout_confirm')}</span>
+                <Icon name="logout" size={20} /> 
+                <span>{t('logout_confirm')}</span>
               </button>
             </>
           ) : (
-            <form onSubmit={handleUpdatePasscode} style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('old_passcode')}</label>
+            <form onSubmit={handleUpdatePasscode} className="minimal-form">
+              <div className="form-field">
+                <label>{t('old_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.oldPin}
                   onChange={(e) => setPassData({...passData, oldPin: e.target.value})}
                   required 
                 />
               </div>
-              <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('new_passcode')}</label>
+              <div className="form-field">
+                <label>{t('new_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.newPin}
                   onChange={(e) => setPassData({...passData, newPin: e.target.value})}
                   required 
                 />
               </div>
-              <div className="form-field" style={{ marginBottom: 0 }}>
-                <label style={{ fontSize: '0.7rem', color: 'var(--pos-text-muted)' }}>{t('confirm_passcode')}</label>
+              <div className="form-field">
+                <label>{t('confirm_passcode')}</label>
                 <input 
                   type="password" 
                   maxLength="4"
                   placeholder="****"
-                  style={{ height: '38px', padding: '8px 12px', fontSize: '0.9rem', borderRadius: '10px' }}
                   value={passData.confirmPin}
                   onChange={(e) => setPassData({...passData, confirmPin: e.target.value})}
                   required 
                 />
               </div>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+              <div className="form-actions">
                 <button 
                   type="button" 
-                  className="mini-action-btn" 
-                  style={{ flex: 1, height: '38px', fontSize: '0.75rem', borderRadius: '10px' }} 
+                  className="profile-action-btn" 
                   onClick={() => setShowPassForm(false)}
                 >
                   {t('back')}
                 </button>
                 <button 
                   type="submit" 
-                  className="checkout-btn" 
-                  style={{ flex: 1.5, height: '38px', fontSize: '0.75rem', borderRadius: '10px' }} 
+                  className="profile-action-btn active" 
                   disabled={loading}
                 >
                   {loading ? '...' : t('save')}
