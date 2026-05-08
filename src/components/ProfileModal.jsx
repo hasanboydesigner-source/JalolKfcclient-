@@ -134,21 +134,16 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView, isDarkMode
   return (
     <div 
       ref={modalRef} 
-      className="profile-modal-container" 
+      className="profile-modal-container dropdown-mode" 
       style={{ 
-        position: 'absolute', 
-        top: '100%', 
-        right: 0, 
-        marginTop: '12px', 
-        width: '280px',
-        backgroundColor: surfaceBg
+        backgroundColor: surfaceBg,
+        position: 'absolute',
+        top: '100%',
+        zIndex: 1000
       }}
     >
-      <div className="profile-modal-header" style={{ padding: '20px 24px' }}>
+      <div className="profile-modal-header" style={{ padding: '24px 20px 12px' }}>
         <div className="profile-modal-title" style={{ fontSize: '1.1rem', color: textColor }}>{user?.name || t('profile')}</div>
-        <div className="profile-modal-subtitle">
-          {user?.role === 'admin' ? t('administrator') : t('cashier')}
-        </div>
       </div>
 
       <div className="profile-modal-body" style={{ padding: '0 12px 12px' }}>

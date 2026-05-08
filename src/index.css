@@ -2861,106 +2861,71 @@ img {
 .profile-modal-container {
   background: var(--pos-surface);
   border: 1px solid var(--pos-border);
-  border-radius: 24px;
+  border-radius: 32px;
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
   overflow: hidden;
-  box-shadow: var(--shadow-premium);
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme='light'] .profile-modal-container {
   background: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
-}
-
-[data-theme='light'] .profile-modal-title {
-  color: #0f172a !important;
-}
-
-[data-theme='light'] .profile-modal-subtitle {
-  color: #64748b !important;
-}
-
-[data-theme='light'] .modal-label {
-  color: #64748b !important;
-}
-
-[data-theme='light'] .modal-input {
-  background: #f1f5f9 !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
-[data-theme='light'] .modal-btn-cancel {
-  color: #475569 !important;
-}
-
-[data-theme='light'] .profile-action-btn {
-  color: #1e293b !important;
-}
-
-[data-theme='light'] .profile-action-btn:hover {
-  background: #f1f5f9 !important;
-}
-
-@keyframes modalSlideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
 }
 
 .profile-modal-header {
-  padding: 32px 32px 24px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+  padding: 32px 24px 20px;
+  text-align: left;
 }
 
 .profile-modal-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--pos-text);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .profile-modal-subtitle {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--brand-primary);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--pos-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   margin-top: 4px;
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 .profile-modal-body {
-  padding: 0 32px 32px;
+  padding: 0 24px 24px;
 }
 
 .modal-input-group {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .modal-label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 800;
   color: var(--pos-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 8px;
-  padding-left: 4px;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+  padding-left: 2px;
 }
 
 .modal-input {
   width: 100%;
   background: var(--slate-50);
   border: 1px solid var(--pos-border);
-  border-radius: var(--radius-lg);
-  padding: 14px 18px;
+  border-radius: 16px;
+  padding: 12px 16px;
   color: var(--pos-text);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.2s;
+  letter-spacing: 0.2em; /* Good for pin/passcode */
 }
 
 [data-theme='dark'] .modal-input {
@@ -2970,28 +2935,24 @@ img {
 .modal-input:focus {
   background: var(--pos-surface);
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
   outline: none;
 }
 
 .modal-footer {
-  padding: 0 32px 32px;
+  padding: 0 24px 24px;
   display: flex;
-  gap: 16px;
+  gap: 12px;
 }
 
 .modal-btn {
   flex: 1;
-  padding: 14px;
-  border-radius: var(--radius-lg);
+  padding: 12px;
+  border-radius: 14px;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-btn-cancel {
@@ -3006,25 +2967,58 @@ img {
 }
 
 .modal-btn-save {
-  background: var(--brand-primary);
+  background: var(--pos-text);
   border: none;
-  color: var(--pos-bg);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  color: var(--pos-surface);
+}
+
+[data-theme='dark'] .modal-btn-save {
+  background: #ffffff;
+  color: #000;
 }
 
 .modal-btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.1);
 }
 
-[data-theme='dark'] .modal-btn-save {
-  background: white;
-  color: #000;
+.profile-modal-container.dropdown-mode {
+  margin-top: 10px;
+  min-width: 260px;
+  width: max-content;
+  max-width: 320px;
+  right: -8px; /* Offset to stay away from edge */
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
-.profile-dropdown {
-  min-width: 240px;
-  padding: 0;
+@media (max-width: 768px) {
+  .profile-modal-container.dropdown-mode {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: 0;
+    border-radius: 32px 32px 0 0;
+    animation: bottomSheetSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999 !important;
+    text-align: center;
+  }
+
+  .profile-modal-container.dropdown-mode .profile-modal-header {
+    text-align: center;
+  }
+
+  .profile-modal-container.dropdown-mode .profile-modal-title {
+    text-align: center;
+  }
+
+  .profile-modal-container.dropdown-mode .profile-action-btn {
+    justify-content: center;
+  }
 }
 
 .pos-header {
