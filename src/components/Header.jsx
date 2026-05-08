@@ -37,31 +37,24 @@ const Header = ({
   }, [])
 
   return (
-    <header className="pos-header" style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: '10px' }}>
-      <div className="header-main-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-        <div className="search-field" style={{ background: isCustomerView ? 'transparent' : '', flex: 1, marginRight: '10px' }}>
-          {isCustomerView ? (
-            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--pos-text)' }}>Stol #{tableParam}</h2>
-          ) : (
-            <>
-              <Icon name="search" size={18} className="text-dim" />
-              <input 
-                type="text" 
-                placeholder={t('search_placeholder')} 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </>
+    <header className="pos-header">
+      <div className="header-main-row">
+        <div className="header-left-brand">
+          <div className="logo-badge">J</div>
+          <div className="brand-name hidden-mobile">JalolKFC</div>
+          {isCustomerView && (
+             <h2 className="table-badge">Stol #{tableParam}</h2>
           )}
         </div>
-        
-        <div className="header-right-tools" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+
+        <div className="header-right-tools">
           {!isOnline && (
             <div className="offline-badge">
               <Icon name="clock" size={14} />
               <span>Oflayn</span>
             </div>
           )}
+          
           <div className="language-selector-wrapper">
             <select
               value={language}
@@ -72,133 +65,102 @@ const Header = ({
               <option value="ru">RU</option>
               <option value="en">EN</option>
             </select>
-            <div style={{
-              position: 'absolute',
-              fontWeight: 800,
-              width: '20px',
-              height: '20px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '2px solid white',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}>
-              {cartCount}
+            <div className="chevron-icon">
+              <Icon name="chevron_down" size={14} style={{ color: 'inherit' }} />
             </div>
-          )}
-        </button>
-
-        {!isCustomerView && (
-          <div style={{ position: 'relative' }}>
-            <div className="profile-trigger hidden-mobile" onClick={() => setIsDropdownOpen(!isDropdownOpen)} style={{ cursor: 'pointer' }}>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{user?.name || 'Foydalanuvchi'}</div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--pos-text-muted)', textTransform: 'capitalize' }}>
-                  {user?.role === 'admin' ? t('administrator') : t('cashier')}
-                </div>
-              </div>
-              <div className="profile-avatar">
-                <Icon name="user" size={18} strokeWidth={2.5} />
-              </div>
-            </div>
-
-            <ProfileModal 
-              isOpen={isDropdownOpen} 
-              onClose={() => setIsDropdownOpen(false)} 
-              onLogout={onLogout}
-              user={user}
-              currentView={currentView}
-            />
           </div>
-        )}
 
-        {!isCustomerView && (
-          <div style={{ position: 'relative' }}>
-            <button 
-              onClick={() => setIsPendingOpen(!isPendingOpen)}
-              className={`header-tool-btn ${isPendingOpen ? 'active' : ''}`}
-            >
-              <Icon name="clock" size={20} />
-              {pendingOrders?.length > 0 && (
-                <div style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  background: 'red',
-                  color: 'white',
-                  fontSize: '10px',
-                  fontWeight: 800,
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {pendingOrders.length}
+          <button onClick={toggleDarkMode} className="theme-toggle header-tool-btn">
+            <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
+          </button>
+
+          <button 
+            className={`mobile-cart-toggle header-tool-btn ${showMobileCart ? 'active' : ''}`}
+            onClick={() => setShowMobileCart(!showMobileCart)}
+          >
+            <Icon name="cart" size={22} />
+            {cartCount > 0 && (
+              <div className="cart-badge">{cartCount}</div>
+            )}
+          </button>
+
+          {!isCustomerView && (
+            <div style={{ position: 'relative' }}>
+              <button 
+                onClick={() => setIsPendingOpen(!isPendingOpen)}
+                className={`header-tool-btn ${isPendingOpen ? 'active' : ''}`}
+              >
+                <Icon name="clock" size={20} />
+                {pendingOrders?.length > 0 && (
+                  <div className="pending-badge">{pendingOrders.length}</div>
+                )}
+              </button>
+
+              {isPendingOpen && (
+                <div className="pending-orders-dropdown">
+                  <h3 className="dropdown-title">Yangi buyurtmalar</h3>
+                  {(!pendingOrders || pendingOrders.length === 0) ? (
+                    <p className="empty-msg">Hozircha buyurtmalar yo'q.</p>
+                  ) : (
+                    pendingOrders.map(order => (
+                      <div key={order._id} className="pending-order-card">
+                        <div className="order-card-header">
+                          <span className="order-table">Stol #{order.tableNumber || '?'}</span>
+                          <span className="order-total">{order.total.toLocaleString()} so'm</span>
+                        </div>
+                        <div className="order-items">
+                          {order.items.map((i, idx) => (
+                            <div key={idx}>- {i.qty}x {i.name}</div>
+                          ))}
+                        </div>
+                        <button className="complete-btn" onClick={() => onCompleteOrder(order._id)}>Bajarildi</button>
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
-            </button>
+            </div>
+          )}
 
-            {isPendingOpen && (
-              <div style={{
-                position: 'absolute',
-                top: '50px',
-                right: 0,
-                width: '300px',
-                background: 'var(--pos-surface)',
-                border: '1px solid var(--pos-border)',
-                borderRadius: '12px',
-                boxShadow: 'var(--shadow-lg)',
-                zIndex: 1000,
-                maxHeight: '400px',
-                overflowY: 'auto',
-                padding: '16px'
-              }}>
-                <h3 style={{ margin: '0 0 16px 0', fontSize: '1rem' }}>Yangi buyurtmalar</h3>
-                {(!pendingOrders || pendingOrders.length === 0) ? (
-                  <p style={{ color: 'var(--pos-text-muted)', margin: 0, fontSize: '0.9rem' }}>Hozircha buyurtmalar yo'q.</p>
-                ) : (
-                  pendingOrders.map(order => (
-                    <div key={order._id} style={{ 
-                      padding: '12px',
-                      background: 'var(--slate-50)',
-                      borderRadius: '8px',
-                      marginBottom: '12px'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontWeight: 800, color: 'var(--brand-primary)' }}>Stol #{order.tableNumber || '?'}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--pos-text-muted)' }}>{order.total.toLocaleString()} so'm</span>
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--pos-text)', marginBottom: '12px' }}>
-                        {order.items.map((i, idx) => (
-                          <div key={idx}>- {i.qty}x {i.name}</div>
-                        ))}
-                      </div>
-                      <button 
-                        onClick={() => onCompleteOrder(order._id)}
-                        style={{
-                          width: '100%',
-                          padding: '8px',
-                          background: 'var(--brand-primary)',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Bajarildi
-                      </button>
-                    </div>
-                  ))
-                )}
+          {!isCustomerView && (
+            <div style={{ position: 'relative' }}>
+              <div className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <div className="profile-info hidden-mobile">
+                  <div className="profile-name">{user?.name || 'Admin'}</div>
+                  <div className="profile-role">
+                    {user?.role === 'admin' ? t('administrator') : t('cashier')}
+                  </div>
+                </div>
+                <div className="profile-avatar">
+                  <Icon name="user" size={18} strokeWidth={2.5} />
+                </div>
               </div>
-            )}
-          </div>
-        )}
+
+              <ProfileModal 
+                isOpen={isDropdownOpen} 
+                onClose={() => setIsDropdownOpen(false)} 
+                onLogout={onLogout}
+                user={user}
+                currentView={currentView}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      {!isCustomerView && (
+        <div className="search-row">
+          <div className="search-field">
+            <Icon name="search" size={18} className="text-dim" />
+            <input 
+              type="text" 
+              placeholder={t('search_placeholder')} 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
     </header>
   )
 }
