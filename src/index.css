@@ -3124,8 +3124,48 @@ img {
   }
 
   .header-main {
-    min-height: 50px;
-    padding: 4px 12px;
+    min-height: 64px;
+    padding: 0 16px;
+    justify-content: center !important;
+  }
+
+  .header-right-tools {
+    gap: 0 !important;
+    width: 100% !important;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2px; /* Smaller padding for better fit */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    display: flex !important;
+    overflow: hidden;
+  }
+
+  .header-right-tools > .tool-wrapper {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-width: 0;
+  }
+
+  .header-tool-btn {
+    width: 100% !important;
+    height: 38px !important; /* Fixed height for consistency */
+    padding: 0 !important;
+    border-radius: 10px !important;
+    color: #64748b !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .header-tool-btn.active {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
   }
 }
 
@@ -4556,3 +4596,26 @@ img {
     padding-top: 0 !important;
   }
 }
+
+/* Dark Mode Overrides for Segmented Controls */
+[data-theme='dark'] .header-right-tools,
+[data-theme='dark'] .kds-mobile-tabs {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .header-tool-btn,
+[data-theme='dark'] .kds-tab-btn {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme='dark'] .header-tool-btn.active,
+[data-theme='dark'] .kds-tab-btn.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme='dark'] .kds-tab-btn.active svg {
+  color: #ff4d4d !important;
+}

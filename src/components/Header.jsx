@@ -40,9 +40,9 @@ const Header = ({
   return (
     <header className="pos-header">
       <div className="header-main">
-        <div className="header-left hidden-desktop">
+        <div className="header-left hidden-mobile">
           <div className="logo-badge">J</div>
-          <span className="brand-name hidden-mobile">JalolKFC</span>
+          <span className="brand-name">JalolKFC</span>
           {isCustomerView && (
              <h2 className="table-badge">Stol #{tableParam}</h2>
           )}
@@ -90,17 +90,21 @@ const Header = ({
             )}
           </div>
 
-          <button onClick={toggleDarkMode} className="header-tool-btn">
-            <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
-          </button>
+          <div className="tool-wrapper">
+            <button onClick={toggleDarkMode} className="header-tool-btn">
+              <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
+            </button>
+          </div>
 
-          <button 
-            className={`header-tool-btn ${showMobileCart ? 'active' : ''}`}
-            onClick={() => setShowMobileCart(!showMobileCart)}
-          >
-            <Icon name="cart" size={22} />
-            {cartCount > 0 && <div className="cart-badge">{cartCount}</div>}
-          </button>
+          <div className="tool-wrapper">
+            <button 
+              className={`header-tool-btn ${showMobileCart ? 'active' : ''}`}
+              onClick={() => setShowMobileCart(!showMobileCart)}
+            >
+              <Icon name="cart" size={22} />
+              {cartCount > 0 && <div className="cart-badge">{cartCount}</div>}
+            </button>
+          </div>
 
           {!isCustomerView && (
             <div className="tool-wrapper">
