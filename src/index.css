@@ -3365,6 +3365,23 @@ img {
   background: #0f172a;
 }
 
+.hidden-mobile {
+  display: block;
+}
+
+.hidden-desktop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .hidden-desktop {
+    display: flex !important;
+  }
+}
+
 .header-main {
   height: 65px;
   padding: 0 20px;

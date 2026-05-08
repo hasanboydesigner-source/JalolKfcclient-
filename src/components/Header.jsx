@@ -40,7 +40,7 @@ const Header = ({
   return (
     <header className="pos-header">
       <div className="header-main">
-        <div className="header-left">
+        <div className="header-left hidden-desktop">
           <div className="logo-badge">J</div>
           <span className="brand-name hidden-mobile">JalolKFC</span>
           {isCustomerView && (
