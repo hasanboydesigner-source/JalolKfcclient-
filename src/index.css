@@ -464,19 +464,7 @@ img {
   border: none !important;
   background: transparent !important;
 }
-  background: var(--slate-100);
-  color: var(--pos-text);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  appearance: none;
-  outline: none;
-  transition: all 0.2s;
-  text-transform: uppercase;
-  min-width: 72px;
-  display: flex;
-  align-items: center;
-}
+
 
 [data-theme='dark'] .language-selector {
   background: var(--btn-glass-bg);
