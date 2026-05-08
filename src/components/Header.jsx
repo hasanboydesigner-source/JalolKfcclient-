@@ -80,7 +80,7 @@ const Header = ({
             display: 'flex',
             alignItems: 'center'
           }}>
-            <Icon name="chevron_down" size={14} />
+            <Icon name="chevron_down" size={14} style={{ color: 'inherit' }} />
           </div>
         </div>
         
