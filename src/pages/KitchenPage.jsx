@@ -115,49 +115,48 @@ const KitchenPage = () => {
   return (
     <div className="kds-container">
       <header className="kds-header">
-        <div className="kds-brand">
-          <ChefHat size={22} color="#e4002b" />
-          <h1>KDS BOARD</h1>
-          <div className="kds-status-tag">
-            {isConnected ? <Signal size={12} /> : <SignalLow size={12} />}
-            {isConnected ? 'SYSTEM LIVE' : 'RECONNECTING'}
+        <div className="kds-brand-section">
+          <div className="kds-brand">
+            <ChefHat size={20} color="#e4002b" />
+            <h1>KDS BOARD</h1>
+          </div>
+          <div className={`kds-status-tag ${isConnected ? 'live' : 'reconnecting'}`}>
+            <Signal size={10} />
+            <span>{isConnected ? 'LIVE' : 'OFFLINE'}</span>
           </div>
         </div>
 
         <div className="kds-stats-center">
           <div className="kds-stat-item">
             <span className="val">{preparingOrders.length}</span>
-            <span className="lbl">Preparing</span>
+            <span className="lbl">PREPARING</span>
           </div>
+          <div className="kds-stat-divider"></div>
           <div className="kds-stat-item">
-            <span className="val" style={{ color: '#10b981' }}>{readyOrders.length}</span>
-            <span className="lbl">Ready</span>
+            <span className="val success">{readyOrders.length}</span>
+            <span className="lbl">READY</span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'monospace' }}>
-              {currentTime.toLocaleTimeString('en-US', { hour12: false })}
-            </div>
-            <div style={{ fontSize: '0.65rem', color: '#71717a', fontWeight: 600 }}>
-              {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-            </div>
+        <div className="kds-header-right">
+          <div className="kds-time-box">
+            <span className="time">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+            <span className="date">{currentTime.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>
           </div>
-          <button className="kds-control-btn" onClick={() => document.documentElement.requestFullscreen()}>
-            <Maximize2 size={16} />
+          <button className="kds-fullscreen-btn" onClick={() => document.documentElement.requestFullscreen()}>
+            <Maximize2 size={14} />
           </button>
         </div>
       </header>
 
       <main className="kds-main">
-        <section className="kds-shelf">
+        <section className="kds-shelf active-orders">
           <div className="kds-shelf-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="shelf-title">
               <Timer size={14} color="#f59e0b" />
               <h2>FAOL BUYURTMALAR</h2>
             </div>
-            <span style={{ fontSize: '0.7rem', color: '#71717a' }}>{preparingOrders.length} BUYURTMA</span>
+            <span className="shelf-count">{preparingOrders.length}</span>
           </div>
           <div className="kds-scroll-area">
             <AnimatePresence mode="popLayout">
@@ -173,20 +172,23 @@ const KitchenPage = () => {
             </AnimatePresence>
             {preparingOrders.length === 0 && (
               <div className="kds-empty-box">
-                <Package size={40} />
-                <p>Queue is clear</p>
+                <div className="empty-icon-wrap">
+                  <Package size={32} />
+                </div>
+                <p>Oshxona bo'sh</p>
+                <span>Yangi buyurtmalar kutilmoqda</span>
               </div>
             )}
           </div>
         </section>
 
-        <section className="kds-shelf">
+        <section className="kds-shelf ready-orders">
           <div className="kds-shelf-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="shelf-title">
               <CheckCircle2 size={14} color="#10b981" />
               <h2>TAYYOR BUYURTMALAR</h2>
             </div>
-            <span style={{ fontSize: '0.7rem', color: '#71717a' }}>{readyOrders.length} BUYURTMA</span>
+            <span className="shelf-count">{readyOrders.length}</span>
           </div>
           <div className="kds-scroll-area">
             <AnimatePresence mode="popLayout">
@@ -195,15 +197,17 @@ const KitchenPage = () => {
                   key={order._id} 
                   order={order} 
                   onAction={() => updateStatus(order._id, 'Completed')}
-                  btnLabel="BAJARILDI"
+                  btnLabel="TOPSHIRILDI"
                   btnClass="success"
                 />
               ))}
             </AnimatePresence>
             {readyOrders.length === 0 && (
               <div className="kds-empty-box">
-                <CheckCircle2 size={40} />
-                <p>No orders ready</p>
+                <div className="empty-icon-wrap success">
+                  <CheckCircle2 size={32} />
+                </div>
+                <p>Tayyor buyurtmalar yo'q</p>
               </div>
             )}
           </div>
