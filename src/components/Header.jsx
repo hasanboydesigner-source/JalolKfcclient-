@@ -115,22 +115,25 @@ const Header = ({
               </button>
 
               {isPendingOpen && (
-                <div className="pending-orders-dropdown">
-                  <h3 className="dropdown-title">Yangi buyurtmalar</h3>
-                  {(!pendingOrders || pendingOrders.length === 0) ? (
-                    <p className="empty-msg">Hozircha buyurtmalar yo'q.</p>
-                  ) : (
-                    pendingOrders.map(order => (
-                      <div key={order._id} className="pending-order-card">
-                        <div className="order-card-header">
-                          <span className="order-table">Stol #{order.tableNumber || '?'}</span>
-                          <span className="order-total">{order.total.toLocaleString()} so'm</span>
+                <>
+                  <div className="modal-backdrop" onClick={() => setIsPendingOpen(false)} />
+                  <div className="pending-orders-dropdown">
+                    <h3 className="dropdown-title">Yangi buyurtmalar</h3>
+                    {(!pendingOrders || pendingOrders.length === 0) ? (
+                      <p className="empty-msg">Hozircha buyurtmalar yo'q.</p>
+                    ) : (
+                      pendingOrders.map(order => (
+                        <div key={order._id} className="pending-order-card">
+                          <div className="order-card-header">
+                            <span className="order-table">Stol #{order.tableNumber || '?'}</span>
+                            <span className="order-total">{order.total.toLocaleString()} so'm</span>
+                          </div>
+                          <button className="complete-btn" onClick={() => onCompleteOrder(order._id)}>Bajarildi</button>
                         </div>
-                        <button className="complete-btn" onClick={() => onCompleteOrder(order._id)}>Bajarildi</button>
-                      </div>
-                    ))
-                  )}
-                </div>
+                      ))
+                    )}
+                  </div>
+                </>
               )}
             </div>
           )}

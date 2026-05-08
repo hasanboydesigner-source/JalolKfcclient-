@@ -134,7 +134,7 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView, isDarkMode
   return (
     <div 
       ref={modalRef} 
-      className="compact-dropdown profile-modal-container" 
+      className="profile-modal-container" 
       style={{ 
         position: 'absolute', 
         top: '100%', 
