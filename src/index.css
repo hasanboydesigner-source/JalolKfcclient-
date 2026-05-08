@@ -3180,15 +3180,15 @@ img {
     left: 0;
     right: 0;
     width: 100%;
-    max-height: 70vh;
-    border-radius: 24px 24px 0 0;
+    max-height: 80vh;
+    border-radius: 32px 32px 0 0;
     border: none;
-    border-top: 1px solid var(--pos-border);
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
-    padding: 24px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-    animation: bottomSheetSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 2000;
+    background: var(--pos-surface);
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.4);
+    padding: 32px 24px;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+    animation: bottomSheetSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999; /* Higher than everything */
   }
 
   .pending-orders-dropdown::before, .compact-dropdown::before {
@@ -3197,10 +3197,11 @@ img {
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
+    width: 48px;
+    height: 5px;
     background: var(--pos-border);
     border-radius: var(--radius-full);
+    opacity: 0.5;
   }
 }
 
