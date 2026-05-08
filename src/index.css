@@ -64,19 +64,19 @@
   --slate-600: #cbd5e1;
   --slate-700: #e2e8f0;
   --slate-800: #f1f5f9;
-  --slate-900: #f8fafc;
-  --slate-950: #ffffff;
+  --slate-900: rgba(255, 255, 255, 0.1); /* Oqni 90% ga kamaytirdik */
+  --slate-950: rgba(255, 255, 255, 0.2); /* Oqni 80% ga kamaytirdik */
 
-  --brand-primary: #ffffff;
-  --brand-hover: #f1f5f9;
+  --brand-primary: rgba(255, 255, 255, 0.15); /* Asosiy oq tugmalar endi 85% xira */
+  --brand-hover: rgba(255, 255, 255, 0.25);
   --brand-accent: #ff4d4d;
 
   --pos-bg: #020617;
   --pos-surface: #0f172a;
-  --pos-border: #1e293b;
-  --pos-border-subtle: #1e293b;
+  --pos-border: rgba(255, 255, 255, 0.1);
+  --pos-border-subtle: rgba(255, 255, 255, 0.05);
 
-  --pos-text: #ffffff;
+  --pos-text: #e2e8f0;
   --pos-text-muted: #94a3b8;
   --pos-text-dim: #64748b;
 }
@@ -185,14 +185,18 @@ img {
   height: 44px;
   background: var(--brand-primary);
   color: var(--pos-bg);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1.1rem;
-  box-shadow: var(--shadow-md);
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-theme='dark'] .logo-badge {
+  color: #ffffff;
 }
 
 .logo-badge:hover {
@@ -253,6 +257,10 @@ img {
   font-size: 0.9rem;
   font-weight: 700;
   white-space: nowrap;
+}
+
+[data-theme='dark'] .nav-item.active {
+  color: #ffffff;
 }
 
 @media (max-width: 768px) {
@@ -490,6 +498,10 @@ img {
   color: var(--pos-bg);
 }
 
+[data-theme='dark'] .category-pill.active {
+  color: #ffffff;
+}
+
 .pill-icon {
   width: 18px;
   height: 18px;
@@ -682,6 +694,10 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+[data-theme='dark'] .add-action-btn {
+  color: #ffffff;
 }
 
 .add-action-btn:hover {
@@ -1173,6 +1189,10 @@ img {
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
 }
 
+[data-theme='dark'] .checkout-btn {
+  color: #ffffff;
+}
+
 .checkout-btn:hover {
   background: var(--brand-hover);
   transform: translateY(-2px);
@@ -1498,12 +1518,13 @@ img {
 .splash-overlay {
   position: fixed;
   inset: 0;
-  background: var(--slate-950);
+  background: var(--pos-bg); /* slate-950 o'rniga pos-bg ishlatamiz, chunki slate-950 darkda oq edi */
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   z-index: 9999;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .splash-overlay.exit {
@@ -1555,8 +1576,12 @@ img {
   left: 0;
   height: 100%;
   width: 40%;
-  background: var(--pos-surface);
+  background: var(--brand-primary); /* oq/xira oq o'rniga brand rangini beramiz */
   animation: splashLoading 1.5s infinite ease-in-out;
+}
+
+[data-theme='dark'] .splash-loader-bar {
+  background: #ffffff;
 }
 
 @keyframes splashLoading {
@@ -1863,6 +1888,11 @@ img {
   background: var(--brand-primary);
   color: var(--pos-bg);
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .payment-tab.active,
+[data-theme='dark'] .payment-method-card.active {
+  color: #ffffff;
 }
 
 /* Bottom Nav (mobile) */
