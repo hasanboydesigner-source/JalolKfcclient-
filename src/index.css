@@ -467,8 +467,7 @@ img {
   background: #f59e0b;
 }
 
-/* Minimalist Header Tools */
-.header-tool-btn, .profile-trigger, .language-selector {
+.header-tool-btn {
   width: 40px !important;
   height: 40px !important;
   border-radius: 10px !important;
@@ -480,24 +479,18 @@ img {
   color: var(--pos-text-muted) !important;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
-  padding: 0 !important;
 }
 
-[data-theme='light'] .header-tool-btn,
-[data-theme='light'] .profile-trigger,
-[data-theme='light'] .language-selector {
+[data-theme='light'] .header-tool-btn {
   color: #475569 !important;
 }
 
-.header-tool-btn:hover, .profile-trigger:hover, .language-selector:hover {
+.header-tool-btn:hover {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--brand-primary) !important;
 }
 
-[data-theme='light'] .header-tool-btn:hover,
-[data-theme='light'] .profile-trigger:hover,
-[data-theme='light'] .language-selector:hover {
+[data-theme='light'] .header-tool-btn:hover {
   background: rgba(15, 23, 42, 0.05) !important;
 }
 
@@ -506,11 +499,60 @@ img {
   background: rgba(239, 68, 68, 0.1) !important;
 }
 
-.language-selector {
-  appearance: none;
-  font-weight: 700;
+.tool-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.compact-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  z-index: 1000;
+  animation: dropdownSlide 0.2s ease;
+}
+
+[data-theme='light'] .compact-dropdown {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: var(--pos-text-muted);
   font-size: 0.85rem;
-  text-align: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+[data-theme='light'] .dropdown-item:hover {
+  background: rgba(15, 23, 42, 0.05);
+  color: #0f172a;
+}
+
+.dropdown-item.active {
+  color: var(--brand-primary);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+@keyframes dropdownSlide {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .profile-avatar {
@@ -2816,26 +2858,13 @@ img {
   animation: fadeIn 0.3s ease;
 }
 
-/* Profile Modal - Compact & Minimalist */
-.profile-modal-content {
-  width: 320px;
-  background: rgba(15, 23, 42, 0.98);
-  backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+.profile-dropdown {
+  min-width: 240px;
   padding: 0;
 }
 
-[data-theme='light'] .profile-modal-content {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.15);
-}
-
 .profile-modal-header {
-  padding: 30px 24px 20px;
-  text-align: center;
+  padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -2843,60 +2872,54 @@ img {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.profile-modal-avatar {
-  display: none; /* Kichikroq qilish uchun olib tashlaymiz */
-}
-
 .profile-modal-name {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--pos-text);
-  margin: 0;
 }
 
 .profile-modal-role {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--brand-primary);
   font-weight: 700;
-  margin-top: 4px;
+  text-transform: uppercase;
+  margin-top: 2px;
 }
 
 .profile-modal-body {
-  padding: 20px;
+  padding: 12px;
 }
 
 .profile-action-btn {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: none;
   color: var(--pos-text);
   font-weight: 600;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   transition: all 0.2s;
-  margin-bottom: 8px;
-}
-
-[data-theme='light'] .profile-action-btn {
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .profile-action-btn:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: var(--brand-primary);
+}
+
+[data-theme='light'] .profile-action-btn:hover {
+  background: rgba(15, 23, 42, 0.05);
 }
 
 .profile-action-btn.logout {
   color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.2);
 }
 
-.profile-action-btn.logout:hover {
-  background: #ef4444;
-  color: white;
+.profile-action-btn.active {
+  background: var(--brand-primary) !important;
+  color: white !important;
 }
 
 @keyframes modalSlideUp {

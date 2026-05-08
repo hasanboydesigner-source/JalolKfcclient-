@@ -20,6 +20,7 @@ const Header = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isPendingOpen, setIsPendingOpen] = useState(false)
+  const [showLangMenu, setShowLangMenu] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(document.documentElement.getAttribute('data-theme') === 'dark')
   const { language, t, changeLanguage } = useLanguage()
 
@@ -55,32 +56,40 @@ const Header = ({
             </div>
           )}
           
-          <select
-            value={language}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="language-selector"
-          >
-            <option value="uz">UZ</option>
-            <option value="ru">RU</option>
-            <option value="en">EN</option>
-          </select>
+          {/* Custom Language Dropdown */}
+          <div className="tool-wrapper">
+            <button className="header-tool-btn" onClick={() => setShowLangMenu(!showLangMenu)}>
+              {language.toUpperCase()}
+            </button>
+            {showLangMenu && (
+              <div className="compact-dropdown">
+                {['uz', 'ru', 'en'].map(lang => (
+                  <div 
+                    key={lang} 
+                    className={`dropdown-item ${language === lang ? 'active' : ''}`}
+                    onClick={() => { changeLanguage(lang); setShowLangMenu(false); }}
+                  >
+                    {lang.toUpperCase()}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <button onClick={toggleDarkMode} className="theme-toggle header-tool-btn">
+          <button onClick={toggleDarkMode} className="header-tool-btn">
             <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
           </button>
 
           <button 
-            className={`mobile-cart-toggle header-tool-btn ${showMobileCart ? 'active' : ''}`}
+            className={`header-tool-btn ${showMobileCart ? 'active' : ''}`}
             onClick={() => setShowMobileCart(!showMobileCart)}
           >
             <Icon name="cart" size={22} />
-            {cartCount > 0 && (
-              <div className="cart-badge">{cartCount}</div>
-            )}
+            {cartCount > 0 && <div className="cart-badge">{cartCount}</div>}
           </button>
 
           {!isCustomerView && (
-            <div style={{ position: 'relative' }}>
+            <div className="tool-wrapper">
               <button 
                 onClick={() => setIsPendingOpen(!isPendingOpen)}
                 className={`header-tool-btn ${isPendingOpen ? 'active' : ''}`}
@@ -93,7 +102,7 @@ const Header = ({
 
               {isPendingOpen && (
                 <div className="pending-orders-dropdown">
-                  <h3 className="dropdown-title">Yangi buyurtmalar</h3>
+                  <h3 className="dropdown-title">{t('pending_orders') || 'Yangi buyurtmalar'}</h3>
                   {(!pendingOrders || pendingOrders.length === 0) ? (
                     <p className="empty-msg">Hozircha buyurtmalar yo'q.</p>
                   ) : (
@@ -102,11 +111,6 @@ const Header = ({
                         <div className="order-card-header">
                           <span className="order-table">Stol #{order.tableNumber || '?'}</span>
                           <span className="order-total">{order.total.toLocaleString()} so'm</span>
-                        </div>
-                        <div className="order-items">
-                          {order.items.map((i, idx) => (
-                            <div key={idx}>- {i.qty}x {i.name}</div>
-                          ))}
                         </div>
                         <button className="complete-btn" onClick={() => onCompleteOrder(order._id)}>Bajarildi</button>
                       </div>
@@ -118,17 +122,12 @@ const Header = ({
           )}
 
           {!isCustomerView && (
-            <div style={{ position: 'relative' }}>
-              <div className="profile-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                <div className="profile-info hidden-mobile">
-                  <div className="profile-name">{user?.name || 'Admin'}</div>
-                  <div className="profile-role">
-                    {user?.role === 'admin' ? t('administrator') : t('cashier')}
-                  </div>
-                </div>
-                <div className="profile-avatar">
-                  <Icon name="user" size={18} strokeWidth={2.5} />
-                </div>
+            <div className="tool-wrapper">
+              <div 
+                className={`header-tool-btn ${isDropdownOpen ? 'active' : ''}`} 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <Icon name="user" size={20} />
               </div>
 
               <ProfileModal 
@@ -136,7 +135,6 @@ const Header = ({
                 onClose={() => setIsDropdownOpen(false)} 
                 onLogout={onLogout}
                 user={user}
-                currentView={currentView}
               />
             </div>
           )}
