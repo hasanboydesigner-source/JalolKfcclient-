@@ -17,28 +17,28 @@ const BottomNav = () => {
         className={`mobile-nav-item ${currentView === 'pos' ? 'active' : ''}`}
         onClick={() => navigate('/')}
       >
-        <Icon name="menu" size={24} />
+        <Icon name="menu" size={20} />
         <span>{t('pos')}</span>
       </div>
       <div 
         className={`mobile-nav-item ${currentView === 'kitchen' ? 'active' : ''}`}
         onClick={() => navigate('/kitchen')}
       >
-        <Icon name="clock" size={24} />
+        <Icon name="clock" size={20} />
         <span>{t('kitchen')}</span>
       </div>
       <div 
         className={`mobile-nav-item ${currentView === 'admin' ? 'active' : ''}`}
         onClick={() => navigate('/admin')}
       >
-        <Icon name="settings" size={24} />
+        <Icon name="settings" size={20} />
         <span>{t('admin')}</span>
       </div>
       <div 
         className={`mobile-nav-item ${currentView === 'stats' ? 'active' : ''}`}
         onClick={() => navigate('/stats')}
       >
-        <Icon name="chart" size={24} />
+        <Icon name="chart" size={20} />
         <span>{t('stats')}</span>
       </div>
     </nav>
