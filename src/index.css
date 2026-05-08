@@ -344,6 +344,11 @@ img {
   flex-shrink: 0;
 }
 
+[data-theme='dark'] .header-tool-btn {
+  background: var(--btn-glass-bg);
+  color: #ffffff !important;
+}
+
 .header-tool-btn.active {
   background: var(--brand-primary);
   color: white;
@@ -356,8 +361,9 @@ img {
 }
 
 .language-selector {
-  padding: 8px 32px 8px 12px;
-  border-radius: 12px;
+  height: 40px;
+  padding: 0 32px 0 12px;
+  border-radius: 10px;
   border: none;
   background: var(--slate-100);
   color: var(--pos-text);
@@ -368,7 +374,14 @@ img {
   outline: none;
   transition: all 0.2s;
   text-transform: uppercase;
-  min-width: 60px;
+  min-width: 72px;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme='dark'] .language-selector {
+  background: var(--btn-glass-bg);
+  color: #ffffff !important;
 }
 
 @media (max-width: 768px) {

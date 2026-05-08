@@ -148,18 +148,7 @@ const Header = ({
           <div style={{ position: 'relative' }}>
             <button 
               onClick={() => setIsPendingOpen(!isPendingOpen)}
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                background: 'var(--slate-100)',
-                border: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                position: 'relative'
-              }}
+              className={`header-tool-btn ${isPendingOpen ? 'active' : ''}`}
             >
               <Icon name="clock" size={20} />
               {pendingOrders?.length > 0 && (
