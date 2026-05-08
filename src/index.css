@@ -599,16 +599,13 @@ img {
 
 @media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
     padding: 0 0 100px 0;
   }
-}
-
-@media (max-width: 360px) {
-  .products-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  
+  .pos-viewport {
+    padding: 12px;
   }
 }
 
