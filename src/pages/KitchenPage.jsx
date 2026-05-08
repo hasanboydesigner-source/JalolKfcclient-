@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../hooks/useSocket';
+import { getBgRemovedUrl } from '../utils/imageUtils';
 
 const NEW_ORDER_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3';
 
@@ -262,7 +263,7 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
           <div key={i} className="kds-item-row">
             <div className="kds-item-qty">{item.qty}</div>
             <div className="kds-item-img-wrap">
-              <img src={item.image} alt={item.name} className="kds-item-img" />
+              <img src={getBgRemovedUrl(item.image)} alt={item.name} className="kds-item-img" />
             </div>
             <div className="kds-item-name">{item.name}</div>
           </div>
