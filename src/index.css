@@ -2280,8 +2280,9 @@ img {
 
 .cart-time-badge {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--pos-text-muted);
@@ -2291,9 +2292,13 @@ img {
   line-height: 1;
 }
 
+.cart-time-badge svg {
+  flex-shrink: 0;
+}
+
 .cart-time-badge span {
   display: inline-block;
-  transform: translateY(1px); /* Sub-pixel adjustment for optical alignment */
+  white-space: nowrap;
 }
 
 .close-cart-btn {
