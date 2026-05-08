@@ -39,14 +39,28 @@ const Header = ({
 
   return (
     <header className="pos-header">
-      <div className="header-main-row">
-        <div className="header-left-brand">
+      <div className="header-main">
+        <div className="header-left">
           <div className="logo-badge">J</div>
-          <div className="brand-name hidden-mobile">JalolKFC</div>
+          <span className="brand-name hidden-mobile">JalolKFC</span>
           {isCustomerView && (
              <h2 className="table-badge">Stol #{tableParam}</h2>
           )}
         </div>
+
+        {!isCustomerView && (
+          <div className="header-center">
+            <div className="search-field">
+              <Icon name="search" size={18} className="text-dim" />
+              <input 
+                type="text" 
+                placeholder={t('search_placeholder')} 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="header-right-tools">
           {!isOnline && (
@@ -102,7 +116,7 @@ const Header = ({
 
               {isPendingOpen && (
                 <div className="pending-orders-dropdown">
-                  <h3 className="dropdown-title">{t('pending_orders') || 'Yangi buyurtmalar'}</h3>
+                  <h3 className="dropdown-title">Yangi buyurtmalar</h3>
                   {(!pendingOrders || pendingOrders.length === 0) ? (
                     <p className="empty-msg">Hozircha buyurtmalar yo'q.</p>
                   ) : (
