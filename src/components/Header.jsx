@@ -55,20 +55,15 @@ const Header = ({
             </div>
           )}
           
-          <div className="language-selector-wrapper">
-            <select
-              value={language}
-              onChange={(e) => changeLanguage(e.target.value)}
-              className="language-selector"
-            >
-              <option value="uz">UZ</option>
-              <option value="ru">RU</option>
-              <option value="en">EN</option>
-            </select>
-            <div className="chevron-icon">
-              <Icon name="chevron_down" size={14} style={{ color: 'inherit' }} />
-            </div>
-          </div>
+          <select
+            value={language}
+            onChange={(e) => changeLanguage(e.target.value)}
+            className="language-selector"
+          >
+            <option value="uz">UZ</option>
+            <option value="ru">RU</option>
+            <option value="en">EN</option>
+          </select>
 
           <button onClick={toggleDarkMode} className="theme-toggle header-tool-btn">
             <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
