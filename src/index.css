@@ -185,20 +185,18 @@ img {
 }
 
 .logo-badge {
-  width: 44px;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--brand-primary), #ff4d4d) !important;
+  color: white !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-weight: 900;
+  font-size: 1.4rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-[data-theme='dark'] .logo-badge {
-  background: var(--btn-glass-bg) !important;
-  color: #ffffff !important;
 }
 
 .logo-badge:hover {
@@ -372,19 +370,20 @@ img {
     flex-direction: row;
     padding: 0 40px;
   }
-  
+
   .header-main-row {
     width: auto;
     flex: 1;
   }
-  
+
   .search-row {
     width: 380px;
     margin: 0 20px;
   }
 }
 
-.cart-badge, .pending-badge {
+.cart-badge,
+.pending-badge {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -405,36 +404,44 @@ img {
   background: #f59e0b;
 }
 
-/* Header Tool Buttons */
-.header-tool-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--slate-100);
-  border: none;
+/* Professional Header Tool Buttons */
+.header-tool-btn, .profile-trigger {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--pos-text) !important;
   cursor: pointer;
-  transition: all 0.2s;
-  color: var(--pos-text);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   flex-shrink: 0;
 }
 
-[data-theme='dark'] .header-tool-btn {
-  background: var(--btn-glass-bg);
-  color: #ffffff !important;
+[data-theme='light'] .header-tool-btn,
+[data-theme='light'] .profile-trigger {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+.header-tool-btn:hover, .profile-trigger:hover {
+  background: var(--brand-primary) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .header-tool-btn.active {
-  background: var(--brand-primary);
-  color: white;
+  background: white !important;
+  color: #0f172a !important;
 }
 
-[data-theme='dark'] .header-tool-btn.active {
-  background: #ffffff !important;
-  color: #0f172a !important;
+[data-theme='light'] .header-tool-btn.active {
+  background: var(--brand-primary) !important;
+  color: white !important;
 }
 
 .language-selector-wrapper {
@@ -521,34 +528,23 @@ img {
 }
 
 .profile-trigger {
+  padding: 0;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 4px;
-  padding-left: 16px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--pos-border-subtle);
-  transition: all 0.2s;
-  cursor: pointer;
+  justify-content: center;
 }
 
-.profile-trigger:hover {
-  background: var(--slate-50);
-}
-
-.profile-trigger.active {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-
-[data-theme='dark'] .profile-trigger.active {
-  background: #ffffff !important;
-  border-color: #ffffff !important;
-}
-
-.profile-trigger.active .brand-name,
-.profile-trigger.active .profile-role {
-  color: #0f172a !important;
+@media (min-width: 1024px) {
+  .profile-trigger {
+    width: auto !important;
+    padding: 0 16px !important;
+    gap: 12px;
+  }
 }
 
 [data-theme='light'] .profile-trigger.active .brand-name,
@@ -680,7 +676,7 @@ img {
     gap: 12px;
     padding: 0 0 100px 0;
   }
-  
+
   .pos-viewport {
     padding: 12px;
   }
@@ -813,7 +809,7 @@ img {
 @media (max-width: 480px) {
   .product-name-label {
     font-size: 0.8rem;
-    height: 2.4em;
+    /* height: 2.4em; */
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -2626,8 +2622,10 @@ img {
 
 /* The Ultimate Senior-Grade KDS Design System - Onyx & Crimson */
 :root {
-  --kds-bg: #050814; /* Qop-qora emas, to'q ko'kroq fon */
-  --kds-surface: #0f172a; /* Kartalar uchun slate-950/surface rangi */
+  --kds-bg: #050814;
+  /* Qop-qora emas, to'q ko'kroq fon */
+  --kds-surface: #0f172a;
+  /* Kartalar uchun slate-950/surface rangi */
   --kds-border: rgba(255, 255, 255, 0.08);
   --kds-text: #f1f5f9;
   --kds-text-dim: #94a3b8;
@@ -2649,7 +2647,8 @@ img {
 
 .kds-header {
   height: 80px;
-  background: #0a0e1c; /* Header biroz ochroq */
+  background: #0a0e1c;
+  /* Header biroz ochroq */
   padding: 0 32px;
   display: flex;
   justify-content: space-between;
