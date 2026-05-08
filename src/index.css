@@ -2279,10 +2279,10 @@ img {
 }
 
 .cart-time-badge {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--pos-text-muted);
@@ -2294,10 +2294,11 @@ img {
 
 .cart-time-badge svg {
   flex-shrink: 0;
+  display: block !important;
 }
 
 .cart-time-badge span {
-  display: inline-block;
+  display: block !important;
   white-space: nowrap;
 }
 
