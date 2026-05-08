@@ -2521,19 +2521,26 @@ img {
   width: 100%;
   background: var(--kds-bg);
   color: #ffffff;
+}
+
+[data-theme='light'] {
+  --kds-bg: #f1f5f9;
+  --kds-surface: #ffffff;
+  --kds-border: #e2e8f0;
+  --kds-text: #0f172a;
+  --kds-text-dim: #64748b;
+}
+
+.kds-container {
+  height: 100%;
+  width: 100%;
+  background: var(--kds-bg);
+  color: var(--kds-text);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   font-family: 'Inter', -apple-system, sans-serif;
   border-radius: 20px;
-}
-
-[data-theme='light'] .kds-container {
-  --kds-bg: #f8fafc;
-  --kds-surface: #ffffff;
-  --kds-border: #e2e8f0;
-  --kds-text-dim: #64748b;
-  color: #0f172a;
 }
 
 .kds-header {
@@ -2675,13 +2682,20 @@ img {
 .kds-ticket {
   background: var(--kds-surface);
   border: 1px solid var(--kds-border);
-  border-radius: 14px;
+  border-radius: 20px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   position: relative;
-  flex-shrink: 0;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 400px;
+}
+
+[data-theme='dark'] .kds-ticket {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .kds-ticket:hover {
