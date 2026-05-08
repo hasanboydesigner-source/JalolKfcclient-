@@ -445,10 +445,10 @@ img {
   top: calc(100% + 8px);
   right: 0;
   min-width: 160px;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   padding: 8px;
   z-index: 1000;
   animation: dropdownSlide 0.2s ease;
@@ -456,8 +456,6 @@ img {
 
 [data-theme='light'] .compact-dropdown {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-item {
@@ -486,8 +484,15 @@ img {
 }
 
 @keyframes dropdownSlide {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-avatar {
@@ -1764,7 +1769,7 @@ img {
 }
 
 .splash-logo-text {
-  color: white;
+  color: var(--pos-text);
   font-size: 3.5rem;
   font-weight: 800;
   letter-spacing: -0.05em;
@@ -1788,7 +1793,7 @@ img {
 .splash-loader {
   width: 40px;
   height: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--pos-border);
   border-radius: 99px;
   overflow: hidden;
   position: relative;
@@ -1800,13 +1805,12 @@ img {
   left: 0;
   height: 100%;
   width: 40%;
-  background: var(--brand-primary);
-  /* oq/xira oq o'rniga brand rangini beramiz */
+  background: var(--brand-accent);
   animation: splashLoading 1.5s infinite ease-in-out;
 }
 
 [data-theme='dark'] .splash-loader-bar {
-  background: #ffffff;
+  background: var(--brand-accent);
 }
 
 @keyframes splashLoading {
@@ -2787,13 +2791,183 @@ img {
 .profile-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(2, 6, 23, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  animation: fadeIn 0.3s ease;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.profile-modal-container {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  box-shadow: var(--shadow-premium);
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='light'] .profile-modal-container {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme='light'] .profile-modal-title {
+  color: #0f172a !important;
+}
+
+[data-theme='light'] .profile-modal-subtitle {
+  color: #64748b !important;
+}
+
+[data-theme='light'] .modal-label {
+  color: #64748b !important;
+}
+
+[data-theme='light'] .modal-input {
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme='light'] .modal-btn-cancel {
+  color: #475569 !important;
+}
+
+[data-theme='light'] .profile-action-btn {
+  color: #1e293b !important;
+}
+
+[data-theme='light'] .profile-action-btn:hover {
+  background: #f1f5f9 !important;
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.profile-modal-header {
+  padding: 32px 32px 24px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+}
+
+.profile-modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--pos-text);
+  letter-spacing: -0.03em;
+}
+
+.profile-modal-subtitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.profile-modal-body {
+  padding: 0 32px 32px;
+}
+
+.modal-input-group {
+  margin-bottom: 24px;
+}
+
+.modal-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--pos-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.modal-input {
+  width: 100%;
+  background: var(--slate-50);
+  border: 1px solid var(--pos-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  color: var(--pos-text);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+[data-theme='dark'] .modal-input {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modal-input:focus {
+  background: var(--pos-surface);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+  outline: none;
+}
+
+.modal-footer {
+  padding: 0 32px 32px;
+  display: flex;
+  gap: 16px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--pos-border);
+  color: var(--pos-text-muted);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--slate-50);
+  color: var(--pos-text);
+}
+
+.modal-btn-save {
+  background: var(--brand-primary);
+  border: none;
+  color: var(--pos-bg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .modal-btn-save {
+  background: white;
+  color: #000;
 }
 
 .profile-dropdown {
@@ -2888,40 +3062,15 @@ img {
   .header-center {
     display: none;
   }
+
   .search-row {
     display: block;
   }
+
   .header-main {
     min-height: 50px;
     padding: 4px 12px;
   }
-}
-
-.profile-modal-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-[data-theme='light'] .profile-modal-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.profile-modal-name {
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--pos-text);
-}
-
-.profile-modal-role {
-  font-size: 0.7rem;
-  color: var(--brand-primary);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.profile-modal-body {
-  padding: 12px;
 }
 
 .profile-action-btn {
@@ -2957,8 +3106,15 @@ img {
 }
 
 @keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Minimalist Form Styles */
@@ -3399,6 +3555,7 @@ img {
   .hidden-mobile {
     display: none !important;
   }
+
   .hidden-desktop {
     display: flex !important;
   }

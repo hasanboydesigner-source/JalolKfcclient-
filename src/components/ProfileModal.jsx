@@ -54,86 +54,106 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
     }
   }
 
+  // If password form is shown, use the full modal overlay style
+  if (showPassForm) {
+    return (
+      <div className="profile-modal-overlay">
+        <div ref={modalRef} className="profile-modal-container">
+          <div className="profile-modal-header">
+            <div className="profile-modal-title">{t('change_passcode')}</div>
+            <div className="profile-modal-subtitle">
+              {user?.role === 'admin' ? t('administrator') : t('cashier')}
+            </div>
+          </div>
+
+          <div className="profile-modal-body">
+            <form onSubmit={handleUpdatePasscode}>
+              <div className="modal-input-group">
+                <label className="modal-label">{t('old_passcode')}</label>
+                <input 
+                  type="password" 
+                  className="modal-input"
+                  maxLength="4"
+                  placeholder="****"
+                  value={passData.oldPin}
+                  onChange={(e) => setPassData({...passData, oldPin: e.target.value})}
+                  required 
+                />
+              </div>
+              <div className="modal-input-group">
+                <label className="modal-label">{t('new_passcode')}</label>
+                <input 
+                  type="password" 
+                  className="modal-input"
+                  maxLength="4"
+                  placeholder="****"
+                  value={passData.newPin}
+                  onChange={(e) => setPassData({...passData, newPin: e.target.value})}
+                  required 
+                />
+              </div>
+              <div className="modal-input-group">
+                <label className="modal-label">{t('confirm_passcode')}</label>
+                <input 
+                  type="password" 
+                  className="modal-input"
+                  maxLength="4"
+                  placeholder="****"
+                  value={passData.confirmPin}
+                  onChange={(e) => setPassData({...passData, confirmPin: e.target.value})}
+                  required 
+                />
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="modal-btn modal-btn-cancel" 
+                  onClick={() => setShowPassForm(false)}
+                >
+                  {t('back')}
+                </button>
+                <button 
+                  type="submit" 
+                  className="modal-btn modal-btn-save" 
+                  disabled={loading}
+                >
+                  {loading ? '...' : t('save')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Otherwise, show as a dropdown
   return (
-    <div ref={modalRef} className="compact-dropdown profile-dropdown">
-      <div className="profile-modal-header">
-        <div className="profile-modal-name">{user?.name || t('profile')}</div>
-        <div className="profile-modal-role">
+    <div ref={modalRef} className="compact-dropdown profile-modal-container" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', width: '280px' }}>
+      <div className="profile-modal-header" style={{ padding: '20px 24px' }}>
+        <div className="profile-modal-title" style={{ fontSize: '1.1rem' }}>{user?.name || t('profile')}</div>
+        <div className="profile-modal-subtitle">
           {user?.role === 'admin' ? t('administrator') : t('cashier')}
         </div>
       </div>
 
-      <div className="profile-modal-body">
-        {!showPassForm ? (
-          <>
-            <button 
-              className="profile-action-btn" 
-              onClick={() => setShowPassForm(true)}
-            >
-              <Icon name="settings" size={18} /> 
-              <span>{t('change_passcode')}</span>
-            </button>
-            <button 
-              className="profile-action-btn logout" 
-              onClick={onLogout}
-            >
-              <Icon name="logout" size={18} /> 
-              <span>{t('logout_confirm')}</span>
-            </button>
-          </>
-        ) : (
-          <form onSubmit={handleUpdatePasscode} className="minimal-form">
-            <div className="form-field">
-              <label>{t('old_passcode')}</label>
-              <input 
-                type="password" 
-                maxLength="4"
-                placeholder="****"
-                value={passData.oldPin}
-                onChange={(e) => setPassData({...passData, oldPin: e.target.value})}
-                required 
-              />
-            </div>
-            <div className="form-field">
-              <label>{t('new_passcode')}</label>
-              <input 
-                type="password" 
-                maxLength="4"
-                placeholder="****"
-                value={passData.newPin}
-                onChange={(e) => setPassData({...passData, newPin: e.target.value})}
-                required 
-              />
-            </div>
-            <div className="form-field">
-              <label>{t('confirm_passcode')}</label>
-              <input 
-                type="password" 
-                maxLength="4"
-                placeholder="****"
-                value={passData.confirmPin}
-                onChange={(e) => setPassData({...passData, confirmPin: e.target.value})}
-                required 
-              />
-            </div>
-            <div className="form-actions">
-              <button 
-                type="button" 
-                className="profile-action-btn" 
-                onClick={() => setShowPassForm(false)}
-              >
-                {t('back')}
-              </button>
-              <button 
-                type="submit" 
-                className="profile-action-btn active" 
-                disabled={loading}
-              >
-                {loading ? '...' : t('save')}
-              </button>
-            </div>
-          </form>
-        )}
+      <div className="profile-modal-body" style={{ padding: '0 12px 12px' }}>
+        <button 
+          className="profile-action-btn" 
+          onClick={() => setShowPassForm(true)}
+          style={{ marginBottom: '4px' }}
+        >
+          <Icon name="settings" size={18} /> 
+          <span>{t('change_passcode')}</span>
+        </button>
+        <button 
+          className="profile-action-btn logout" 
+          onClick={onLogout}
+          style={{ color: 'var(--pos-danger)' }}
+        >
+          <Icon name="logout" size={18} /> 
+          <span>{t('logout_confirm')}</span>
+        </button>
       </div>
     </div>
   )
