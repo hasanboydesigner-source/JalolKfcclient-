@@ -407,6 +407,8 @@ app.use((err, req, res, next) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.get('/ping', (req, res) => res.send('pong'));
+
 if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
   app.use(express.static(path.join(__dirname, '../dist')));
   
@@ -416,4 +418,19 @@ if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
 }
 
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  
+  // Keep-alive mechanism for Render free tier
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+  if (RENDER_URL) {
+    setInterval(async () => {
+      try {
+        await axios.get(`${RENDER_URL}/ping`);
+        console.log('💓 Keep-alive: Server pinged successfully');
+      } catch (err) {
+        console.error('💔 Keep-alive Error:', err.message);
+      }
+    }, 14 * 60 * 1000); // Ping every 14 minutes
+  }
+});
