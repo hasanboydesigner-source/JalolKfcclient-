@@ -708,6 +708,12 @@ img {
     padding: 0 0 100px 0;
   }
 
+  @media (max-width: 350px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .pos-viewport {
     padding: 12px;
   }
