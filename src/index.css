@@ -1592,13 +1592,23 @@ img {
 
 @media (max-width: 768px) {
   .admin-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
   }
 
   .admin-header-row h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+  }
+
+  .admin-header-row .checkout-btn {
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+    width: auto !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -3983,5 +3993,309 @@ img {
 
   .offline-badge {
     padding: 8px;
+  }
+}
+
+/* Stats Premium UI */
+.stats-card-premium {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border-subtle);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.stats-card-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  padding: 24px 24px 0;
+  color: var(--pos-text);
+}
+
+.chart-container-inner {
+  padding: 0 16px 20px;
+}
+
+.chart-legend-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 0 16px 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--pos-text-muted);
+}
+
+.metric-label-text {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--pos-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.metric-value-text {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--pos-text);
+}
+
+.metric-unit-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--pos-text-muted);
+}
+
+.metric-subtext {
+  font-size: 0.7rem;
+  color: var(--pos-text-dim);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.stats-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+}
+
+.card-header-premium {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--pos-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title-text {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.count-badge {
+  font-size: 0.7rem;
+  color: var(--brand-primary);
+  background: rgba(239, 68, 68, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+}
+
+.table-price {
+  font-weight: 800;
+  color: var(--pos-text);
+}
+
+.table-muted {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--pos-text-muted);
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.status-pill.success {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.status-pill.danger {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* Mobile Order Cards */
+.mobile-order-card-refined {
+  padding: 16px;
+  background: var(--pos-surface);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--pos-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.mobile-order-card-refined:active {
+  transform: scale(0.98);
+  background: var(--slate-50);
+}
+
+.mobile-order-card-refined .card-left,
+.mobile-order-card-refined .card-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-time {
+  font-size: 0.7rem;
+  color: var(--pos-text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.order-price {
+  font-weight: 900;
+  color: var(--pos-text);
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.order-method {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--pos-text-muted);
+  margin-bottom: 6px;
+  text-align: right;
+}
+
+.order-status-dot {
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.order-status-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.order-status-dot.success { color: #10b981; }
+.order-status-dot.success::before { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+.order-status-dot.danger { color: #ef4444; }
+.order-status-dot.danger::before { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+/* Top Products List */
+.top-product-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.top-product-item:hover {
+  background: var(--slate-50);
+}
+
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--slate-100);
+  color: var(--pos-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.rank-badge.top {
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-meta {
+  font-size: 0.75rem;
+  color: var(--pos-text-muted);
+  font-weight: 600;
+}
+
+.product-revenue {
+  font-weight: 900;
+  color: var(--pos-text);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1024px) {
+  .stats-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-value-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-header-info {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .stats-header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .stats-date-wrapper {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .last-update-badge {
+    display: none;
   }
 }
