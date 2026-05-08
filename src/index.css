@@ -267,10 +267,11 @@ img {
 }
 
 .brand-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--pos-text);
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .nav-stack {

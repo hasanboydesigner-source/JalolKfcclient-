@@ -16,7 +16,6 @@ const Sidebar = ({ user }) => {
   return (
     <aside className="pos-sidebar">
       <div className="logo-container hidden-mobile">
-        <div className="logo-badge">JL</div>
         <div className="brand-name">Jalol KFC</div>
       </div>
       <nav className="nav-stack">
