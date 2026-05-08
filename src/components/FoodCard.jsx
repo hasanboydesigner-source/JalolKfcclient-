@@ -1,5 +1,6 @@
 import { Icon } from './Icons'
 import { useLanguage } from '../context/LanguageContext'
+import { getBgRemovedUrl } from '../utils/imageUtils'
 
 const FoodCard = ({ product, addToCart, updateQty, cart }) => {
   const { t } = useLanguage()
@@ -15,7 +16,7 @@ const FoodCard = ({ product, addToCart, updateQty, cart }) => {
       )}
       
       <div className="product-visual">
-        <img src={product.image} alt={product.name} className="product-img" loading="lazy" />
+        <img src={getBgRemovedUrl(product.image)} alt={product.name} className="product-img" loading="lazy" />
       </div>
       
       <div className="product-content">

@@ -1,5 +1,6 @@
 import { Icon } from './Icons'
 import { useLanguage } from '../context/LanguageContext'
+import { getBgRemovedUrl } from '../utils/imageUtils'
 
 const AdminPanel = ({ products, searchQuery, handleOpenModal, handleDeleteProduct, INITIAL_CATEGORIES }) => {
   const { t } = useLanguage()
@@ -30,7 +31,7 @@ const AdminPanel = ({ products, searchQuery, handleOpenModal, handleDeleteProduc
               <tr key={product._id}>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <img src={product.image} className="table-img" alt="" />
+                    <img src={getBgRemovedUrl(product.image)} className="table-img" alt="" />
                     <div className="table-name-group">
                       <div className="table-name">{product.name}</div>
                       <div className="table-category-tag">
@@ -76,7 +77,7 @@ const AdminPanel = ({ products, searchQuery, handleOpenModal, handleDeleteProduc
         {filtered.map(product => (
           <div key={product._id} className="mobile-admin-card">
             <div className="card-main-info">
-              <img src={product.image} alt="" className="card-thumb" />
+              <img src={getBgRemovedUrl(product.image)} alt="" className="card-thumb" />
               <div className="card-details">
                 <div className="card-name">{product.name}</div>
                 <div className="card-meta">

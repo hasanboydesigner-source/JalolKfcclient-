@@ -1,5 +1,6 @@
 import { Icon } from './Icons'
 import { useLanguage } from '../context/LanguageContext'
+import { getBgRemovedUrl } from '../utils/imageUtils'
 
 const Cart = ({ 
   cart, 
@@ -82,7 +83,7 @@ const Cart = ({
             <div className="cart-items-list">
               {cart.map(item => (
                 <div key={item._id} className="cart-item">
-                  <img src={item.image} alt={item.name} className="cart-item-thumb" />
+                  <img src={getBgRemovedUrl(item.image)} alt={item.name} className="cart-item-thumb" />
                   <div className="cart-item-info">
                     <div className="cart-item-name">{item.name}</div>
                     <div className="cart-item-price">{(item.price * item.qty).toLocaleString()} {t('sum')}</div>
@@ -107,7 +108,7 @@ const Cart = ({
                 <div className="recommendation-scroll">
                   {recommendedProducts.map(product => (
                     <div key={product._id} className="recommendation-card">
-                      <img src={product.image} alt={product.name} className="rec-img" />
+                      <img src={getBgRemovedUrl(product.image)} alt={product.name} className="rec-img" />
                       <div className="rec-info">
                         <div className="rec-name">{product.name}</div>
                         <div className="rec-price">{product.price.toLocaleString()} {t('sum')}</div>
