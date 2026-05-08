@@ -2864,7 +2864,7 @@ img {
   padding: 0;
 }
 
-.profile-modal.pos-header {
+.pos-header {
   background: var(--pos-bg-secondary);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: sticky;
@@ -2879,8 +2879,8 @@ img {
 }
 
 .header-main {
-  min-height: 64px;
-  padding: 8px 20px;
+  min-height: 52px;
+  padding: 4px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2943,9 +2943,8 @@ img {
   outline: none;
 }
 
-/* Mobile Search Row - Only for Mobile */
 .search-row {
-  padding: 0 16px 12px;
+  padding: 0 16px 8px;
   display: none;
 }
 
@@ -2957,14 +2956,14 @@ img {
     display: block;
   }
   .header-main {
-    min-height: 60px;
-    padding: 8px 12px;
+    min-height: 50px;
+    padding: 4px 12px;
   }
 }
 
 .header-main {
-  min-height: 64px;
-  padding: 10px 20px;
+  min-height: 52px;
+  padding: 4px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
