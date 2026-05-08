@@ -149,6 +149,7 @@ const Header = ({
                 onClose={() => setIsDropdownOpen(false)} 
                 onLogout={onLogout}
                 user={user}
+                isDarkMode={isDarkMode}
               />
             </div>
           )}

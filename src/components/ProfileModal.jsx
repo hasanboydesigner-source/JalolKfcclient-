@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 import { useLanguage } from '../context/LanguageContext'
 
-const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
+const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView, isDarkMode }) => {
   const { t } = useLanguage()
   const [showPassForm, setShowPassForm] = useState(false)
   const [passData, setPassData] = useState({ oldPin: '', newPin: '', confirmPin: '' })
@@ -54,13 +54,16 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
     }
   }
 
+  const surfaceBg = isDarkMode ? '#0f172a' : '#ffffff';
+  const textColor = isDarkMode ? '#e2e8f0' : '#0f172a';
+
   // If password form is shown, use the full modal overlay style
   if (showPassForm) {
     return (
       <div className="profile-modal-overlay">
-        <div ref={modalRef} className="profile-modal-container">
+        <div ref={modalRef} className="profile-modal-container" style={{ backgroundColor: surfaceBg }}>
           <div className="profile-modal-header">
-            <div className="profile-modal-title">{t('change_passcode')}</div>
+            <div className="profile-modal-title" style={{ color: textColor }}>{t('change_passcode')}</div>
             <div className="profile-modal-subtitle">
               {user?.role === 'admin' ? t('administrator') : t('cashier')}
             </div>
@@ -129,9 +132,20 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
 
   // Otherwise, show as a dropdown
   return (
-    <div ref={modalRef} className="compact-dropdown profile-modal-container" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '12px', width: '280px' }}>
+    <div 
+      ref={modalRef} 
+      className="compact-dropdown profile-modal-container" 
+      style={{ 
+        position: 'absolute', 
+        top: '100%', 
+        right: 0, 
+        marginTop: '12px', 
+        width: '280px',
+        backgroundColor: surfaceBg
+      }}
+    >
       <div className="profile-modal-header" style={{ padding: '20px 24px' }}>
-        <div className="profile-modal-title" style={{ fontSize: '1.1rem' }}>{user?.name || t('profile')}</div>
+        <div className="profile-modal-title" style={{ fontSize: '1.1rem', color: textColor }}>{user?.name || t('profile')}</div>
         <div className="profile-modal-subtitle">
           {user?.role === 'admin' ? t('administrator') : t('cashier')}
         </div>
@@ -141,7 +155,7 @@ const ProfileModal = ({ isOpen, onClose, onLogout, user, currentView }) => {
         <button 
           className="profile-action-btn" 
           onClick={() => setShowPassForm(true)}
-          style={{ marginBottom: '4px' }}
+          style={{ marginBottom: '4px', color: textColor }}
         >
           <Icon name="settings" size={18} /> 
           <span>{t('change_passcode')}</span>
