@@ -186,9 +186,6 @@ img {
 
 .logo-badge {
   width: 44px;
-  height: 44px;
-  background: var(--brand-primary);
-  color: var(--pos-bg);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -291,22 +288,23 @@ img {
 }
 
 .pos-header {
-  height: var(--header-height);
+  height: 80px;
   padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--pos-border-subtle);
+  border-bottom: 1px solid var(--pos-border);
   background: var(--pos-surface);
   flex-shrink: 0;
-  gap: 20px;
+  transition: all 0.3s;
 }
 
 @media (max-width: 768px) {
   .pos-header {
-    height: 60px;
-    padding: 0 12px;
-    gap: 8px;
+    height: auto;
+    padding: 12px;
+    flex-direction: column;
+    gap: 12px;
   }
 }
 
@@ -421,9 +419,9 @@ img {
 
 @media (max-width: 768px) {
   .search-field {
-    width: auto;
-    flex: 1;
-    padding: 8px 12px;
+    width: 100% !important;
+    margin-right: 0 !important;
+    order: 2; /* Mobil ekranlarda pastga tushishi uchun */
   }
 }
 
@@ -767,6 +765,16 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .add-action-btn {
+    padding: 8px 4px;
+    font-size: 0.72rem;
+    gap: 4px;
+    height: 38px;
+  }
 }
 
 [data-theme='dark'] .add-action-btn {

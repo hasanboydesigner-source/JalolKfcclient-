@@ -7,7 +7,9 @@ const BottomNav = () => {
   const location = useLocation()
   const { t } = useLanguage()
   
-  const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : 'pos'
+  const currentView = location.pathname === '/admin' ? 'admin' : 
+                     location.pathname === '/stats' ? 'stats' : 
+                     location.pathname === '/kitchen' ? 'kitchen' : 'pos'
 
   return (
     <nav className="bottom-navigation">
@@ -17,6 +19,13 @@ const BottomNav = () => {
       >
         <Icon name="menu" size={24} />
         <span>{t('pos')}</span>
+      </div>
+      <div 
+        className={`mobile-nav-item ${currentView === 'kitchen' ? 'active' : ''}`}
+        onClick={() => navigate('/kitchen')}
+      >
+        <Icon name="clock" size={24} />
+        <span>{t('kitchen')}</span>
       </div>
       <div 
         className={`mobile-nav-item ${currentView === 'admin' ? 'active' : ''}`}

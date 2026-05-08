@@ -37,74 +37,43 @@ const Header = ({
   }, [])
 
   return (
-    <header className="pos-header">
-      <div className="search-field" style={{ background: isCustomerView ? 'transparent' : '' }}>
-        {isCustomerView ? (
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--pos-text)' }}>Stol #{tableParam}</h2>
-        ) : (
-          <>
-            <Icon name="search" size={18} className="text-dim" />
-            <input 
-              type="text" 
-              placeholder={t('search_placeholder')} 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </>
-        )}
-      </div>
-      
-      <div className="header-right-tools">
-        {!isOnline && (
-          <div className="offline-badge">
-            <Icon name="clock" size={14} />
-            <span>Oflayn</span>
-          </div>
-        )}
-        {/* Language Selection Select */}
-        <div className="language-selector-wrapper">
-          <select
-            value={language}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="language-selector"
-          >
-            <option value="uz">UZ</option>
-            <option value="ru">RU</option>
-            <option value="en">EN</option>
-          </select>
-          <div style={{
-            position: 'absolute',
-            right: '10px',
-            pointerEvents: 'none',
-            color: 'var(--pos-text-muted)',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-            <Icon name="chevron_down" size={14} style={{ color: 'inherit' }} />
-          </div>
+    <header className="pos-header" style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: '10px' }}>
+      <div className="header-main-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div className="search-field" style={{ background: isCustomerView ? 'transparent' : '', flex: 1, marginRight: '10px' }}>
+          {isCustomerView ? (
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--pos-text)' }}>Stol #{tableParam}</h2>
+          ) : (
+            <>
+              <Icon name="search" size={18} className="text-dim" />
+              <input 
+                type="text" 
+                placeholder={t('search_placeholder')} 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </>
+          )}
         </div>
         
-
-        <button 
-          onClick={toggleDarkMode}
-          className="theme-toggle header-tool-btn"
-        >
-          <Icon name={isDarkMode ? 'sun' : 'moon'} size={20} />
-        </button>
-
-        <button 
-          className={`mobile-cart-toggle header-tool-btn ${showMobileCart ? 'active' : ''}`}
-          onClick={() => setShowMobileCart(!showMobileCart)}
-        >
-          <Icon name="cart" size={22} />
-          {cartCount > 0 && (
-            <div className="cart-badge" style={{
+        <div className="header-right-tools" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {!isOnline && (
+            <div className="offline-badge">
+              <Icon name="clock" size={14} />
+              <span>Oflayn</span>
+            </div>
+          )}
+          <div className="language-selector-wrapper">
+            <select
+              value={language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="language-selector"
+            >
+              <option value="uz">UZ</option>
+              <option value="ru">RU</option>
+              <option value="en">EN</option>
+            </select>
+            <div style={{
               position: 'absolute',
-              top: '-6px',
-              right: '-6px',
-              background: 'var(--brand-primary)',
-              color: 'white',
-              fontSize: '10px',
               fontWeight: 800,
               width: '20px',
               height: '20px',
