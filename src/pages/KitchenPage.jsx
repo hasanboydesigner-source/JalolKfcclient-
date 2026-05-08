@@ -103,6 +103,8 @@ const KitchenPage = () => {
   const preparingOrders = orders.filter(o => ['Pending', 'Preparing'].includes(o.status));
   const readyOrders = orders.filter(o => o.status === 'Ready');
 
+  const [activeTab, setActiveTab] = useState('active'); // 'active' or 'ready'
+
   if (loading) {
     return (
       <div className="kds-loader-wrap">
@@ -149,69 +151,90 @@ const KitchenPage = () => {
         </div>
       </header>
 
-      <main className="kds-main">
-        <section className="kds-shelf active-orders">
-          <div className="kds-shelf-header">
-            <div className="shelf-title">
-              <Timer size={14} color="#f59e0b" />
-              <h2>FAOL BUYURTMALAR</h2>
-            </div>
-            <span className="shelf-count">{preparingOrders.length}</span>
-          </div>
-          <div className="kds-scroll-area">
-            <AnimatePresence mode="popLayout">
-              {preparingOrders.map(order => (
-                <Ticket 
-                  key={order._id} 
-                  order={order} 
-                  onAction={() => updateStatus(order._id, 'Ready')}
-                  btnLabel="TAYYOR"
-                  btnClass="primary"
-                />
-              ))}
-            </AnimatePresence>
-            {preparingOrders.length === 0 && (
-              <div className="kds-empty-box">
-                <div className="empty-icon-wrap">
-                  <Package size={32} />
-                </div>
-                <p>Oshxona bo'sh</p>
-                <span>Yangi buyurtmalar kutilmoqda</span>
-              </div>
-            )}
-          </div>
-        </section>
+      <div className="kds-mobile-tabs show-mobile">
+        <button 
+          className={`kds-tab-btn ${activeTab === 'active' ? 'active' : ''}`}
+          onClick={() => setActiveTab('active')}
+        >
+          <Timer size={16} />
+          <span>FAOL ({preparingOrders.length})</span>
+        </button>
+        <button 
+          className={`kds-tab-btn ${activeTab === 'ready' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ready')}
+        >
+          <CheckCircle2 size={16} />
+          <span>TAYYOR ({readyOrders.length})</span>
+        </button>
+      </div>
 
-        <section className="kds-shelf ready-orders">
-          <div className="kds-shelf-header">
-            <div className="shelf-title">
-              <CheckCircle2 size={14} color="#10b981" />
-              <h2>TAYYOR BUYURTMALAR</h2>
-            </div>
-            <span className="shelf-count">{readyOrders.length}</span>
-          </div>
-          <div className="kds-scroll-area">
-            <AnimatePresence mode="popLayout">
-              {readyOrders.map(order => (
-                <Ticket 
-                  key={order._id} 
-                  order={order} 
-                  onAction={() => updateStatus(order._id, 'Completed')}
-                  btnLabel="TOPSHIRILDI"
-                  btnClass="success"
-                />
-              ))}
-            </AnimatePresence>
-            {readyOrders.length === 0 && (
-              <div className="kds-empty-box">
-                <div className="empty-icon-wrap success">
-                  <CheckCircle2 size={32} />
-                </div>
-                <p>Tayyor buyurtmalar yo'q</p>
+      <main className="kds-main">
+        {(activeTab === 'active' || window.innerWidth > 900) && (
+          <section className="kds-shelf active-orders">
+            <div className="kds-shelf-header">
+              <div className="shelf-title">
+                <Timer size={14} color="#f59e0b" />
+                <h2>FAOL BUYURTMALAR</h2>
               </div>
-            )}
-          </div>
-        </section>
+              <span className="shelf-count">{preparingOrders.length}</span>
+            </div>
+            <div className="kds-scroll-area">
+              <AnimatePresence mode="popLayout">
+                {preparingOrders.map(order => (
+                  <Ticket 
+                    key={order._id} 
+                    order={order} 
+                    onAction={() => updateStatus(order._id, 'Ready')}
+                    btnLabel="TAYYOR"
+                    btnClass="primary"
+                  />
+                ))}
+              </AnimatePresence>
+              {preparingOrders.length === 0 && (
+                <div className="kds-empty-box">
+                  <div className="empty-icon-wrap">
+                    <Package size={32} />
+                  </div>
+                  <p>Oshxona bo'sh</p>
+                  <span>Yangi buyurtmalar kutilmoqda</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {(activeTab === 'ready' || window.innerWidth > 900) && (
+          <section className="kds-shelf ready-orders">
+            <div className="kds-shelf-header">
+              <div className="shelf-title">
+                <CheckCircle2 size={14} color="#10b981" />
+                <h2>TAYYOR BUYURTMALAR</h2>
+              </div>
+              <span className="shelf-count">{readyOrders.length}</span>
+            </div>
+            <div className="kds-scroll-area">
+              <AnimatePresence mode="popLayout">
+                {readyOrders.map(order => (
+                  <Ticket 
+                    key={order._id} 
+                    order={order} 
+                    onAction={() => updateStatus(order._id, 'Completed')}
+                    btnLabel="TOPSHIRILDI"
+                    btnClass="success"
+                  />
+                ))}
+              </AnimatePresence>
+              {readyOrders.length === 0 && (
+                <div className="kds-empty-box">
+                  <div className="empty-icon-wrap success">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  <p>Tayyor buyurtmalar yo'q</p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );
