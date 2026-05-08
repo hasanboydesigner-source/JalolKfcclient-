@@ -185,28 +185,89 @@ img {
 }
 
 .logo-badge {
-  width: 44px;
-  height: 44px;
-  background: var(--brand-primary);
-  color: white;
+  width: auto;
+  height: auto;
+  background: transparent !important;
+  color: var(--brand-primary) !important;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-weight: 900;
-  font-size: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.8rem;
+  border-radius: 0;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0;
 }
 
-.logo-badge:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 25px rgba(239, 68, 68, 0.3);
+[data-theme='light'] .logo-badge {
+  color: var(--brand-primary) !important;
+}
+
+/* Minimalist Bottom Navigation */
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-around;
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+[data-theme='light'] .bottom-navigation {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--pos-text-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+[data-theme='light'] .mobile-nav-item {
+  color: #64748b;
+}
+
+.mobile-nav-item.active {
+  color: var(--brand-primary);
+}
+
+.mobile-nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+}
+
+.mobile-nav-item .icon {
+  font-size: 1.4rem;
 }
 
 .brand-name {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--pos-text);
   letter-spacing: -0.02em;
@@ -406,53 +467,50 @@ img {
   background: #f59e0b;
 }
 
-/* Ultra-Premium Header Tools */
+/* Minimalist Header Tools */
 .header-tool-btn, .profile-trigger, .language-selector {
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   color: var(--pos-text-muted) !important;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
-  flex-shrink: 0;
-  box-sizing: border-box;
+  padding: 0 !important;
 }
 
 [data-theme='light'] .header-tool-btn,
 [data-theme='light'] .profile-trigger,
 [data-theme='light'] .language-selector {
-  background: rgba(15, 23, 42, 0.04) !important;
-  border: 1px solid rgba(15, 23, 42, 0.06) !important;
-  color: #1e293b !important;
+  color: #475569 !important;
 }
 
 .header-tool-btn:hover, .profile-trigger:hover, .language-selector:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--brand-primary) !important;
 }
 
-.header-tool-btn.active, .mobile-nav-item.active {
-  background: var(--brand-primary) !important;
-  color: white !important;
-  border-color: var(--brand-primary) !important;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+[data-theme='light'] .header-tool-btn:hover,
+[data-theme='light'] .profile-trigger:hover,
+[data-theme='light'] .language-selector:hover {
+  background: rgba(15, 23, 42, 0.05) !important;
+}
+
+.header-tool-btn.active {
+  color: var(--brand-primary) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
 }
 
 .language-selector {
   appearance: none;
-  -webkit-appearance: none;
-  padding: 0 !important;
-  text-align: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .profile-avatar {
@@ -461,8 +519,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none !important;
-  background: transparent !important;
+  color: inherit !important;
 }
 
 
@@ -2759,87 +2816,82 @@ img {
   animation: fadeIn 0.3s ease;
 }
 
+/* Profile Modal - Compact & Minimalist */
 .profile-modal-content {
-  width: 380px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
+  width: 320px;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 28px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 20px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  padding: 0;
 }
 
 [data-theme='light'] .profile-modal-content {
   background: white;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.15);
 }
 
 .profile-modal-header {
-  padding: 40px 32px 32px;
+  padding: 30px 24px 20px;
   text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .profile-modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .profile-modal-avatar {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, var(--brand-primary), #ff4d4d);
-  border-radius: 24px;
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 2rem;
-  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+  display: none; /* Kichikroq qilish uchun olib tashlaymiz */
 }
 
 .profile-modal-name {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  margin-bottom: 6px;
   color: var(--pos-text);
+  margin: 0;
 }
 
 .profile-modal-role {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--pos-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--brand-primary);
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .profile-modal-body {
-  padding: 0 32px 40px;
+  padding: 20px;
 }
 
 .profile-action-btn {
   width: 100%;
-  padding: 16px;
-  margin-bottom: 12px;
-  border-radius: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.03);
   color: var(--pos-text);
-  font-size: 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
   transition: all 0.2s;
+  margin-bottom: 8px;
+}
+
+[data-theme='light'] .profile-action-btn {
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .profile-action-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--brand-primary);
 }
 
 .profile-action-btn.logout {
-  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .profile-action-btn.logout:hover {
