@@ -2507,28 +2507,13 @@ img {
 
 /* The Ultimate Senior-Grade KDS Design System - Onyx & Crimson */
 :root {
-  --kds-bg: #0a0a0b;
-  --kds-surface: #141416;
-  --kds-border: #232326;
+  --kds-bg: #050814; /* Qop-qora emas, to'q ko'kroq fon */
+  --kds-surface: #0f172a; /* Kartalar uchun slate-950/surface rangi */
+  --kds-border: rgba(255, 255, 255, 0.08);
+  --kds-text: #f1f5f9;
+  --kds-text-dim: #94a3b8;
   --kds-accent: #e4002b;
   --kds-success: #10b981;
-  --kds-warning: #f59e0b;
-  --kds-text-dim: #71717a;
-}
-
-.kds-container {
-  height: 100%;
-  width: 100%;
-  background: var(--kds-bg);
-  color: #ffffff;
-}
-
-[data-theme='light'] {
-  --kds-bg: #f1f5f9;
-  --kds-surface: #ffffff;
-  --kds-border: #e2e8f0;
-  --kds-text: #0f172a;
-  --kds-text-dim: #64748b;
 }
 
 .kds-container {
@@ -2544,15 +2529,13 @@ img {
 }
 
 .kds-header {
-  height: 64px;
-  background: rgba(20, 20, 22, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--kds-border);
-  padding: 0 24px;
+  height: 80px;
+  background: #0a0e1c; /* Header biroz ochroq */
+  padding: 0 32px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  z-index: 100;
+  align-items: center;
+  border-bottom: 1px solid var(--kds-border);
 }
 
 [data-theme='light'] .kds-header {
