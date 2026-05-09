@@ -128,8 +128,8 @@ export const translations = {
   },
   ru: {
     // Sidebar & Navigation
-    pos: "POS Терминал",
-    admin: "Админ Панель",
+    pos: "Терминал",
+    admin: "Админ",
     stats: "Статистика",
     logout: "Выйти",
     profile: "Профиль",

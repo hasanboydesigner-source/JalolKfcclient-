@@ -226,11 +226,23 @@ img {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 2px;
     color: var(--pos-text-muted);
-    font-size: 0.65rem;
-    font-weight: 600;
-    transition: color 0.2s ease;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 4px 2px;
+    transition: all 0.2s ease;
+    min-width: 0;
+  }
+
+  .mobile-nav-item span {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mobile-nav-item.active {
@@ -727,7 +739,7 @@ img {
     padding: 0 0 100px 0;
   }
 
-  @media (max-width: 350px) {
+  @media (max-width: 370px) {
     .products-grid {
       grid-template-columns: 1fr;
     }
@@ -3066,7 +3078,41 @@ img {
   border: 1px solid var(--kds-border);
   border-radius: var(--radius-xl);
   margin-bottom: 24px;
-  box-shadow: var(--shadow-md);
+}
+
+.kds-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kds-audio-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kds-audio-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+.kds-audio-btn svg {
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  .kds-audio-btn span { display: none; }
+  .kds-audio-btn { padding: 8px; }
 }
 
 [data-theme='light'] .kds-header {
@@ -4384,28 +4430,38 @@ img {
 .chart-legend-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
-  margin-top: 10px;
-  padding: 0 16px 20px;
+  margin-top: 16px;
+  padding: 0 12px 20px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  background: var(--pos-bg);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--pos-border-subtle);
+  transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+  border-color: var(--pos-border);
+  transform: translateY(-1px);
 }
 
 .legend-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
 }
 
 .legend-text {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: var(--pos-text-muted);
+  color: var(--pos-text);
 }
 
 .metric-label-text {

@@ -168,6 +168,17 @@ const KitchenPage = () => {
         </div>
 
         <div className="kds-header-right">
+          <button 
+            className="kds-audio-btn" 
+            onClick={() => {
+              playNotification();
+              toast.info("Ovozli bildirishnomalar yoqildi", { autoClose: 2000, theme: "dark" });
+            }}
+            title="Ovozni tekshirish"
+          >
+            <SignalLow size={16} />
+            <span>OVOZ</span>
+          </button>
           <div className="kds-time-box">
             <span className="time">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
             <span className="date">{currentTime.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>

@@ -184,29 +184,31 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
           </div>
         </div>
 
-        {/* Category Distribution */}
         <div className="chart-box stats-card-premium">
           <h3 className="chart-title">Kategoriyalar ulushi</h3>
-          <div className="chart-container-inner" style={{ width: '100%', height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryDistribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={70}
-                  paddingAngle={5}
-                  dataKey="value"
-                  nameKey="_id"
-                >
-                  {categoryDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="chart-container-inner" style={{ width: '100%', minHeight: 320 }}>
+            <div style={{ width: '100%', height: 200 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={5}
+                    dataKey="value"
+                    nameKey="_id"
+                    stroke="none"
+                  >
+                    {categoryDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
             <div className="chart-legend-grid">
               {categoryDistribution.map((entry, index) => (
                 <div key={entry._id} className="legend-item">
