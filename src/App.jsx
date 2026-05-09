@@ -496,6 +496,7 @@ function App() {
                       total={total}
                       clearCart={() => setCart([])}
                       handlePlaceOrder={handlePlaceOrder}
+                      recommendedProducts={recommendedProducts}
                     />
                   }
                 />
