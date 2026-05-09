@@ -200,12 +200,12 @@ const KitchenPage = () => {
         <div className="kds-audio-overlay">
           <div className="kds-overlay-content">
             <div className="kds-overlay-icon">
-              <ChefHat size={48} color="#e4002b" />
+              <ChefHat size={32} color="#e4002b" />
             </div>
-            <h2>KDS TIZIMI TAYYOR</h2>
-            <p>Ovozli bildirishnomalar va real-vaqt sinxronizatsiyasini boshlash uchun tugmani bosing</p>
+            <h2>KDS TAYYOR</h2>
+            <p>Ovozli bildirishnomalar va sinxronizatsiyani boshlash uchun bosing</p>
             <button className="kds-start-btn" onClick={activateAudio}>
-              <Play size={22} fill="white" />
+              <Play size={18} fill="white" />
               TIZIMNI YUKLASH
             </button>
           </div>

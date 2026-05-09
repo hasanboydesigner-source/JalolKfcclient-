@@ -3119,71 +3119,70 @@ img {
   background: rgba(255, 255, 255, 0.8);
 }
 
-/* KDS System Activation Overlay - Senior Grade Minimalist */
+/* Ultra-Minimalist KDS Activation Overlay */
 .kds-audio-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--slate-50);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
 }
 
 [data-theme='dark'] .kds-audio-overlay {
-  background: #020617;
+  background: rgba(2, 6, 23, 0.6);
 }
 
 .kds-overlay-content {
-  max-width: 480px;
-  width: 100%;
-  background: white;
-  border-radius: 40px;
-  padding: 60px 40px;
+  max-width: 360px;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 32px;
+  padding: 40px 32px;
   text-align: center;
-  box-shadow: 0 40px 100px rgba(15, 23, 42, 0.1);
-  animation: kdsOverlayEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+  animation: kdsCompactEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 [data-theme='dark'] .kds-overlay-content {
-  background: #0f172a;
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes kdsOverlayEntrance {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes kdsCompactEntrance {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .kds-overlay-icon {
-  width: 100px;
-  height: 100px;
-  background: #fff5f5;
-  border-radius: 35px;
+  width: 64px;
+  height: 64px;
+  background: #fff;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 32px;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  margin: 0 auto 24px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme='dark'] .kds-overlay-icon {
-  background: rgba(228, 0, 43, 0.1);
+  background: #0f172a;
 }
 
 .kds-overlay-content h2 {
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #0f172a;
-  margin-bottom: 16px;
-  letter-spacing: -0.03em;
-  font-family: 'Space Grotesk', sans-serif;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 [data-theme='dark'] .kds-overlay-content h2 {
@@ -3192,41 +3191,33 @@ img {
 
 .kds-overlay-content p {
   color: #64748b;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 48px;
-  max-width: 320px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 32px;
 }
 
 .kds-start-btn {
   width: 100%;
-  height: 72px;
+  height: 56px;
   background: #e4002b;
   color: white;
   border: none;
-  border-radius: 24px;
-  font-size: 1.1rem;
-  font-weight: 800;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 40px rgba(228, 0, 43, 0.3);
-  letter-spacing: 0.02em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px rgba(228, 0, 43, 0.2);
 }
 
 .kds-start-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 30px 60px rgba(228, 0, 43, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(228, 0, 43, 0.3);
   background: #c20025;
-}
-
-.kds-start-btn:active {
-  transform: translateY(-2px) scale(0.98);
 }
 
 .kds-brand {
