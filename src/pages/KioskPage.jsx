@@ -197,14 +197,22 @@ const KioskPage = (props) => {
   if (step === 'checkout_success') {
     return (
       <div className="kiosk-minimal-success">
-        <div className="success-content">
-          <div className="success-check"><Icon name="check" size={64} /></div>
-          <h1>{t('order_success')}</h1>
-          <div className="order-num">
-            <span>{t('order_num')}</span>
-            <h2>#{completedOrderId || '0482'}</h2>
+        <div className="success-receipt-wrapper">
+          <div className="receipt-content">
+            <div className="receipt-check-icon"><Icon name="check" size={32} /></div>
+            <h1 className="receipt-title">{t('order_success')}</h1>
+            
+            <div className="receipt-divider"></div>
+            
+            <div className="receipt-order-label">{t('order_num')}</div>
+            <div className="receipt-order-number">#{completedOrderId || '0482'}</div>
+            
+            <div className="receipt-divider"></div>
+            
+            <div className="receipt-barcode"></div>
+            
+            <p className="receipt-footer-text">{language === 'uz' ? '10 soniyadan so\'ng qaytamiz' : 'Returning in 10s'}</p>
           </div>
-          <p>{language === 'uz' ? '10 soniyadan so\'ng qaytamiz' : 'Returning in 10s'}</p>
         </div>
       </div>
     );
