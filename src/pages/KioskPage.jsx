@@ -132,27 +132,61 @@ const KioskPage = (props) => {
 
   if (step === 'dining_choice') {
     return (
-      <div className="kiosk-minimal-step">
-        <div className="kiosk-minimal-container">
-          <button className="kiosk-minimal-back" onClick={() => setStep('welcome')}>
-            <Icon name="chevron_left" size={20} /> {t('back')}
-          </button>
-          
-          <h2 className="kiosk-minimal-step-title">
-            {language === 'uz' ? 'Qayerda ovqatlanasiz?' : 'Where will you eat?'}
-          </h2>
+      <div className="kiosk-editorial-step">
+        <div className="editorial-bg-accent" />
+        
+        <div className="editorial-step-container">
+          <header className="editorial-step-header">
+            <button className="editorial-back-btn" onClick={() => setStep('welcome')}>
+              <Icon name="arrow_left" size={24} />
+              <span>{t('back')}</span>
+            </button>
+            <div className="editorial-step-brand">Jalol<span>KFC</span></div>
+          </header>
 
-          <div className="kiosk-minimal-choices">
-            <div className="kiosk-minimal-choice" onClick={() => selectDining('eat_in')}>
-              <div className="choice-icon"><Icon name="home" size={48} /></div>
-              <h3>{language === 'uz' ? 'Shu yerda' : 'Eat In'}</h3>
-            </div>
+          <main className="editorial-step-main">
+            <motion.div 
+              className="editorial-step-content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <h2 className="editorial-step-title">
+                {language === 'uz' ? 'Qayerda ovqatlanasiz?' : 
+                 language === 'ru' ? 'Где будете кушать?' : 
+                 'Where will you eat?'}
+              </h2>
+              
+              <div className="dining-options">
+                <motion.button 
+                  className="dining-card"
+                  whileHover={{ y: -10 }}
+                  onClick={() => selectDining('eat_in')}
+                >
+                  <div className="card-visual">
+                    <Icon name="home" size={28} />
+                  </div>
+                  <div className="card-info">
+                    <h3>{t('in_hall')}</h3>
+                    <p>{language === 'uz' ? 'Issiq va mazali' : language === 'ru' ? 'Горячо и вкусно' : 'Hot & Fresh'}</p>
+                  </div>
+                </motion.button>
 
-            <div className="kiosk-minimal-choice" onClick={() => selectDining('take_away')}>
-              <div className="choice-icon"><Icon name="package" size={48} /></div>
-              <h3>{language === 'uz' ? 'Olib ketish' : 'Take Away'}</h3>
-            </div>
-          </div>
+                <motion.button 
+                  className="dining-card"
+                  whileHover={{ y: -10 }}
+                  onClick={() => selectDining('take_away')}
+                >
+                  <div className="card-visual">
+                    <Icon name="package" size={28} />
+                  </div>
+                  <div className="card-info">
+                    <h3>{t('takeaway')}</h3>
+                    <p>{language === 'uz' ? 'Yo\'l-yo\'lakay' : language === 'ru' ? 'С собой в дорогу' : 'On the go'}</p>
+                  </div>
+                </motion.button>
+              </div>
+            </motion.div>
+          </main>
         </div>
       </div>
     );
