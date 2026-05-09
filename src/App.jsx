@@ -547,7 +547,7 @@ function App() {
             </main>
           </div>
 
-          {currentView === 'pos' && (
+          {currentView === 'pos' && !isKiosk && (
             <div className={`mobile-cart-overlay ${showMobileCart ? 'show-mobile-cart' : ''}`}>
               <Cart
                 cart={cart}
