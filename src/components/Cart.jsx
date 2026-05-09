@@ -41,9 +41,8 @@ const Cart = ({
             <Icon name="chevron_left" size={20} />
             <span>{t('back')}</span>
           </button>
-          <div>
+          <div className="cart-title-container">
             <div className="cart-order-num">{t('order_num')} #0482</div>
-            <h2 className="cart-title">{t('cart_title')}</h2>
           </div>
           <div className="cart-header-actions">
             <div className="cart-time-badge hidden-mobile">
