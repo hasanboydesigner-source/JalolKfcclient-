@@ -123,7 +123,10 @@ const KitchenPage = () => {
     });
   }, []);
 
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    return sessionStorage.getItem('kds_audio_active') === 'true';
+  });
+
   const socket = useSocket(handleNewOrder, handleStatusUpdate);
 
   const activateAudio = () => {
@@ -133,6 +136,7 @@ const KitchenPage = () => {
         audio.pause();
         audio.currentTime = 0;
         setAudioEnabled(true);
+        sessionStorage.setItem('kds_audio_active', 'true');
         toast.success("Ovozli tizim faollashtirildi", { theme: "dark", autoClose: 1500 });
         // Also prime speech synthesis
         if ('speechSynthesis' in window) {
@@ -198,11 +202,11 @@ const KitchenPage = () => {
             <div className="kds-overlay-icon">
               <ChefHat size={48} color="#e4002b" />
             </div>
-            <h2>KDS TIZIMINI ISHGA TUSHIRISH</h2>
-            <p>Ovozli bildirishnomalar va buyurtmalar sinxronizatsiyasini faollashtirish uchun pastdagi tugmani bosing</p>
+            <h2>KDS TIZIMI TAYYOR</h2>
+            <p>Ovozli bildirishnomalar va real-vaqt sinxronizatsiyasini boshlash uchun tugmani bosing</p>
             <button className="kds-start-btn" onClick={activateAudio}>
-              <Play size={20} />
-              TIZIMNI BOSHLASH
+              <Play size={22} fill="white" />
+              TIZIMNI YUKLASH
             </button>
           </div>
         </div>
