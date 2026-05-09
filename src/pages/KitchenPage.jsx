@@ -66,45 +66,61 @@ const KitchenPage = () => {
   };
 
   const playNotification = useCallback(() => {
-    // 1. Play pleasant bell chime
-    audio.currentTime = 0;
-    audio.play().catch(e => console.log('Audio play failed:', e));
+    // 1. Play bell chime
+    if (audio) {
+      audio.currentTime = 0;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Audio playback failed:", error);
+        });
+      }
+    }
 
     // 2. Voice notification in Uzbek
     if ('speechSynthesis' in window) {
-      const msg = new SpeechSynthesisUtterance();
-      msg.text = "Yangi buyurtma";
+      // Cancel any ongoing speech to avoid queueing
+      window.speechSynthesis.cancel();
+
+      const msg = new SpeechSynthesisUtterance("Yangi buyurtma");
       
-      // Try to find the best voice
       const voices = window.speechSynthesis.getVoices();
-      // Look for Uzbek, then Turkish (similar phonetics), then Russian
-      const uzVoice = voices.find(v => v.lang.startsWith('uz'));
-      const trVoice = voices.find(v => v.lang.startsWith('tr'));
-      const ruVoice = voices.find(v => v.lang.startsWith('ru'));
+      const preferredVoices = ['uz', 'tr', 'ru', 'en'];
       
-      if (uzVoice) msg.voice = uzVoice;
-      else if (trVoice) msg.voice = trVoice;
-      else if (ruVoice) msg.voice = ruVoice;
-      
-      msg.lang = 'uz-UZ';
-      msg.rate = 0.9; // Slightly slower for clarity
-      msg.pitch = 1.0;
-      
-      // Some browsers require voices to be loaded first
-      if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          const updatedVoices = window.speechSynthesis.getVoices();
-          const v = updatedVoices.find(v => v.lang.startsWith('uz')) || 
-                    updatedVoices.find(v => v.lang.startsWith('tr')) || 
-                    updatedVoices.find(v => v.lang.startsWith('ru'));
-          if (v) msg.voice = v;
-          window.speechSynthesis.speak(msg);
-        };
-      } else {
-        window.speechSynthesis.speak(msg);
+      let selectedVoice = null;
+      for (const lang of preferredVoices) {
+        selectedVoice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
+        if (selectedVoice) break;
       }
+      
+      if (selectedVoice) msg.voice = selectedVoice;
+      msg.lang = selectedVoice ? selectedVoice.lang : 'uz-UZ';
+      msg.rate = 0.9;
+      msg.pitch = 1.0;
+      msg.volume = 1.0;
+      
+      window.speechSynthesis.speak(msg);
     }
   }, [audio]);
+
+  const activateAudio = () => {
+    // Prime the audio object with a silent play or immediate play
+    audio.play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        toast.success("Ovozli tizim faollashtirildi", { theme: "dark", autoClose: 1500 });
+        // Also prime speech synthesis
+        if ('speechSynthesis' in window) {
+          const m = new SpeechSynthesisUtterance("");
+          window.speechSynthesis.speak(m);
+        }
+      })
+      .catch(e => {
+        console.error("Audio activation failed:", e);
+        toast.error("Ovozni yoqib bo'lmadi. Brauzer sozlamalarini tekshiring.");
+      });
+  };
 
   const handleNewOrder = useCallback((newOrder) => {
     setOrders(prev => [newOrder, ...prev]);
@@ -200,11 +216,8 @@ const KitchenPage = () => {
         <div className="kds-header-right">
           <button 
             className="kds-audio-btn" 
-            onClick={() => {
-              playNotification();
-              toast.info("Ovozli bildirishnomalar yoqildi", { autoClose: 2000, theme: "dark" });
-            }}
-            title="Ovozni tekshirish"
+            onClick={activateAudio}
+            title="Ovozni faollashtirish"
           >
             <SignalLow size={16} />
             <span>OVOZ</span>
