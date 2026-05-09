@@ -13,7 +13,8 @@ import {
   Maximize2,
   Package,
   ShoppingCart,
-  Timer
+  Timer,
+  Play
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../hooks/useSocket';

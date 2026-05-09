@@ -8,7 +8,11 @@ export const useSocket = (onNewOrder, onStatusUpdate) => {
 
   useEffect(() => {
     // Initialize socket connection
-    socketRef.current = io(SOCKET_URL);
+    socketRef.current = io(SOCKET_URL, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000
+    });
 
     // New order listener
     socketRef.current.on('newOrder', (order) => {
