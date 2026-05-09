@@ -118,7 +118,7 @@ const Header = ({
 
               {isPendingOpen && (
                 <>
-                  <div className="modal-backdrop" onClick={() => setIsPendingOpen(false)} />
+                  <div className="modal-backdrop dropdown-backdrop" onClick={() => setIsPendingOpen(false)} />
                   <div className="pending-orders-dropdown">
                     <h3 className="dropdown-title">Yangi buyurtmalar</h3>
                     {(!pendingOrders || pendingOrders.length === 0) ? (
