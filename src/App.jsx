@@ -491,6 +491,9 @@ function App() {
                       addToCart={addToCart}
                       updateQty={updateQty}
                       cart={cart}
+                      subtotal={subtotal}
+                      tax={tax}
+                      total={total}
                       clearCart={() => setCart([])}
                       handlePlaceOrder={handlePlaceOrder}
                     />
