@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : '';
+const SOCKET_URL = 'https://jalolkfc.onrender.com';
 
 export const useSocket = (onNewOrder, onStatusUpdate) => {
   const socketRef = useRef(null);
