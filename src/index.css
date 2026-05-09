@@ -5610,3 +5610,7 @@ margin: 0;
 .kiosk-cart-internal .cart-items-scroller { flex: 1; overflow-y: auto; padding: 24px; }
 .kiosk-cart-internal .cart-footer { padding: 24px; background: var(--pos-surface); border-top: 1px solid var(--pos-border); }
 .kiosk-cart-internal .cart-item { margin-bottom: 20px; }
+
+.action-wrapper { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+.minimal-hint { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+.minimal-hint svg { opacity: 0.5; }

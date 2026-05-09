@@ -124,6 +124,7 @@ export const translations = {
     no_products: "Mahsulot topilmadi",
     qty: "Soni",
     touch_to_start: "Boshlash uchun bosing",
+    start_ordering: "Buyurtma berish",
   },
   ru: {
     // Sidebar & Navigation
@@ -250,6 +251,7 @@ export const translations = {
     no_products: "Товар не найден",
     qty: "Кол-во",
     touch_to_start: "Нажмите, чтобы начать",
+    start_ordering: "Начать заказ",
   },
   en: {
     // Sidebar & Navigation
@@ -376,5 +378,6 @@ export const translations = {
     no_products: "No products found",
     qty: "Qty",
     touch_to_start: "Touch to Start",
+    start_ordering: "Start Ordering",
   }
 }

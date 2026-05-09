@@ -86,15 +86,17 @@ const KioskPage = (props) => {
                 </p>
                 
                 <div className="editorial-action">
-                  <button className="editorial-start-btn">
-                    <span>{t('confirm_sale')}</span>
-                    <div className="btn-arrow">
-                      <Icon name="arrow_right" size={24} />
+                  <div className="action-wrapper">
+                    <button className="editorial-start-btn">
+                      <span>{t('start_ordering')}</span>
+                      <div className="btn-arrow">
+                        <Icon name="arrow_right" size={24} />
+                      </div>
+                    </button>
+                    <div className="minimal-hint">
+                      <Icon name="mouse_pointer" size={12} />
+                      <span>{t('touch_to_start')}</span>
                     </div>
-                  </button>
-                  <div className="start-hint">
-                    <span className="pulse-dot" />
-                    {t('touch_to_start')}
                   </div>
                 </div>
               </motion.div>
