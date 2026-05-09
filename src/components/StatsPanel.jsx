@@ -37,10 +37,17 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const label = data.name || data.hour || (t(data._id) || data._id);
+      const isCount = data.count !== undefined;
+      
       return (
         <div style={{ background: 'var(--pos-surface)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--pos-border)', boxShadow: 'var(--shadow-lg)' }}>
-          <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: 'var(--pos-text-muted)' }}>{payload[0].payload.name}</p>
-          <p style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: 'var(--pos-text)' }}>{payload[0].value.toLocaleString()} <small>{t('sum')}</small></p>
+          <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: 'var(--pos-text-muted)' }}>{label}</p>
+          <p style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: 'var(--pos-text)' }}>
+            {payload[0].value.toLocaleString()} 
+            <small style={{ marginLeft: '4px' }}>{isCount ? t('sold_count') : t('sum')}</small>
+          </p>
         </div>
       );
     }
@@ -147,7 +154,10 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--slate-100)" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip 
+                  content={<CustomTooltip />} 
+                  cursor={{ fill: 'var(--pos-border-subtle)', opacity: 0.4 }}
+                />
                 <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={32}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? 'var(--brand-primary)' : 'var(--slate-300)'} />
@@ -167,7 +177,7 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--slate-100)" />
                 <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: 'var(--pos-text-muted)' }} interval={3} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--pos-text-muted)' }} />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Line type="monotone" dataKey="count" stroke="var(--brand-primary)" strokeWidth={3} dot={{ r: 3, fill: 'var(--brand-primary)' }} />
               </LineChart>
             </ResponsiveContainer>
@@ -194,7 +204,7 @@ const StatsPanel = ({ stats, loading, statsDate, setStatsDate }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
             <div className="chart-legend-grid">

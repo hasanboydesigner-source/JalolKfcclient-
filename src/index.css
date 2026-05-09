@@ -4589,6 +4589,11 @@ img {
   box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
 }
 
+[data-theme='dark'] .rank-badge.top {
+  background: var(--pos-danger) !important;
+  color: white !important;
+}
+
 .product-info {
   flex: 1;
   min-width: 0;
