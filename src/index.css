@@ -5570,19 +5570,17 @@ margin: 0;
 
 .success-receipt-wrapper {
   background: white;
-  color: var(--slate-900);
+  color: var(--slate-800);
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   position: relative;
-  box-shadow: var(--shadow-premium);
-  animation: receiptSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  /* Basic jagged edges using drop-shadow and repeating linear gradients could be complex,
-     we will use border radius and pseudo elements for a clean cut look */
-  border-radius: 16px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  animation: receiptSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-radius: 20px;
 }
 
 .receipt-content {
-  padding: 48px 40px;
+  padding: 48px 32px 40px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -5590,11 +5588,11 @@ margin: 0;
 }
 
 .receipt-check-icon {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: #10b981;
-  color: white;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5603,51 +5601,51 @@ margin: 0;
 
 .receipt-title {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 32px 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--slate-800);
+  margin: 0 0 28px 0;
   letter-spacing: -0.5px;
 }
 
 .receipt-divider {
   width: 100%;
   height: 1px;
-  background-image: linear-gradient(to right, var(--slate-300) 50%, transparent 50%);
-  background-size: 12px 1px;
+  background-image: linear-gradient(to right, var(--slate-200) 50%, transparent 50%);
+  background-size: 8px 1px;
   background-repeat: repeat-x;
-  margin: 0 0 32px 0;
+  margin: 0 0 28px 0;
 }
 
 .receipt-order-label {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--slate-500);
+  letter-spacing: 3px;
+  color: var(--slate-400);
   margin-bottom: 12px;
 }
 
 .receipt-order-number {
   font-family: monospace, sans-serif;
-  font-size: 4.5rem;
-  font-weight: 800;
+  font-size: 3.5rem;
+  font-weight: 700;
   line-height: 1;
-  margin: 0 0 32px 0;
-  letter-spacing: 2px;
-  color: var(--slate-900);
+  margin: 0 0 28px 0;
+  letter-spacing: 1px;
+  color: var(--slate-800);
 }
 
 .receipt-barcode {
-  width: 100%;
-  height: 60px;
-  background-image: repeating-linear-gradient(to right, var(--slate-900) 0, var(--slate-900) 3px, transparent 3px, transparent 6px, var(--slate-900) 6px, var(--slate-900) 7px, transparent 7px, transparent 10px, var(--slate-900) 10px, var(--slate-900) 14px, transparent 14px, transparent 16px);
-  opacity: 0.8;
-  margin-bottom: 32px;
-  border-radius: 4px;
+  width: 80%;
+  height: 40px;
+  background-image: repeating-linear-gradient(to right, var(--slate-300) 0, var(--slate-300) 2px, transparent 2px, transparent 4px, var(--slate-300) 4px, var(--slate-300) 5px, transparent 5px, transparent 8px, var(--slate-300) 8px, var(--slate-300) 11px, transparent 11px, transparent 14px);
+  opacity: 0.6;
+  margin-bottom: 24px;
 }
 
 .receipt-footer-text {
-  font-size: 0.95rem;
-  color: var(--slate-500);
+  font-size: 0.85rem;
+  color: var(--slate-400);
   font-weight: 500;
 }
 
