@@ -163,7 +163,7 @@ const KioskPage = (props) => {
                   onClick={() => selectDining('eat_in')}
                 >
                   <div className="card-visual">
-                    <Icon name="home" size={28} />
+                    <Icon name="home" size={22} />
                   </div>
                   <div className="card-info">
                     <h3>{t('in_hall')}</h3>
@@ -177,7 +177,7 @@ const KioskPage = (props) => {
                   onClick={() => selectDining('take_away')}
                 >
                   <div className="card-visual">
-                    <Icon name="package" size={28} />
+                    <Icon name="package" size={22} />
                   </div>
                   <div className="card-info">
                     <h3>{t('takeaway')}</h3>
