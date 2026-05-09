@@ -103,29 +103,10 @@ const KitchenPage = () => {
     }
   }, [audio]);
 
-  const activateAudio = () => {
-    // Prime the audio object with a silent play or immediate play
-    audio.play()
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        toast.success("Ovozli tizim faollashtirildi", { theme: "dark", autoClose: 1500 });
-        // Also prime speech synthesis
-        if ('speechSynthesis' in window) {
-          const m = new SpeechSynthesisUtterance("");
-          window.speechSynthesis.speak(m);
-        }
-      })
-      .catch(e => {
-        console.error("Audio activation failed:", e);
-        toast.error("Ovozni yoqib bo'lmadi. Brauzer sozlamalarini tekshiring.");
-      });
-  };
-
   const handleNewOrder = useCallback((newOrder) => {
     setOrders(prev => [newOrder, ...prev]);
     playNotification();
-    toast.success(`NEW ORDER: #${newOrder._id.slice(-4).toUpperCase()}`, {
+    toast.success(`YANGI BUYURTMA: #${newOrder._id.slice(-4).toUpperCase()}`, {
       icon: <ShoppingCart size={18} />,
       position: "top-right",
       theme: "dark"
@@ -141,7 +122,28 @@ const KitchenPage = () => {
     });
   }, []);
 
+  const [audioEnabled, setAudioEnabled] = useState(false);
   const socket = useSocket(handleNewOrder, handleStatusUpdate);
+
+  const activateAudio = () => {
+    // Prime the audio object with a silent play or immediate play
+    audio.play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        setAudioEnabled(true);
+        toast.success("Ovozli tizim faollashtirildi", { theme: "dark", autoClose: 1500 });
+        // Also prime speech synthesis
+        if ('speechSynthesis' in window) {
+          const m = new SpeechSynthesisUtterance("");
+          window.speechSynthesis.speak(m);
+        }
+      })
+      .catch(e => {
+        console.error("Audio activation failed:", e);
+        toast.error("Ovozni yoqib bo'lmadi. Brauzer sozlamalarini tekshiring.");
+      });
+  };
 
   useEffect(() => {
     if (socket) {
@@ -189,6 +191,22 @@ const KitchenPage = () => {
 
   return (
     <div className="kds-container">
+      {!audioEnabled && (
+        <div className="kds-audio-overlay">
+          <div className="kds-overlay-content">
+            <div className="kds-overlay-icon">
+              <ChefHat size={48} color="#e4002b" />
+            </div>
+            <h2>KDS TIZIMINI ISHGA TUSHIRISH</h2>
+            <p>Ovozli bildirishnomalar va buyurtmalar sinxronizatsiyasini faollashtirish uchun pastdagi tugmani bosing</p>
+            <button className="kds-start-btn" onClick={activateAudio}>
+              <Play size={20} />
+              TIZIMNI BOSHLASH
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="kds-header">
         <div className="kds-brand-section">
           <div className="kds-brand">
