@@ -3346,7 +3346,7 @@ img {
 
 .header-main {
   min-height: 72px;
-  padding: 16px 20px;
+  padding: 16px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3367,7 +3367,7 @@ img {
   flex: 1;
   max-width: 600px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .header-right-tools {

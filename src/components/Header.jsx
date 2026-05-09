@@ -40,13 +40,11 @@ const Header = ({
   return (
     <header className="pos-header">
       <div className="header-main">
-        <div className="header-left hidden-mobile">
-          <div className="logo-badge">J</div>
-          <span className="brand-name">JalolKFC</span>
-          {isCustomerView && (
+        {isCustomerView && (
+          <div className="header-left hidden-mobile">
              <h2 className="table-badge">Stol #{tableParam}</h2>
-          )}
-        </div>
+          </div>
+        )}
 
         {!isCustomerView && (
           <div className="header-center">
