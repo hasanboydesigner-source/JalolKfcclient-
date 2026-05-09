@@ -1,4 +1,7 @@
+import React from 'react'
+import { createPortal } from 'react-dom'
 import { useLanguage } from '../context/LanguageContext'
+import { X, Package, Tag, DollarSign, Layers, AlignLeft, Upload, Image as ImageIcon, AlertCircle } from 'lucide-react'
 
 const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, setFormData, selectedFile, setSelectedFile, handleSaveProduct, INITIAL_CATEGORIES }) => {
   const { t } = useLanguage()
@@ -55,18 +58,30 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
 
   if (!isModalOpen) return null
 
-  return (
+  const modalContent = (
     <div className="modal-overlay">
       <div className="modal-sheet">
+        <button className="modal-close-btn" onClick={() => setIsModalOpen(false)}>
+          <X size={20} />
+        </button>
+
         <div className="modal-header">
+          <div className="modal-icon-header">
+            <Package size={24} color="var(--slate-900)" />
+          </div>
           <h2 className="modal-title">{editingProduct ? t('edit_product') : t('add_product')}</h2>
-          <p style={{ color: 'var(--pos-text-muted)', fontSize: '0.85rem', marginTop: '4px', fontWeight: 600 }}>{t('professional_desc')}</p>
+          <p style={{ color: 'var(--pos-text-muted)', fontSize: '0.85rem', marginTop: '4px', fontWeight: 600 }}>
+            {editingProduct ? "Mahsulot ma'lumotlarini tahrirlash" : "Yangi mahsulot ma'lumotlarini kiriting"}
+          </p>
         </div>
         
-        <form onSubmit={handleSaveProduct}>
+        <form onSubmit={handleSaveProduct} className="premium-form">
           <div className="form-grid">
             <div className="form-field">
-              <label>{t('product_name')}</label>
+              <label>
+                <Layers size={14} />
+                {t('product_name')}
+              </label>
               <input 
                 type="text" 
                 value={formData.name} 
@@ -76,7 +91,10 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
               />
             </div>
             <div className="form-field">
-              <label>{t('category')}</label>
+              <label>
+                <Tag size={14} />
+                {t('category')}
+              </label>
               <select 
                 value={formData.category} 
                 onChange={(e) => {
@@ -94,7 +112,10 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
 
           <div className="form-grid-3">
             <div className="form-field">
-              <label>{t('price')} ({t('sum')})</label>
+              <label>
+                <DollarSign size={14} />
+                {t('price')} ({t('sum')})
+              </label>
               <input 
                 type="number" 
                 value={formData.price} 
@@ -104,7 +125,10 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
               />
             </div>
             <div className="form-field">
-              <label>{t('category')}</label>
+              <label>
+                <Layers size={14} />
+                Teg / Turi
+              </label>
               <select 
                 value={formData.tag} 
                 onChange={(e) => setFormData({...formData, tag: e.target.value})}
@@ -115,7 +139,10 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
               </select>
             </div>
             <div className="form-field">
-              <label>Aksiya</label>
+              <label>
+                <Tag size={14} />
+                Aksiya / Chegirma
+              </label>
               <input 
                 type="text" 
                 value={formData.discount} 
@@ -127,40 +154,48 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
 
           <div className="form-grid">
             <div className="form-field">
-              <label>{t('desc')}</label>
+              <label>
+                <AlignLeft size={14} />
+                {t('desc')}
+              </label>
               <textarea 
                 value={formData.desc} 
                 onChange={(e) => setFormData({...formData, desc: e.target.value})} 
-                placeholder="..."
-                rows={4}
+                placeholder="Mahsulot haqida qisqacha ma'lumot..."
+                rows={3}
                 style={{ resize: 'none' }}
               ></textarea>
             </div>
             <div className="form-field">
-              <label>{t('upload_img')}</label>
-              <div style={{ 
-                background: 'var(--slate-50)', 
-                border: '1px dashed var(--pos-border)', 
-                borderRadius: 'var(--radius-lg)',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px'
-              }}>
+              <label>
+                <Upload size={14} />
+                {t('upload_img')}
+              </label>
+              <div className="premium-upload-area">
                 <input 
                   type="file" 
+                  id="file-upload"
                   accept="image/*"
                   onChange={(e) => setSelectedFile(e.target.files[0])}
-                  style={{ fontSize: '0.8rem', width: '100%' }}
+                  className="hidden-file-input"
                 />
+                <label htmlFor="file-upload" className="upload-drop-zone">
+                  {selectedFile ? (
+                    <div className="upload-success">
+                      <ImageIcon size={24} />
+                      <span>{selectedFile.name}</span>
+                    </div>
+                  ) : (
+                    <div className="upload-placeholder">
+                      <Upload size={24} />
+                      <span>Rasm yuklash yoki tanlash</span>
+                    </div>
+                  )}
+                </label>
                 {editingProduct && !selectedFile && (
-                  <div style={{ fontSize: '0.75rem', color: 'var(--pos-text-dim)', fontWeight: 600 }}>
-                    {t('current_img')}
-                  </div>
-                )}
-                {selectedFile && (
-                  <div style={{ fontSize: '0.75rem', color: 'var(--pos-success)', fontWeight: 700 }}>
-                    {t('new_img_selected')}: {selectedFile.name}
+                  <div className="current-img-hint">
+                    <AlertCircle size={12} />
+                    Hozirgi rasm saqlanadi
                   </div>
                 )}
               </div>
@@ -170,14 +205,14 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
           <div className="modal-footer-actions">
             <button 
               type="button" 
-              className="qty-btn cancel-btn" 
+              className="cancel-btn" 
               onClick={() => setIsModalOpen(false)}
             >
               {t('cancel')}
             </button>
             <button 
               type="submit" 
-              className="checkout-btn save-btn"
+              className="save-btn"
             >
               {t('save')}
             </button>
@@ -185,7 +220,9 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
         </form>
       </div>
     </div>
-  )
+  );
+
+  return createPortal(modalContent, document.body);
 }
 
 export default ProductModal

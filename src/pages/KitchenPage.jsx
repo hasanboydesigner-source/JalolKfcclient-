@@ -292,7 +292,9 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
             <div className="kds-item-img-wrap">
               <img src={getBgRemovedUrl(item.image)} alt={item.name} className="kds-item-img" />
             </div>
-            <div className="kds-item-name">{item.name}</div>
+            <div className="kds-item-details">
+              <div className="kds-item-name">{item.name}</div>
+            </div>
           </div>
         ))}
         {order.note && (
@@ -307,6 +309,7 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
 
       <div className="kds-ticket-footer">
         <button className={`kds-action-btn ${btnClass}`} onClick={onAction}>
+          {btnClass === 'success' ? <CheckCircle2 size={18} /> : <ChefHat size={18} />}
           {btnLabel}
         </button>
       </div>
