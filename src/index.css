@@ -4989,92 +4989,485 @@ img {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+margin: 0;
+}
+
+.kds-empty-box span {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .kds-header {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 16px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .kds-brand-section {
+    order: 1;
+  }
+
+  .kds-header-right {
+    order: 2;
+  }
+
+  .kds-stats-center {
+    order: 3;
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--kds-border);
+    border-radius: 16px;
+    padding: 8px !important;
+    gap: 12px !important;
+    margin-top: 4px;
+    display: flex !important;
+  }
+  
+  .kds-stat-item {
+    flex: 1;
+  }
+  
+  .kds-stat-item .val {
+    font-size: 1rem !important;
+  }
+  
+  .kds-time-box .time {
+    font-size: 0.95rem !important;
+  }
+  
+  .kds-main {
+    padding: 8px !important;
+    gap: 12px !important;
+  }
+  
+  .kds-shelf-header {
+    padding: 12px 16px !important;
+  }
+  
+  .kds-shelf h2 {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* KDS Mobile Segmented Tabs */
+.kds-mobile-tabs {
+  display: flex !important;
+  flex-direction: row !important;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  margin: 0 16px 20px;
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.kds-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.kds-tab-btn svg {
+  opacity: 0.5;
+}
+
+.kds-tab-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.kds-tab-btn.active svg {
+  opacity: 1;
+  color: #e4002b;
+}
+
+@media (max-width: 900px) {
+  .kds-shelf {
+    min-height: calc(100vh - 300px) !important;
+  }
+  
+  /* Ensure the header and tabs play nice */
+  .kds-container {
+    padding-top: 0 !important;
+    height: auto !important;
+    border-radius: 0;
+  }
+
+  .kds-scroll-area {
+    padding: 8px !important;
+    padding-bottom: 100px !important; /* Clear BottomNav */
+  }
+
+  .kds-ticket {
+    margin: 8px 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .kds-ticket-header {
+    padding: 12px 16px !important;
+  }
+
+  .kds-ticket-header .id {
+    font-size: 0.95rem !important;
+  }
+
+  .kds-ticket-body {
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+
+  .kds-item-row {
+    gap: 10px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .kds-item-qty {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.9rem !important;
+    border-radius: 10px !important;
+  }
+
+  .kds-item-img-wrap {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+
+  .kds-item-name {
+    font-size: 0.85rem !important;
+  }
+
+  .kds-ticket-footer {
+    padding: 12px !important;
+  }
+
+  .kds-action-btn {
+    height: 48px !important;
+    font-size: 0.85rem !important;
+    margin-top: 0 !important;
+  }
+}
+
+/* Dark Mode Overrides for Segmented Controls */
+[data-theme='dark'] .header-right-tools,
+[data-theme='dark'] .kds-mobile-tabs {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+[data-theme='dark'] .header-tool-btn,
+[data-theme='dark'] .kds-tab-btn {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme='dark'] .header-tool-btn.active,
+[data-theme='dark'] .kds-tab-btn.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
 [data-theme='dark'] .kds-tab-btn.active svg {
   color: #ff4d4d !important;
 }
-/* Kiosk Mode Styles */
-.kiosk-welcome-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--slate-950) 0%, var(--slate-900) 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; color: white; text-align: center; }
-.kiosk-hero { max-width: 800px; padding: 40px; }
-.kiosk-logo-large { margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.kiosk-logo-large .logo-badge { background: var(--brand-primary); color: var(--pos-bg); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.kiosk-logo-large h1 { font-size: 4rem; font-weight: 900; letter-spacing: -0.02em; }
-.kiosk-welcome-screen h2 { font-size: 2.5rem; margin-bottom: 60px; opacity: 0.9; }
-.kiosk-start-btn { background: var(--brand-primary); color: var(--pos-bg) !important; border: none; padding: 24px 60px; font-size: 1.8rem; font-weight: 900; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; margin: 0 auto 60px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transition: all 0.3s; }
-.kiosk-start-btn:active { transform: scale(0.95); }
-.kiosk-lang-selector { display: flex; justify-content: center; gap: 20px; }
-.kiosk-lang-selector button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-.kiosk-lang-selector button.active { background: white; color: black; }
-.kiosk-step-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--pos-bg); z-index: 9998; padding: 60px; }
-.kiosk-back-top { position: absolute; top: 40px; left: 40px; background: transparent; border: none; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--pos-text-muted); cursor: pointer; }
-.kiosk-step-title { font-size: 3rem; text-align: center; margin-top: 60px; margin-bottom: 80px; font-weight: 800; }
-.kiosk-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; max-width: 1000px; margin: 0 auto; }
-.kiosk-choice-card { background: var(--pos-surface); border: 2px solid var(--pos-border); border-radius: 32px; padding: 60px; text-align: center; cursor: pointer; transition: all 0.3s; }
-.kiosk-choice-card:hover { border-color: var(--brand-primary); background: var(--slate-50); }
-.kiosk-choice-card .choice-icon { margin-bottom: 30px; color: var(--brand-primary); }
-.kiosk-choice-card h3 { font-size: 2rem; font-weight: 800; }
-.kiosk-main-layout { display: grid; grid-template-columns: 1fr 450px; height: 100vh; overflow: hidden; background: var(--pos-bg); }
-.kiosk-sidebar-menu { display: flex; flex-direction: column; overflow: hidden; padding: 20px; }
-.kiosk-menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.kiosk-exit-btn { background: var(--slate-100); border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.kiosk-dining-badge { background: var(--brand-primary); color: var(--pos-bg); padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
-.kiosk-pos-wrapper { flex: 1; overflow-y: auto; padding-bottom: 40px; }
-.kiosk-cart-panel { background: var(--pos-surface); border-left: 1px solid var(--pos-border); display: flex; flex-direction: column; }
-.kiosk-success-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 10000; display: flex; align-items: center; justify-content: center; text-align: center; }
-.success-content { padding: 40px; }
-.success-icon-large { color: var(--pos-success); margin-bottom: 30px; }
-.kiosk-order-number { margin: 40px 0; padding: 20px; background: var(--slate-100); border-radius: 20px; }
-.kiosk-order-number h2 { font-size: 4rem; font-weight: 900; color: var(--brand-primary); margin: 0; }
-.kiosk-timer-msg { color: var(--pos-text-muted); font-weight: 600; }
-.kiosk-layout .pos-viewport { padding: 0 !important; }
-@media (max-width: 768px) {
-  .kiosk-logo-large h1 { font-size: 2.5rem; }
-  .kiosk-logo-large .logo-badge { width: 80px !important; height: 80px !important; font-size: 2rem !important; }
-  .kiosk-welcome-screen h2 { font-size: 1.5rem; margin-bottom: 40px; }
-  .kiosk-start-btn { padding: 16px 40px; font-size: 1.2rem; }
-  
-  .kiosk-step-screen { padding: 20px; }
-  .kiosk-step-title { font-size: 1.8rem; margin-top: 40px; margin-bottom: 40px; }
-  .kiosk-choice-grid { grid-template-columns: 1fr; gap: 20px; }
-  .kiosk-choice-card { padding: 30px; border-radius: 20px; }
-  .kiosk-choice-card .choice-icon { margin-bottom: 15px; }
-  .kiosk-choice-card .choice-icon svg { width: 48px; height: 48px; }
-  .kiosk-choice-card h3 { font-size: 1.4rem; }
+/* Kiosk Mode - Minimalist Styles */
+.kiosk-minimal-welcome {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--pos-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
 
-  .kiosk-main-layout { grid-template-columns: 1fr; }
-  .kiosk-cart-panel { 
+.kiosk-minimal-center {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  padding: 40px;
+}
+
+.kiosk-minimal-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--brand-primary);
+  border-radius: 50%;
+}
+
+.kiosk-minimal-brand h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.kiosk-minimal-title {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 48px;
+  color: var(--pos-text);
+}
+
+.kiosk-minimal-start-btn {
+  width: 100%;
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  padding: 24px;
+  border-radius: 16px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(255, 77, 77, 0.15);
+  transition: all 0.2s;
+}
+
+.kiosk-minimal-start-btn:active {
+  transform: scale(0.98);
+}
+
+.kiosk-minimal-langs {
+  margin-top: 48px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.kiosk-minimal-langs button {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  color: var(--pos-text-muted);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kiosk-minimal-langs button.active {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background: rgba(255, 77, 77, 0.05);
+}
+
+/* Steps */
+.kiosk-minimal-step {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--pos-bg);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kiosk-minimal-container {
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+}
+
+.kiosk-minimal-back {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--pos-text-muted);
+  cursor: pointer;
+}
+
+.kiosk-minimal-step-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.kiosk-minimal-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.kiosk-minimal-choice {
+  background: var(--pos-surface);
+  border: 1px solid var(--pos-border);
+  padding: 48px;
+  border-radius: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kiosk-minimal-choice:hover {
+  border-color: var(--brand-primary);
+  transform: translateY(-4px);
+}
+
+.choice-icon {
+  margin-bottom: 24px;
+  color: var(--brand-primary);
+}
+
+.kiosk-minimal-choice h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Success */
+.kiosk-minimal-success {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: white;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.success-check {
+  color: #10b981;
+  margin-bottom: 24px;
+}
+
+.order-num {
+  margin: 32px 0;
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 20px;
+}
+
+.order-num h2 {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--brand-primary);
+}
+
+/* Main Layout */
+.kiosk-minimal-main {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  height: 100vh;
+  background: var(--pos-bg);
+}
+
+.kiosk-minimal-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kiosk-minimal-header {
+  padding: 24px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--pos-border);
+}
+
+.kiosk-minimal-header button {
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.dining-badge {
+  background: var(--brand-primary);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.kiosk-minimal-pos {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 40px;
+}
+
+.kiosk-minimal-cart {
+  background: var(--pos-surface);
+  border-left: 1px solid var(--pos-border);
+}
+
+/* Mobile Adjustments */
+.kiosk-mobile-toggle { display: none; }
+
+@media (max-width: 768px) {
+  .kiosk-minimal-main { grid-template-columns: 1fr; }
+  .kiosk-minimal-cart {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 70vh;
+    bottom: 0; left: 0; right: 0;
+    height: 80vh;
     z-index: 1000;
     transform: translateY(100%);
     transition: transform 0.3s ease;
-    border-left: none;
-    border-top: 1px solid var(--pos-border);
-    border-radius: 30px 30px 0 0;
+    border-radius: 24px 24px 0 0;
     display: flex !important;
   }
-  .kiosk-cart-panel.open { transform: translateY(0); }
-  
-  .kiosk-mobile-cart-toggle {
+  .kiosk-minimal-cart.open { transform: translateY(0); }
+  .kiosk-mobile-toggle {
+    display: flex;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 24px; right: 24px;
     background: var(--brand-primary);
-    color: var(--pos-bg);
+    color: white;
     padding: 16px 24px;
     border-radius: 50px;
-    font-weight: 800;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    display: flex;
+    font-weight: 700;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     z-index: 999;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border: none;
   }
+  .kiosk-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+    backdrop-filter: blur(4px);
+  }
+  .kiosk-minimal-choices { grid-template-columns: 1fr; gap: 16px; }
+  .kiosk-minimal-choice { padding: 32px; }
+  .kiosk-minimal-title { font-size: 2rem; }
+  .kiosk-minimal-header { padding: 16px 24px; }
+  .kiosk-minimal-pos { padding: 16px 24px; }
 }
-
-.cart-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 998; backdrop-filter: blur(4px); }
-.kiosk-mobile-cart-toggle .cart-badge { background: white; color: var(--brand-primary); width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; position: absolute; top: 10px; left: 35px; }
