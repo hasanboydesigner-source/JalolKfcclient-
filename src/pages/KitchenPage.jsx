@@ -37,15 +37,27 @@ const KitchenPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('/api/stats');
-      const activeOrders = res.data.recentOrders.filter(o => 
+      const res = await axios.get('/api/orders');
+      // Ensure we only show active orders in the kitchen
+      const activeOrders = res.data.filter(o => 
         ['Pending', 'Preparing', 'Ready'].includes(o.status)
       );
       setOrders(activeOrders);
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch orders:', err);
-      toast.error("Ma'lumotlarni yuklashda xatolik", { theme: "dark" });
+      // Fallback to stats if orders endpoint fails, but it usually doesn't have items
+      try {
+        const res = await axios.get('/api/stats');
+        const activeOrders = (res.data.recentOrders || []).filter(o => 
+          ['Pending', 'Preparing', 'Ready'].includes(o.status)
+        );
+        setOrders(activeOrders);
+      } catch (e) {
+        toast.error("Ma'lumotlarni yuklashda xatolik", { theme: "dark" });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -260,9 +272,13 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    if (!order?.createdAt) return;
+    
     const update = () => {
       const created = new Date(order.createdAt);
       const now = new Date();
+      if (isNaN(created.getTime())) return;
+      
       const diffMs = now - created;
       const diffMins = diffMs / 60000;
       
@@ -270,9 +286,11 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
       setProgress(Math.min((diffMins / 20) * 100, 100));
     };
     update();
-    const itv = setInterval(update, 1000);
+    const itv = setInterval(update, 10000); // 10s is enough for relative time
     return () => clearInterval(itv);
-  }, [order.createdAt]);
+  }, [order?.createdAt]);
+
+  const orderIdShort = order?._id ? (typeof order._id === 'string' ? order._id.slice(-4).toUpperCase() : String(order._id).slice(-4)) : '????';
 
   return (
     <motion.div
@@ -283,12 +301,19 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       className="kds-ticket"
     >
-      <div className="kds-ticket-urgency" style={{ width: `${progress}%`, background: progress > 75 ? '#ef4444' : (progress > 50 ? '#f59e0b' : '#3b82f6') }} />
+      <div 
+        className="kds-ticket-urgency" 
+        style={{ 
+          width: `${progress}%`, 
+          background: progress > 75 ? '#ef4444' : (progress > 50 ? '#f59e0b' : '#3b82f6'),
+          height: '4px'
+        }} 
+      />
       
       <div className="kds-ticket-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="id">#{order._id.slice(-4).toUpperCase()}</div>
-          {order.tableNumber && (
+          <div className="id">#{orderIdShort}</div>
+          {order?.tableNumber && (
             <div className="kds-table-badge">
               STOL #{order.tableNumber}
             </div>
@@ -301,21 +326,28 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
       </div>
 
       <div className="kds-ticket-body">
-        {order.items.map((item, i) => (
-          <div key={i} className="kds-item-row">
-            <div className="kds-item-qty">{item.qty}</div>
-            <div className="kds-item-img-wrap">
-              <img src={getBgRemovedUrl(item.image)} alt={item.name} className="kds-item-img" />
+        {order?.items?.length > 0 ? (
+          order.items.map((item, i) => (
+            <div key={i} className="kds-item-row">
+              <div className="kds-item-qty">{item.qty}</div>
+              <div className="kds-item-img-wrap">
+                <img src={getBgRemovedUrl(item.image)} alt={item.name} className="kds-item-img" />
+              </div>
+              <div className="kds-item-details">
+                <div className="kds-item-name">{item.name}</div>
+              </div>
             </div>
-            <div className="kds-item-details">
-              <div className="kds-item-name">{item.name}</div>
-            </div>
+          ))
+        ) : (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--slate-400)', fontSize: '0.8rem' }}>
+            No items in order
           </div>
-        ))}
-        {order.note && (
-          <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(245, 158, 11, 0.05)', borderRadius: '8px', borderLeft: '3px solid #f59e0b', fontSize: '0.8rem', color: '#d4d4d8' }}>
+        )}
+        
+        {order?.note && (
+          <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(245, 158, 11, 0.05)', borderRadius: '8px', borderLeft: '3px solid #f59e0b', fontSize: '0.8rem', color: '#71717a' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: 700, color: '#f59e0b', fontSize: '0.65rem', textTransform: 'uppercase' }}>
-              <AlertCircle size={10} /> Kitchen Note
+              <AlertCircle size={10} /> Note
             </div>
             {order.note}
           </div>
