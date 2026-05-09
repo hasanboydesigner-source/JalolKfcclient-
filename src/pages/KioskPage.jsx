@@ -23,6 +23,7 @@ const KioskPage = (props) => {
   const { t, language, setLanguage } = useLanguage();
   const [step, setStep] = useState('welcome'); // welcome, dining_choice, menu, checkout_success
   const [diningOption, setDiningOption] = useState(null); // eat_in, take_away
+  const [showCart, setShowCart] = useState(false);
 
   // Auto-reset kiosk after 2 minutes of inactivity on welcome screen
   useEffect(() => {
@@ -166,13 +167,24 @@ const KioskPage = (props) => {
         </div>
       </div>
       
-      <div className="kiosk-cart-panel">
+      <div className={`kiosk-cart-panel ${showCart ? 'open' : ''}`}>
         <Cart 
           {...props}
           onCheckout={onCheckout}
           isKiosk={true}
+          setShowMobileCart={setShowCart}
         />
       </div>
+
+      <button className="kiosk-mobile-cart-toggle show-mobile" onClick={() => setShowCart(true)}>
+        <Icon name="shopping_bag" size={24} />
+        {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
+        {t('cart')}
+      </button>
+
+      {showCart && (
+        <div className="cart-overlay show-mobile" onClick={() => setShowCart(false)} />
+      )}
     </div>
   );
 };

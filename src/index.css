@@ -5028,4 +5028,53 @@ img {
 .kiosk-order-number h2 { font-size: 4rem; font-weight: 900; color: var(--brand-primary); margin: 0; }
 .kiosk-timer-msg { color: var(--pos-text-muted); font-weight: 600; }
 .kiosk-layout .pos-viewport { padding: 0 !important; }
-@media (max-width: 1200px) { .kiosk-main-layout { grid-template-columns: 1fr; } .kiosk-cart-panel { display: none; } }
+@media (max-width: 768px) {
+  .kiosk-logo-large h1 { font-size: 2.5rem; }
+  .kiosk-logo-large .logo-badge { width: 80px !important; height: 80px !important; font-size: 2rem !important; }
+  .kiosk-welcome-screen h2 { font-size: 1.5rem; margin-bottom: 40px; }
+  .kiosk-start-btn { padding: 16px 40px; font-size: 1.2rem; }
+  
+  .kiosk-step-screen { padding: 20px; }
+  .kiosk-step-title { font-size: 1.8rem; margin-top: 40px; margin-bottom: 40px; }
+  .kiosk-choice-grid { grid-template-columns: 1fr; gap: 20px; }
+  .kiosk-choice-card { padding: 30px; border-radius: 20px; }
+  .kiosk-choice-card .choice-icon { margin-bottom: 15px; }
+  .kiosk-choice-card .choice-icon svg { width: 48px; height: 48px; }
+  .kiosk-choice-card h3 { font-size: 1.4rem; }
+
+  .kiosk-main-layout { grid-template-columns: 1fr; }
+  .kiosk-cart-panel { 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70vh;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    border-left: none;
+    border-top: 1px solid var(--pos-border);
+    border-radius: 30px 30px 0 0;
+    display: flex !important;
+  }
+  .kiosk-cart-panel.open { transform: translateY(0); }
+  
+  .kiosk-mobile-cart-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--brand-primary);
+    color: var(--pos-bg);
+    padding: 16px 24px;
+    border-radius: 50px;
+    font-weight: 800;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+  }
+}
+
+.cart-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 998; backdrop-filter: blur(4px); }
+.kiosk-mobile-cart-toggle .cart-badge { background: white; color: var(--brand-primary); width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; position: absolute; top: 10px; left: 35px; }
