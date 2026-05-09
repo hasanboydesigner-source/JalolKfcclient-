@@ -19,7 +19,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../hooks/useSocket';
 import { getBgRemovedUrl } from '../utils/imageUtils';
 
-const NEW_ORDER_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3';
+const NEW_ORDER_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'; // Pleasant Service Bell
 
 const KitchenPage = () => {
   const [orders, setOrders] = useState([]);
@@ -27,7 +27,11 @@ const KitchenPage = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const { t } = useLanguage();
-  const audio = useMemo(() => new Audio(NEW_ORDER_SOUND), []);
+  const audio = useMemo(() => {
+    const a = new Audio(NEW_ORDER_SOUND);
+    a.volume = 0.8;
+    return a;
+  }, []);
 
   // Live Clock
   useEffect(() => {
@@ -62,17 +66,43 @@ const KitchenPage = () => {
   };
 
   const playNotification = useCallback(() => {
-    // 1. Play standard sound
+    // 1. Play pleasant bell chime
+    audio.currentTime = 0;
     audio.play().catch(e => console.log('Audio play failed:', e));
 
-    // 2. Voice notification (Premium feature)
+    // 2. Voice notification in Uzbek
     if ('speechSynthesis' in window) {
       const msg = new SpeechSynthesisUtterance();
-      // Logic for different languages if needed, but "Yangi buyurtma" is requested
       msg.text = "Yangi buyurtma";
+      
+      // Try to find the best voice
+      const voices = window.speechSynthesis.getVoices();
+      // Look for Uzbek, then Turkish (similar phonetics), then Russian
+      const uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      const trVoice = voices.find(v => v.lang.startsWith('tr'));
+      const ruVoice = voices.find(v => v.lang.startsWith('ru'));
+      
+      if (uzVoice) msg.voice = uzVoice;
+      else if (trVoice) msg.voice = trVoice;
+      else if (ruVoice) msg.voice = ruVoice;
+      
       msg.lang = 'uz-UZ';
-      msg.rate = 1.0;
-      window.speechSynthesis.speak(msg);
+      msg.rate = 0.9; // Slightly slower for clarity
+      msg.pitch = 1.0;
+      
+      // Some browsers require voices to be loaded first
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          const updatedVoices = window.speechSynthesis.getVoices();
+          const v = updatedVoices.find(v => v.lang.startsWith('uz')) || 
+                    updatedVoices.find(v => v.lang.startsWith('tr')) || 
+                    updatedVoices.find(v => v.lang.startsWith('ru'));
+          if (v) msg.voice = v;
+          window.speechSynthesis.speak(msg);
+        };
+      } else {
+        window.speechSynthesis.speak(msg);
+      }
     }
   }, [audio]);
 
