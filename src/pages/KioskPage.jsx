@@ -45,52 +45,84 @@ const KioskPage = (props) => {
 
   if (step === 'welcome') {
     return (
-      <div className="kiosk-minimal-welcome" onClick={startOrdering}>
-        <div className="kiosk-minimal-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="kiosk-minimal-brand"
-          >
-            <div className="brand-dot-pulse" />
-            <h1>Jalol<span>KFC</span></h1>
-          </motion.div>
-          
-          <div className="kiosk-hero-text">
-            <motion.h2 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {language === 'uz' ? 'Mazali lahzalar' : language === 'ru' ? 'Вкусные моменты' : 'Delicious Moments'}
-            </motion.h2>
-            <motion.p
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            >
-              {language === 'uz' ? 'Boshlash uchun ekranga bosing' : language === 'ru' ? 'Нажмите, чтобы начать' : 'Touch anywhere to start'}
-            </motion.p>
+      <div className="kiosk-editorial-welcome" onClick={startOrdering}>
+        <div className="editorial-bg-accent" />
+        
+        <div className="editorial-layout">
+          <div className="editorial-left">
+            <div className="editorial-nav">
+              <div className="editorial-brand">
+                <span className="brand-label">Premium Quality</span>
+                <h1>Jalol<span>KFC</span></h1>
+              </div>
+              
+              <div className="editorial-langs" onClick={(e) => e.stopPropagation()}>
+                {['UZ', 'RU', 'EN'].map(l => (
+                  <button 
+                    key={l}
+                    onClick={() => changeLanguage(l.toLowerCase())}
+                    className={language === l.toLowerCase() ? 'active' : ''}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="editorial-hero">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h2 className="editorial-heading">
+                  Taste the<br />
+                  <span>Excellence.</span>
+                </h2>
+                <p className="editorial-sub">
+                  {language === 'uz' ? 'O\'zgacha ta\'m va sifat uyg\'unligi' : 
+                   language === 'ru' ? 'Сочетание вкуса и качества' : 
+                   'Where taste meets quality'}
+                </p>
+                
+                <div className="editorial-action">
+                  <button className="editorial-start-btn">
+                    <span>{t('confirm_sale')}</span>
+                    <div className="btn-arrow">
+                      <Icon name="arrow_right" size={24} />
+                    </div>
+                  </button>
+                  <div className="start-hint">
+                    <span className="pulse-dot" />
+                    {t('touch_to_start')}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="editorial-bottom">
+              <div className="footer-stat">
+                <span className="stat-val">100%</span>
+                <span className="stat-label">Fresh Chicken</span>
+              </div>
+              <div className="footer-stat">
+                <span className="stat-val">20m</span>
+                <span className="stat-label">Fast Service</span>
+              </div>
+            </div>
           </div>
 
-          <div className="kiosk-minimal-langs" onClick={(e) => e.stopPropagation()}>
-            {[
-              { code: 'uz', label: 'UZ' },
-              { code: 'ru', label: 'RU' },
-              { code: 'en', label: 'EN' }
-            ].map(lang => (
-              <button 
-                key={lang.code}
-                onClick={() => changeLanguage(lang.code)} 
-                className={language === lang.code ? 'active' : ''}
-              >
-                {lang.label}
-              </button>
-            ))}
+          <div className="editorial-right">
+            <motion.div 
+              className="image-container"
+              initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            >
+              <img src="/images/hero-burger.png" alt="Signature Burger" />
+              <div className="image-shadow" />
+            </motion.div>
           </div>
-        </div>
-        
-        <div className="kiosk-minimal-footer">
-          <span>{new Date().getFullYear()} © JalolKFC Systems</span>
         </div>
       </div>
     );

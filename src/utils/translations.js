@@ -123,6 +123,7 @@ export const translations = {
     order_success: "Buyurtma muvaffaqiyatli qabul qilindi",
     no_products: "Mahsulot topilmadi",
     qty: "Soni",
+    touch_to_start: "Boshlash uchun bosing",
   },
   ru: {
     // Sidebar & Navigation
@@ -248,6 +249,7 @@ export const translations = {
     order_success: "Заказ успешно принят",
     no_products: "Товар не найден",
     qty: "Кол-во",
+    touch_to_start: "Нажмите, чтобы начать",
   },
   en: {
     // Sidebar & Navigation
@@ -373,5 +375,6 @@ export const translations = {
     order_success: "Order placed successfully",
     no_products: "No products found",
     qty: "Qty",
+    touch_to_start: "Touch to Start",
   }
 }
