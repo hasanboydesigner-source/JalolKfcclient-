@@ -12,7 +12,7 @@ const KioskPage = (props) => {
     handlePlaceOrder
   } = props;
 
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language, changeLanguage } = useLanguage();
   const [step, setStep] = useState('welcome'); // welcome, dining_choice, menu, checkout_success
   const [diningOption, setDiningOption] = useState(null); // eat_in, take_away
   const [showCart, setShowCart] = useState(false);
@@ -45,30 +45,52 @@ const KioskPage = (props) => {
 
   if (step === 'welcome') {
     return (
-      <div className="kiosk-minimal-welcome">
+      <div className="kiosk-minimal-welcome" onClick={startOrdering}>
         <div className="kiosk-minimal-center">
           <motion.div 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="kiosk-minimal-brand"
           >
-            <div className="brand-dot" />
-            <h1>JalolKFC</h1>
+            <div className="brand-dot-pulse" />
+            <h1>Jalol<span>KFC</span></h1>
           </motion.div>
           
-          <h2 className="kiosk-minimal-title">
-            {language === 'uz' ? 'Xush kelibsiz' : language === 'ru' ? 'Добро пожаловать' : 'Welcome'}
-          </h2>
-
-          <button className="kiosk-minimal-start-btn" onClick={startOrdering}>
-            {language === 'uz' ? 'Buyurtma berish' : language === 'ru' ? 'Начать заказ' : 'Start Order'}
-          </button>
-
-          <div className="kiosk-minimal-langs">
-            <button onClick={() => setLanguage('uz')} className={language === 'uz' ? 'active' : ''}>UZ</button>
-            <button onClick={() => setLanguage('ru')} className={language === 'ru' ? 'active' : ''}>RU</button>
-            <button onClick={() => setLanguage('en')} className={language === 'en' ? 'active' : ''}>EN</button>
+          <div className="kiosk-hero-text">
+            <motion.h2 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              {language === 'uz' ? 'Mazali lahzalar' : language === 'ru' ? 'Вкусные моменты' : 'Delicious Moments'}
+            </motion.h2>
+            <motion.p
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            >
+              {language === 'uz' ? 'Boshlash uchun ekranga bosing' : language === 'ru' ? 'Нажмите, чтобы начать' : 'Touch anywhere to start'}
+            </motion.p>
           </div>
+
+          <div className="kiosk-minimal-langs" onClick={(e) => e.stopPropagation()}>
+            {[
+              { code: 'uz', label: 'UZ' },
+              { code: 'ru', label: 'RU' },
+              { code: 'en', label: 'EN' }
+            ].map(lang => (
+              <button 
+                key={lang.code}
+                onClick={() => changeLanguage(lang.code)} 
+                className={language === lang.code ? 'active' : ''}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        <div className="kiosk-minimal-footer">
+          <span>{new Date().getFullYear()} © JalolKFC Systems</span>
         </div>
       </div>
     );
