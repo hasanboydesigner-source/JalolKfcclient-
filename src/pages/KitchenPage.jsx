@@ -294,7 +294,6 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -306,7 +305,7 @@ const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
         style={{ 
           width: `${progress}%`, 
           background: progress > 75 ? '#ef4444' : (progress > 50 ? '#f59e0b' : '#3b82f6'),
-          height: '4px'
+          minHeight: '4px'
         }} 
       />
       
