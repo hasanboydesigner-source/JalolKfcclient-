@@ -19,7 +19,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../hooks/useSocket';
 import { getBgRemovedUrl } from '../utils/imageUtils';
 
-const NEW_ORDER_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'; // Pleasant Service Bell
+const NEW_ORDER_SOUND = '/bell.wav'; // Local custom bell sound
 
 const KitchenPage = () => {
   const [orders, setOrders] = useState([]);
