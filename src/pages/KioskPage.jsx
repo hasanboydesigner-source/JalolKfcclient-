@@ -16,6 +16,7 @@ const KioskPage = (props) => {
   const [step, setStep] = useState('welcome'); // welcome, dining_choice, menu, checkout_success
   const [diningOption, setDiningOption] = useState(null); // eat_in, take_away
   const [showCart, setShowCart] = useState(false);
+  const [completedOrderId, setCompletedOrderId] = useState(null);
 
   // Auto-reset kiosk after 2 minutes of inactivity on welcome screen
   useEffect(() => {
@@ -33,8 +34,9 @@ const KioskPage = (props) => {
   };
 
   const onCheckout = async () => {
-    const success = await handlePlaceOrder();
-    if (success) {
+    const orderData = await handlePlaceOrder();
+    if (orderData) {
+      setCompletedOrderId(orderData._id ? String(orderData._id).slice(-4).toUpperCase() : '0000');
       setStep('checkout_success');
       setTimeout(() => {
         setStep('welcome');
@@ -200,7 +202,7 @@ const KioskPage = (props) => {
           <h1>{t('order_success')}</h1>
           <div className="order-num">
             <span>{t('order_num')}</span>
-            <h2>#0482</h2>
+            <h2>#{completedOrderId || '0482'}</h2>
           </div>
           <p>{language === 'uz' ? '10 soniyadan so\'ng qaytamiz' : 'Returning in 10s'}</p>
         </div>

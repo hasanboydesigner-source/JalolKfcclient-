@@ -399,7 +399,7 @@ function App() {
         style: { borderRadius: '12px', background: '#333', color: '#fff' }
       })
 
-      if (isCustomerView) {
+      if (isCustomerView || isKiosk) {
         setTimeout(() => setCart([]), 500)
       } else {
         setTimeout(() => {
@@ -409,7 +409,7 @@ function App() {
       }
 
       if (currentView === 'stats') fetchStats()
-      return true
+      return savedOrder || { _id: Date.now().toString().slice(-4) }
     } catch (err) {
       toast.error('Error: ' + err.message)
       return false
