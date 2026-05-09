@@ -391,6 +391,7 @@ img {
   color: var(--pos-text-muted) !important;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative !important;
 }
 
 [data-theme='light'] .header-tool-btn {
@@ -3364,6 +3365,13 @@ img {
     background: #ffffff !important;
     color: #0f172a !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  }
+
+  .header-tool-btn .cart-badge,
+  .header-tool-btn .pending-badge {
+    right: 50% !important;
+    transform: translateX(14px) !important;
+    top: 2px !important;
   }
 }
 

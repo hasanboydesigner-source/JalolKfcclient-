@@ -65,10 +65,14 @@ function App() {
   const INITIAL_CATEGORIES = [
     { id: 'all', name: t('all'), icon: 'all' },
     { id: 'burgers', name: t('burgers'), icon: 'burger' },
+    { id: 'lavash', name: "Lavashlar", icon: 'wrap' },
     { id: 'buckets', name: t('buckets'), icon: 'bucket' },
     { id: 'pizza', name: t('pizza'), icon: 'pizza' },
+    { id: 'combo', name: "Kombo", icon: 'combo' },
     { id: 'drinks', name: t('drinks'), icon: 'drink' },
     { id: 'sides', name: t('sides'), icon: 'side' },
+    { id: 'desserts', name: "Desertlar", icon: 'icecream' },
+    { id: 'sauces', name: "Souslar", icon: 'sauce' },
   ]
 
   const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : location.pathname === '/kitchen' ? 'kitchen' : 'pos'

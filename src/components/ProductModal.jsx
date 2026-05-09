@@ -12,9 +12,17 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
         return [
           { value: 'Asl', label: t('original') },
           { value: 'Achchiq', label: t('spicy') },
-          { value: 'Non Veg', label: t('non_veg') },
-          { value: 'Veg', label: t('veg') },
-          { value: 'Double', label: t('double') }
+          { value: 'Go\'shtli', label: "Go'shtli" },
+          { value: 'Vegetarian', label: "Vegetarian" },
+          { value: 'Double', label: "Double" }
+        ];
+      case 'lavash':
+        return [
+          { value: 'Standart', label: "Standart" },
+          { value: 'Kichik', label: "Kichik" },
+          { value: 'Pishloqli', label: "Pishloqli" },
+          { value: 'Achchiq', label: "Achchiq" },
+          { value: 'Sirli', label: "Sirli (Cheese)" }
         ];
       case 'pizza':
         return [
@@ -46,6 +54,28 @@ const ProductModal = ({ isModalOpen, setIsModalOpen, editingProduct, formData, s
           { value: 'O\'rta', label: "O'rta (Medium)" },
           { value: 'Katta', label: "Katta (Large)" },
           { value: 'Box', label: "Box (Qutida)" },
+        ];
+      case 'desserts':
+        return [
+          { value: 'Muzqaymoq', label: "Muzqaymoq" },
+          { value: 'Pirojnoe', label: "Pirojnoe" },
+          { value: 'Milksheyk', label: "Milksheyk" },
+          { value: 'Donut', label: "Donat" }
+        ];
+      case 'sauces':
+        return [
+          { value: 'Ketchup', label: "Ketchup" },
+          { value: 'Mayonez', label: "Mayonez" },
+          { value: 'Pishloqli', label: "Pishloqli" },
+          { value: 'Sarimsoqli', label: "Sarimsoqli" },
+          { value: 'BBQ', label: "BBQ" }
+        ];
+      case 'combo':
+        return [
+          { value: 'Solo', label: "Solo (1 kishilik)" },
+          { value: 'Duo', label: "Duo (2 kishilik)" },
+          { value: 'Family', label: "Family (Oila)" },
+          { value: 'King', label: "King Size" }
         ];
       default:
         return [
