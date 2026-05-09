@@ -5217,7 +5217,7 @@ margin: 0;
 }
 
 .editorial-left {
-  padding: 60px 80px;
+  padding: 40px 60px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -5230,9 +5230,9 @@ margin: 0;
 }
 
 .editorial-brand h1 {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 900;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   color: #0f172a;
   margin: 0;
 }
@@ -5270,23 +5270,23 @@ margin: 0;
 }
 
 .editorial-heading {
-  font-size: 7rem;
+  font-size: 4.5rem;
   font-weight: 900;
-  line-height: 0.8;
-  letter-spacing: -5px;
+  line-height: 0.85;
+  letter-spacing: -3px;
   color: #0f172a;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .editorial-heading span { color: var(--brand-primary); }
 
 .editorial-sub {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: #64748b;
   font-weight: 500;
-  max-width: 450px;
+  max-width: 400px;
   line-height: 1.4;
-  margin-bottom: 60px;
+  margin-bottom: 36px;
 }
 
 .editorial-action {
@@ -5299,18 +5299,18 @@ margin: 0;
   background: #0f172a;
   color: #ffffff;
   border: none;
-  padding: 18px 48px;
+  padding: 14px 36px;
   border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
 }
 
 .editorial-start-btn span {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -5399,15 +5399,16 @@ margin: 0;
 @media (max-width: 1024px) {
   .editorial-layout { grid-template-columns: 1fr; }
   .editorial-right { display: none; }
-  .editorial-left { width: 100%; padding: 40px; }
-  .editorial-heading { font-size: 5rem; }
+  .editorial-left { width: 100%; padding: 32px 28px; }
+  .editorial-heading { font-size: 3.8rem; }
 }
 
 @media (max-width: 768px) {
-  .editorial-heading { font-size: 3.5rem; letter-spacing: -2px; }
-  .editorial-sub { font-size: 1.1rem; }
-  .editorial-action { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .editorial-bottom { display: none; }
+  .editorial-heading { font-size: 3rem; letter-spacing: -2px; }
+  .editorial-sub { font-size: 1rem; margin-bottom: 28px; }
+  .editorial-action { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .editorial-bottom { gap: 40px; }
+  .brand-label { font-size: 0.65rem; }
 }
 
 /* Editorial Step (Dining Choice) */
