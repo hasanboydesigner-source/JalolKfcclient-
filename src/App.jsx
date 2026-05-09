@@ -567,7 +567,7 @@ function App() {
             </div>
           )}
 
-          {!isCustomerView && <BottomNav />}
+          {!isCustomerView && !isKiosk && <BottomNav />}
         </>
       )}
 

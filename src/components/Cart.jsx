@@ -36,7 +36,7 @@ const Cart = ({
   ]
 
   return (
-    <aside className="pos-cart-panel">
+    <aside className={isKiosk ? "kiosk-cart-internal" : "pos-cart-panel"}>
       <div className="cart-header">
         <div className="cart-title-row">
           <button className="cart-back-btn show-mobile" onClick={() => setShowMobileCart(false)}>
