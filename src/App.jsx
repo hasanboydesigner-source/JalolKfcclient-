@@ -21,6 +21,7 @@ import AdminPage from './pages/AdminPage'
 import StatsPage from './pages/StatsPage'
 import KitchenPage from './pages/KitchenPage'
 import StatusPage from './pages/StatusPage'
+import KioskPage from './pages/KioskPage'
 import Receipt from './components/Receipt'
 import { useSocket } from './hooks/useSocket'
 
@@ -35,6 +36,7 @@ function App() {
   const searchParams = new URLSearchParams(location.search)
   const tableParam = searchParams.get('table')
   const isCustomerView = !!tableParam
+  const isKiosk = location.pathname === '/kiosk'
 
   // Real-time Status Notifications for Customers
   const handleNewOrder = () => {}; // App doesn't need to handle new orders generally
@@ -386,12 +388,11 @@ function App() {
         localStorage.setItem('offline_orders', JSON.stringify(queue))
         toast.info('Internet yo\'q. Buyurtma saqlandi va internet tiklanganda yuboriladi.', { icon: '💾' })
         setCart([])
-        return
+        return true
       }
 
       const res = await axios.post('/api/orders', orderData)
       const savedOrder = res.data
-      // ... rest of the logic
 
       toast.success(t('order_success'), {
         icon: '🚀',
@@ -408,8 +409,10 @@ function App() {
       }
 
       if (currentView === 'stats') fetchStats()
+      return true
     } catch (err) {
       toast.error('Error: ' + err.message)
+      return false
     }
   }
 
@@ -426,28 +429,30 @@ function App() {
 
   return (
     <div className="pos-container">
-      {(!isAuthenticated && !isCustomerView) ? (
+      {(!isAuthenticated && !isCustomerView && !isKiosk) ? (
         <LoginView onLogin={handleLogin} />
       ) : (
         <>
-          {!isCustomerView && <Sidebar user={user} />}
+          {(!isCustomerView && !isKiosk) && <Sidebar user={user} />}
 
-          <div className="pos-layout-main">
-            <Header
-              user={user}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              currentView={currentView}
-              showMobileCart={showMobileCart}
-              setShowMobileCart={setShowMobileCart}
-              cartCount={cartCount}
-              onLogout={handleLogout}
-              isCustomerView={isCustomerView}
-              tableParam={tableParam}
-              pendingOrders={pendingOrders}
-              onCompleteOrder={handleCompletePending}
-              isOnline={isOnline}
-            />
+          <div className={`pos-layout-main ${isKiosk ? 'kiosk-layout' : ''}`}>
+            {!isKiosk && (
+              <Header
+                user={user}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                currentView={currentView}
+                showMobileCart={showMobileCart}
+                setShowMobileCart={setShowMobileCart}
+                cartCount={cartCount}
+                onLogout={handleLogout}
+                isCustomerView={isCustomerView}
+                tableParam={tableParam}
+                pendingOrders={pendingOrders}
+                onCompleteOrder={handleCompletePending}
+                isOnline={isOnline}
+              />
+            )}
 
             <main className="pos-viewport">
               <Routes>
@@ -467,6 +472,27 @@ function App() {
                       addToCart={addToCart}
                       updateQty={updateQty}
                       cart={cart}
+                    />
+                  }
+                />
+                <Route
+                  path="/kiosk"
+                  element={
+                    <KioskPage
+                      activeCategory={activeCategory}
+                      setActiveCategory={setActiveCategory}
+                      INITIAL_CATEGORIES={INITIAL_CATEGORIES}
+                      products={products}
+                      loading={loading}
+                      filteredProducts={products.filter(p =>
+                        (activeCategory === 'all' || p.category === activeCategory) &&
+                        (p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      )}
+                      addToCart={addToCart}
+                      updateQty={updateQty}
+                      cart={cart}
+                      clearCart={() => setCart([])}
+                      handlePlaceOrder={handlePlaceOrder}
                     />
                   }
                 />

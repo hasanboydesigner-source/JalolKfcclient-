@@ -16,7 +16,9 @@ const Cart = ({
   setShowMobileCart, 
   isCustomerView,
   recommendedProducts,
-  addToCart
+  addToCart,
+  isKiosk,
+  onCheckout
 }) => {
   const { t, language } = useLanguage()
 
@@ -157,7 +159,7 @@ const Cart = ({
           </div>
         </div>
 
-        <button className="checkout-btn" onClick={handlePlaceOrder}>
+        <button className="checkout-btn" onClick={isKiosk ? () => onCheckout(paymentMethod) : handlePlaceOrder}>
           {t('confirm_order')}
         </button>
       </div>

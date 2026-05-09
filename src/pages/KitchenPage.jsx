@@ -49,15 +49,30 @@ const KitchenPage = () => {
     }
   };
 
+  const playNotification = useCallback(() => {
+    // 1. Play standard sound
+    audio.play().catch(e => console.log('Audio play failed:', e));
+
+    // 2. Voice notification (Premium feature)
+    if ('speechSynthesis' in window) {
+      const msg = new SpeechSynthesisUtterance();
+      // Logic for different languages if needed, but "Yangi buyurtma" is requested
+      msg.text = "Yangi buyurtma";
+      msg.lang = 'uz-UZ';
+      msg.rate = 1.0;
+      window.speechSynthesis.speak(msg);
+    }
+  }, [audio]);
+
   const handleNewOrder = useCallback((newOrder) => {
     setOrders(prev => [newOrder, ...prev]);
-    audio.play().catch(e => console.log('Audio play failed:', e));
+    playNotification();
     toast.success(`NEW ORDER: #${newOrder._id.slice(-4).toUpperCase()}`, {
       icon: <ShoppingCart size={18} />,
       position: "top-right",
       theme: "dark"
     });
-  }, [audio]);
+  }, [playNotification]);
 
   const handleStatusUpdate = useCallback((updatedOrder) => {
     setOrders(prev => {
