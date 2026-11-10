@@ -72,7 +72,7 @@ const Cart = ({
 
           <div className="cart-title-container">
             <div className="cart-order-num">
-              {t('cart_title') || 'Savat'} ({cart.reduce((s, i) => s + i.qty, 0)})
+              {t('cart_title') || 'Savat'} ({Array.isArray(cart) ? cart.reduce((s, i) => s + (i.qty || 0), 0) : 0})
             </div>
           </div>
 
@@ -176,7 +176,7 @@ const Cart = ({
         ) : (
           <>
             <div className="cart-items-list">
-              {cart.map(item => (
+              {(Array.isArray(cart) ? cart : []).map(item => (
                 <div key={item._id} className="cart-item">
                   <img 
                     src={getBgRemovedUrl(item.image)} 
@@ -226,7 +226,7 @@ const Cart = ({
             </div>
 
             {/* Recommendations */}
-            {recommendedProducts && recommendedProducts.length > 0 && settings.kiosk?.smartRecommendations !== false && (
+            {Array.isArray(recommendedProducts) && recommendedProducts.length > 0 && settings.kiosk?.smartRecommendations !== false && (
               <div className="cart-recommendations">
                 <h4 className="recommendation-title">Tavsiya etamiz:</h4>
                 <div className="recommendation-scroll">

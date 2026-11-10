@@ -109,20 +109,22 @@ const StatsPanel = ({ stats, loading: _loading, statsDate, setStatsDate, onRefre
       qr: { key: 'qr', label: 'QR to‘lov', count: 0, total: 0, icon: QrCode, color: '#f59e0b' }
     };
 
-    recentOrders.forEach(o => {
-      if (o.status !== 'Completed') return;
-      const method = (o.paymentMethod || '').toLowerCase();
-      if (method.includes('naqd') || method.includes('cash')) {
-        res.cash.count++;
-        res.cash.total += (o.total || 0);
-      } else if (method.includes('karta') || method.includes('card') || method.includes('humo') || method.includes('uzcard')) {
-        res.card.count++;
-        res.card.total += (o.total || 0);
-      } else {
-        res.qr.count++;
-        res.qr.total += (o.total || 0);
-      }
-    });
+    if (Array.isArray(recentOrders)) {
+      recentOrders.forEach(o => {
+        if (!o || o.status !== 'Completed') return;
+        const method = (o.paymentMethod || '').toLowerCase();
+        if (method.includes('naqd') || method.includes('cash')) {
+          res.cash.count++;
+          res.cash.total += (o.total || 0);
+        } else if (method.includes('karta') || method.includes('card') || method.includes('humo') || method.includes('uzcard')) {
+          res.card.count++;
+          res.card.total += (o.total || 0);
+        } else {
+          res.qr.count++;
+          res.qr.total += (o.total || 0);
+        }
+      });
+    }
 
     const sumTotal = res.cash.total + res.card.total + res.qr.total;
     return {

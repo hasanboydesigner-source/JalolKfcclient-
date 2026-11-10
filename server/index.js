@@ -1400,22 +1400,24 @@ if (fs.existsSync(distPath) || process.env.NODE_ENV === 'production' || process.
   });
 }
 
-const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  
-  // Keep-alive mechanism for Render free tier
-  const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
-  if (RENDER_URL) {
-    setInterval(async () => {
-      try {
-        await axios.get(`${RENDER_URL}/ping`);
-        console.log('💓 Keep-alive: Server pinged successfully');
-      } catch (err) {
-        console.error('💔 Keep-alive Error:', err.message);
-      }
-    }, 14 * 60 * 1000);
-  }
-});
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    
+    // Keep-alive mechanism for Render free tier
+    const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+    if (RENDER_URL) {
+      setInterval(async () => {
+        try {
+          await axios.get(`${RENDER_URL}/ping`);
+          console.log('💓 Keep-alive: Server pinged successfully');
+        } catch (err) {
+          console.error('💔 Keep-alive Error:', err.message);
+        }
+      }, 14 * 60 * 1000);
+    }
+  });
+}
 
 export default app;

@@ -83,22 +83,26 @@ const PosPage = ({
   const isFloorPlanMode = orderType === 'in_hall' && !selectedTable && isDineInFirst
 
   const effectiveTables = useMemo(() => {
-    if (tables && tables.length > 0) return tables
+    if (Array.isArray(tables) && tables.length > 0) return tables
     return FALLBACK_DEFAULT_TABLES
   }, [tables])
 
   // Extract unique zones
   const zones = useMemo(() => {
     const set = new Set(['all'])
-    effectiveTables.forEach(t => {
-      if (t.zone) set.add(t.zone)
-    })
+    if (Array.isArray(effectiveTables)) {
+      effectiveTables.forEach(t => {
+        if (t && t.zone) set.add(t.zone)
+      })
+    }
     return Array.from(set)
   }, [effectiveTables])
 
   // Filter tables
   const filteredTables = useMemo(() => {
+    if (!Array.isArray(effectiveTables)) return []
     return effectiveTables.filter(t => {
+      if (!t) return false
       const matchesZone = activeZone === 'all' || t.zone === activeZone
       const matchesSearch = !searchTableQuery || 
         String(t.tableNumber).toLowerCase().includes(searchTableQuery.toLowerCase()) ||
@@ -109,10 +113,11 @@ const PosPage = ({
 
   // Floor Plan Metrics
   const metrics = useMemo(() => {
+    if (!Array.isArray(effectiveTables)) return { total: 0, free: 0, occupied: 0, bill: 0 }
     const total = effectiveTables.length
-    const free = effectiveTables.filter(t => t.status === 'FREE').length
-    const occupied = effectiveTables.filter(t => t.status === 'OCCUPIED').length
-    const bill = effectiveTables.filter(t => t.status === 'BILL_PRINTED').length
+    const free = effectiveTables.filter(t => t && t.status === 'FREE').length
+    const occupied = effectiveTables.filter(t => t && t.status === 'OCCUPIED').length
+    const bill = effectiveTables.filter(t => t && t.status === 'BILL_PRINTED').length
     return { total, free, occupied, bill }
   }, [effectiveTables])
 

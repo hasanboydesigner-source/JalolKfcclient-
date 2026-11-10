@@ -11,9 +11,12 @@ const AdminPanel = ({ products, searchQuery = '', handleOpenModal, handleDeleteP
   const [localSearch, setLocalSearch] = useState('')
 
   const effectiveSearch = localSearch || searchQuery
+  const safeProducts = Array.isArray(products) ? products : []
+  const safeCategories = Array.isArray(INITIAL_CATEGORIES) ? INITIAL_CATEGORIES : []
 
-  const filtered = products.filter(p => {
-    const matchesSearch = !effectiveSearch || p.name.toLowerCase().includes(effectiveSearch.toLowerCase())
+  const filtered = safeProducts.filter(p => {
+    if (!p) return false
+    const matchesSearch = !effectiveSearch || (p.name || '').toLowerCase().includes(effectiveSearch.toLowerCase())
     const matchesCategory = activeCategory === 'all' || p.category === activeCategory
     return matchesSearch && matchesCategory
   })
@@ -47,10 +50,10 @@ const AdminPanel = ({ products, searchQuery = '', handleOpenModal, handleDeleteP
             className={`zone-tab-pill ${activeCategory === 'all' ? 'active' : ''}`}
             onClick={() => setActiveCategory('all')}
           >
-            Barchasi ({products.length})
+            Barchasi ({safeProducts.length})
           </button>
-          {INITIAL_CATEGORIES.map(cat => {
-            const count = products.filter(p => p.category === cat.id).length
+          {safeCategories.map(cat => {
+            const count = safeProducts.filter(p => p && p.category === cat.id).length
             return (
               <button
                 key={cat.id}

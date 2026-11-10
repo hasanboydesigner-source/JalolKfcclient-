@@ -75,7 +75,7 @@ export const SettingsProvider = ({ children }) => {
   const fetchPublicSettings = useCallback(async () => {
     try {
       const res = await axios.get('/api/settings/public');
-      if (res.data) {
+      if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && res.data.business) {
         setSettings(res.data);
         localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(res.data));
         applyTheme(res.data);

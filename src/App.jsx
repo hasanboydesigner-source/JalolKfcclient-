@@ -19,7 +19,20 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Detect if an API call was rewritten to index.html (e.g. Vercel SPA rewrite fallback when backend is unreachable)
+    const isHtmlResponse = typeof response.data === 'string' &&
+      (response.data.trim().startsWith('<!DOCTYPE') ||
+       response.data.trim().startsWith('<html') ||
+       response.headers?.['content-type']?.includes('text/html'));
+
+    if (isHtmlResponse && response.config?.url?.includes('/api/')) {
+      const err = new Error(`API endpoint ${response.config.url} HTML qaytardi (backend serverga ulanib bo'lmadi).`);
+      err.isHtmlFallback = true;
+      return Promise.reject(err);
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401 && error.config && !error.config.url?.includes('/api/auth/login')) {
       localStorage.removeItem('pos_token');
@@ -128,12 +141,14 @@ function App() {
   const fetchTables = useCallback(async () => {
     try {
       const res = await axios.get('/api/tables')
-      setTables(res.data)
-      setSelectedTable(prev => {
-        if (!prev) return null
-        const latest = res.data.find(t => String(t._id) === String(prev._id))
-        return latest || prev
-      })
+      if (Array.isArray(res.data)) {
+        setTables(res.data)
+        setSelectedTable(prev => {
+          if (!prev) return null
+          const latest = res.data.find(t => String(t._id) === String(prev._id))
+          return latest || prev
+        })
+      }
     } catch (err) {
       console.error('Error fetching tables:', err)
     }
@@ -141,7 +156,7 @@ function App() {
 
   const handleTableUpdate = useCallback((updatedTable) => {
     if (updatedTable) {
-      setTables(prev => prev.map(t => String(t._id) === String(updatedTable._id) ? { ...t, ...updatedTable } : t))
+      setTables(prev => Array.isArray(prev) ? prev.map(t => String(t._id) === String(updatedTable._id) ? { ...t, ...updatedTable } : t) : [])
       setSelectedTable(prev => prev && String(prev._id) === String(updatedTable._id) ? { ...prev, ...updatedTable } : prev)
     } else {
       fetchTables()
@@ -162,19 +177,21 @@ function App() {
     const list = [{ id: 'all', name: t('all') || 'Barchasi', icon: 'all' }];
     const bType = settings?.business?.businessType || 'restaurant';
     const templateCats = INDUSTRY_TEMPLATES[bType]?.categories || INDUSTRY_TEMPLATES.restaurant.categories;
-    const configured = settings?.categories && settings.categories.length > 0 
+    const configured = Array.isArray(settings?.categories) && settings.categories.length > 0 
       ? settings.categories 
-      : templateCats;
+      : (Array.isArray(templateCats) ? templateCats : []);
 
-    configured.forEach(c => {
-      if (!list.some(x => x.id === c.id)) {
-        list.push({ ...c });
-      }
-    });
+    if (Array.isArray(configured)) {
+      configured.forEach(c => {
+        if (c && c.id && !list.some(x => x.id === c.id)) {
+          list.push({ ...c });
+        }
+      });
+    }
 
-    if (products && products.length > 0) {
+    if (Array.isArray(products) && products.length > 0) {
       products.forEach(p => {
-        if (p.category && !list.some(x => x.id === p.category)) {
+        if (p && p.category && !list.some(x => x.id === p.category)) {
           const cap = p.category.charAt(0).toUpperCase() + p.category.slice(1);
           list.push({ id: p.category, name: cap, icon: 'utensils' });
         }
@@ -280,15 +297,17 @@ function App() {
     const fetchPending = async () => {
       try {
         const res = await axios.get('/api/orders/pending')
-        setPendingOrders(res.data)
-        if (res.data.length > 0) {
-          const newest = res.data[0]
-          if (newest._id !== lastNotificationId) {
-            toast.info(`🔔 Yangi buyurtma keldi! (${newest.orderNumber || 'Stol #' + (newest.tableNumber || '?')})`, {
-              icon: '🍽️',
-              theme: 'dark'
-            })
-            setLastNotificationId(newest._id)
+        if (Array.isArray(res.data)) {
+          setPendingOrders(res.data)
+          if (res.data.length > 0) {
+            const newest = res.data[0]
+            if (newest && newest._id !== lastNotificationId) {
+              toast.info(`🔔 Yangi buyurtma keldi! (${newest.orderNumber || 'Stol #' + (newest.tableNumber || '?')})`, {
+                icon: '🍽️',
+                theme: 'dark'
+              })
+              setLastNotificationId(newest._id)
+            }
           }
         }
       } catch (err) {
@@ -339,7 +358,9 @@ function App() {
     setStatsLoading(true)
     try {
       const res = await axios.get('/api/stats', { params: { date: statsDate } })
-      setStats(res.data)
+      if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
+        setStats(res.data)
+      }
     } catch (err) {
       console.error('Error fetching stats:', err)
     } finally {
@@ -351,14 +372,41 @@ function App() {
     setLoading(true)
     try {
       const res = await axios.get('/api/products')
-      setProducts(res.data)
-      localStorage.setItem('jalol_products_cache', JSON.stringify(res.data))
+      if (Array.isArray(res.data)) {
+        setProducts(res.data)
+        localStorage.setItem('jalol_products_cache', JSON.stringify(res.data))
+      } else {
+        console.warn('Expected array for products but received:', typeof res.data)
+        const cached = localStorage.getItem('jalol_products_cache')
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached)
+            if (Array.isArray(parsed)) setProducts(parsed)
+            else setProducts([])
+          } catch {
+            setProducts([])
+          }
+        } else {
+          setProducts([])
+        }
+      }
     } catch (err) {
       console.error('Error fetching products:', err)
       const cached = localStorage.getItem('jalol_products_cache')
       if (cached) {
-        setProducts(JSON.parse(cached))
-        toast.info('Oflayn rejim: Keshdan yuklandi')
+        try {
+          const parsed = JSON.parse(cached)
+          if (Array.isArray(parsed)) {
+            setProducts(parsed)
+            toast.info('Oflayn rejim: Taomlar keshdan yuklandi')
+          } else {
+            setProducts([])
+          }
+        } catch {
+          setProducts([])
+        }
+      } else {
+        setProducts([])
       }
     } finally {
       setLoading(false)
@@ -419,18 +467,30 @@ function App() {
   
   // Smart Recommendations
   const recommendedProducts = useMemo(() => {
-    if (cart.length === 0) return []
+    if (!Array.isArray(products) || products.length === 0 || !Array.isArray(cart) || cart.length === 0) return []
     const cartCategories = new Set(cart.map(item => item.category))
     const needsDrinks = !cartCategories.has('drinks')
     const needsSides = !cartCategories.has('sides')
     
     return products.filter(p => {
+      if (!p) return false
       if (cart.find(item => item._id === p._id)) return false
       if (needsDrinks && p.category === 'drinks') return true
       if (needsSides && p.category === 'sides') return true
       return false
     }).slice(0, 4)
   }, [cart, products])
+
+  // Resilient Filtered Products
+  const filteredProducts = useMemo(() => {
+    if (!Array.isArray(products)) return []
+    const q = (searchQuery || '').trim().toLowerCase()
+    return products.filter(p =>
+      p &&
+      (activeCategory === 'all' || p.category === activeCategory) &&
+      (!q || (p.name || '').toLowerCase().includes(q))
+    )
+  }, [products, activeCategory, searchQuery])
 
   // CRUD Handlers
   const handleOpenModal = (product = null) => {
@@ -839,10 +899,7 @@ function App() {
                       INITIAL_CATEGORIES={INITIAL_CATEGORIES}
                       products={products}
                       loading={loading}
-                      filteredProducts={products.filter(p =>
-                        (activeCategory === 'all' || p.category === activeCategory) &&
-                        (p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )}
+                      filteredProducts={filteredProducts}
                       addToCart={addToCart}
                       updateQty={updateQty}
                       cart={cart}
@@ -883,10 +940,7 @@ function App() {
                       INITIAL_CATEGORIES={INITIAL_CATEGORIES}
                       products={products}
                       loading={loading}
-                      filteredProducts={products.filter(p =>
-                        (activeCategory === 'all' || p.category === activeCategory) &&
-                        (p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )}
+                      filteredProducts={filteredProducts}
                       addToCart={addToCart}
                       updateQty={updateQty}
                       cart={cart}
@@ -936,10 +990,7 @@ function App() {
                   INITIAL_CATEGORIES={INITIAL_CATEGORIES}
                   products={products}
                   loading={loading}
-                  filteredProducts={products.filter(p =>
-                    (activeCategory === 'all' || p.category === activeCategory) &&
-                    (p.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                  )}
+                  filteredProducts={filteredProducts}
                   addToCart={addToCart}
                   updateQty={updateQty}
                   cart={cart}
