@@ -38,7 +38,7 @@ export const translations = {
     cash: "Naqd",
     card: "Karta",
     qr: "QR",
-    confirm_sale: "Sotish",
+    confirm_sale: "Buyurtmani tasdiqlash",
     confirm_order: "Buyurtmani tasdiqlash",
     added: "Qo'shildi",
     
@@ -165,7 +165,7 @@ export const translations = {
     cash: "Наличные",
     card: "Карта",
     qr: "QR",
-    confirm_sale: "Продать",
+    confirm_sale: "Подтвердить заказ",
     confirm_order: "Подтвердить заказ",
     added: "Добавлено",
     
@@ -292,7 +292,7 @@ export const translations = {
     cash: "Cash",
     card: "Card",
     qr: "QR",
-    confirm_sale: "Sell",
+    confirm_sale: "Confirm Order",
     confirm_order: "Confirm Order",
     added: "Added",
     

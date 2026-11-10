@@ -1,49 +1,84 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense, useRef } from 'react'
+import { flushSync } from 'react-dom'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
-axios.defaults.baseURL = 'https://jalolkfc.onrender.com'
+
+// Configure Axios with dynamic URL and Authorization header
+if (import.meta.env.VITE_API_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+}
+
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('pos_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && error.config && !error.config.url?.includes('/api/auth/login')) {
+      localStorage.removeItem('pos_token');
+      localStorage.removeItem('jalol_user');
+      toast.warning('Xavfsizlik tokeni yangilandi. Iltimos, PIN-kod (2024) bilan qaytadan kiring.');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Modular Components
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
-import CategoryPills from './components/CategoryPills'
 import Cart from './components/Cart'
 import ProductModal from './components/ProductModal'
+import SettingsModal from './components/SettingsModal'
 import SplashScreen from './components/SplashScreen'
 import LoginView from './components/LoginView'
 import ConfirmModal from './components/ConfirmModal'
 import BottomNav from './components/BottomNav'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import PosPage from './pages/PosPage'
-import AdminPage from './pages/AdminPage'
-import StatsPage from './pages/StatsPage'
-import KitchenPage from './pages/KitchenPage'
-import StatusPage from './pages/StatusPage'
-import KioskPage from './pages/KioskPage'
+const PosPage = lazy(() => import('./pages/PosPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const StatsPage = lazy(() => import('./pages/StatsPage'))
+const KitchenPage = lazy(() => import('./pages/KitchenPage'))
+const StatusPage = lazy(() => import('./pages/StatusPage'))
+const KioskPage = lazy(() => import('./pages/KioskPage'))
+const TablesPage = lazy(() => import('./pages/TablesPage'))
+import TableSelectorModal from './components/TableSelectorModal'
+import TableDetailModal from './components/TableDetailModal'
 import Receipt from './components/Receipt'
 import { useSocket } from './hooks/useSocket'
-
 import { useLanguage } from './context/LanguageContext'
-
-const READY_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3';
+import { useSettings } from './context/SettingsContext'
+import { INDUSTRY_TEMPLATES } from '../shared/settingsDefaults'
 
 function App() {
   const location = useLocation()
   const { t } = useLanguage()
+  const { settings } = useSettings()
 
   const searchParams = new URLSearchParams(location.search)
   const tableParam = searchParams.get('table')
   const isCustomerView = !!tableParam
   const isKiosk = location.pathname === '/kiosk'
+  const isKitchen = location.pathname === '/kitchen'
+  const isStatusScreen = location.pathname === '/status'
+
+  const readySound = settings.statusScreen?.chimeSoundUrl || 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3';
 
   // Real-time Status Notifications for Customers
-  const handleNewOrder = () => {}; // App doesn't need to handle new orders generally
-  const handleStatusUpdate = (updatedOrder) => {
+  const handleNewOrder = useCallback(() => {}, []);
+  const handleStatusUpdate = useCallback((updatedOrder) => {
     if (isCustomerView && updatedOrder.tableNumber === tableParam) {
       if (updatedOrder.status === 'Ready') {
-        const audio = new Audio(READY_SOUND);
+        const audio = new Audio(readySound);
         audio.play().catch(e => console.log('Audio blocked:', e));
         toast.success(
           <div style={{ padding: '10px' }}>
@@ -60,26 +95,94 @@ function App() {
         );
       }
     }
-  };
+  }, [isCustomerView, tableParam, readySound]);
 
-  useSocket(handleNewOrder, handleStatusUpdate);
+  // Tables State & Real-Time Sync (Guaranteed Initial Tables)
+  const INITIAL_FALLBACK_TABLES = useMemo(() => Array.from({ length: 20 }, (_, i) => {
+    const num = i + 1
+    let zone = 'Asosiy zal'
+    let capacity = 4
+    if (num > 16) {
+      zone = 'VIP'
+      capacity = 8
+    } else if (num > 12) {
+      zone = 'Terrasa'
+      capacity = 4
+    }
+    return {
+      _id: `table-${num}`,
+      tableNumber: String(num).padStart(2, '0'),
+      name: `Stol ${num}`,
+      zone,
+      capacity,
+      status: 'FREE',
+      currentTotal: 0
+    }
+  }), [])
 
-  const INITIAL_CATEGORIES = [
-    { id: 'all', name: t('all'), icon: 'all' },
-    { id: 'burgers', name: t('burgers'), icon: 'burger' },
-    { id: 'lavash', name: "Lavashlar", icon: 'wrap' },
-    { id: 'buckets', name: t('buckets'), icon: 'bucket' },
-    { id: 'pizza', name: t('pizza'), icon: 'pizza' },
-    { id: 'combo', name: "Kombo", icon: 'combo' },
-    { id: 'drinks', name: t('drinks'), icon: 'drink' },
-    { id: 'sides', name: t('sides'), icon: 'side' },
-    { id: 'desserts', name: "Desertlar", icon: 'icecream' },
-    { id: 'sauces', name: "Souslar", icon: 'sauce' },
-  ]
+  const [tables, setTables] = useState(INITIAL_FALLBACK_TABLES)
+  const [selectedTable, setSelectedTable] = useState(null)
+  const [isTableSelectorOpen, setIsTableSelectorOpen] = useState(false)
+  const [tableForDetail, setTableForDetail] = useState(null)
 
-  const currentView = location.pathname === '/admin' ? 'admin' : location.pathname === '/stats' ? 'stats' : location.pathname === '/kitchen' ? 'kitchen' : 'pos'
+  const fetchTables = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/tables')
+      setTables(res.data)
+      setSelectedTable(prev => {
+        if (!prev) return null
+        const latest = res.data.find(t => String(t._id) === String(prev._id))
+        return latest || prev
+      })
+    } catch (err) {
+      console.error('Error fetching tables:', err)
+    }
+  }, [])
+
+  const handleTableUpdate = useCallback((updatedTable) => {
+    if (updatedTable) {
+      setTables(prev => prev.map(t => String(t._id) === String(updatedTable._id) ? { ...t, ...updatedTable } : t))
+      setSelectedTable(prev => prev && String(prev._id) === String(updatedTable._id) ? { ...prev, ...updatedTable } : prev)
+    } else {
+      fetchTables()
+    }
+  }, [fetchTables])
+
+  useSocket(handleNewOrder, handleStatusUpdate, undefined, handleTableUpdate);
+
+  const currentView = 
+    location.pathname === '/admin' ? 'admin' : 
+    location.pathname === '/stats' ? 'stats' : 
+    location.pathname === '/kitchen' ? 'kitchen' : 
+    location.pathname === '/tables' ? 'tables' : 'pos'
   const [activeCategory, setActiveCategory] = useState('all')
   const [products, setProducts] = useState([])
+
+  const INITIAL_CATEGORIES = useMemo(() => {
+    const list = [{ id: 'all', name: t('all') || 'Barchasi', icon: 'all' }];
+    const bType = settings?.business?.businessType || 'restaurant';
+    const templateCats = INDUSTRY_TEMPLATES[bType]?.categories || INDUSTRY_TEMPLATES.restaurant.categories;
+    const configured = settings?.categories && settings.categories.length > 0 
+      ? settings.categories 
+      : templateCats;
+
+    configured.forEach(c => {
+      if (!list.some(x => x.id === c.id)) {
+        list.push({ ...c });
+      }
+    });
+
+    if (products && products.length > 0) {
+      products.forEach(p => {
+        if (p.category && !list.some(x => x.id === p.category)) {
+          const cap = p.category.charAt(0).toUpperCase() + p.category.slice(1);
+          list.push({ id: p.category, name: cap, icon: 'utensils' });
+        }
+      });
+    }
+
+    return list;
+  }, [settings?.categories, settings?.business?.businessType, t, products]);
   const [cart, setCart] = useState([])
   const [orderType, setOrderType] = useState('in_hall')
   const [paymentMethod, setPaymentMethod] = useState('cash')
@@ -89,6 +192,11 @@ function App() {
   const [statsLoading, setStatsLoading] = useState(false)
   const [showMobileCart, setShowMobileCart] = useState(false)
   const [statsDate, setStatsDate] = useState(new Date().toISOString().split('T')[0])
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [lastPlacedOrder, setLastPlacedOrder] = useState(null)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+  const orderLockRef = useRef(false)
+  const cartIdempotencyKeyRef = useRef(null)
 
   // Auth & Splash State
   const [showSplash, setShowSplash] = useState(true)
@@ -104,15 +212,25 @@ function App() {
         setIsAuthenticated(true)
         setUser(res.data.user)
         localStorage.setItem('jalol_user', JSON.stringify(res.data.user))
-        toast.success(`${t('update_success')}, ${res.data.user.name}!`, {
+        if (res.data.token) {
+          localStorage.setItem('pos_token', res.data.token)
+        }
+        fetchTables()
+        toast.success(`${t('update_success') || 'Xush kelibsiz'}, ${res.data.user.name}!`, {
           position: "top-right",
           autoClose: 2000,
           theme: "colored",
         })
+        // Senior Workflow: Directly prompt table selection on admin/cashier entry
+        if (!isCustomerView && !isKiosk && !isKitchen && !isStatusScreen) {
+          setTimeout(() => {
+            setIsTableSelectorOpen(true)
+          }, 350)
+        }
         return true
       }
-    } catch (err) {
-      // LoginView handles the error state internally
+    } catch (_err) {
+      // LoginView handles error
     }
     return false
   }
@@ -121,20 +239,33 @@ function App() {
     setIsAuthenticated(false)
     setUser(null)
     localStorage.removeItem('jalol_user')
+    localStorage.removeItem('pos_token')
     toast.info(t('logout'))
   }
 
   useEffect(() => {
     const savedUser = localStorage.getItem('jalol_user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-      setIsAuthenticated(true)
+    const savedToken = localStorage.getItem('pos_token')
+
+    if (savedUser && savedToken) {
+      try {
+        setUser(JSON.parse(savedUser))
+        setIsAuthenticated(true)
+      } catch (_e) {
+        localStorage.removeItem('jalol_user')
+        localStorage.removeItem('pos_token')
+      }
+    } else if (savedUser && !savedToken) {
+      // Legacy session without JWT token: clear to prompt PIN login
+      localStorage.removeItem('jalol_user')
+      setUser(null)
+      setIsAuthenticated(false)
     }
-    // Initial Splash Sequence
+
     const timer = setTimeout(() => {
       setIsSplashExiting(true)
-      setTimeout(() => setShowSplash(false), 800) // Match CSS transition
-    }, 2000)
+      setTimeout(() => setShowSplash(false), 800)
+    }, 1500)
 
     return () => clearTimeout(timer)
   }, [])
@@ -153,7 +284,7 @@ function App() {
         if (res.data.length > 0) {
           const newest = res.data[0]
           if (newest._id !== lastNotificationId) {
-            toast.info(`🔔 Stoldan yangi buyurtma keldi! (Stol #${newest.tableNumber || '?'})`, {
+            toast.info(`🔔 Yangi buyurtma keldi! (${newest.orderNumber || 'Stol #' + (newest.tableNumber || '?')})`, {
               icon: '🍽️',
               theme: 'dark'
             })
@@ -180,6 +311,60 @@ function App() {
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [productToDelete, setProductToDelete] = useState(null)
 
+  const syncOfflineOrders = useCallback(async () => {
+    const queue = JSON.parse(localStorage.getItem('offline_orders') || '[]')
+    if (queue.length === 0) return
+
+    toast.info(`${queue.length} ta oflayn buyurtma sinxronizatsiya qilinmoqda...`)
+    const remainingQueue = []
+    
+    for (const order of queue) {
+      try {
+        await axios.post('/api/orders', order)
+      } catch (err) {
+        console.error('Sync failed for order', order, err)
+        remainingQueue.push(order)
+      }
+    }
+    
+    if (remainingQueue.length === 0) {
+      localStorage.removeItem('offline_orders')
+      toast.success('Barcha oflayn buyurtmalar serverga yuborildi!')
+    } else {
+      localStorage.setItem('offline_orders', JSON.stringify(remainingQueue))
+    }
+  }, [])
+
+  const fetchStats = useCallback(async () => {
+    setStatsLoading(true)
+    try {
+      const res = await axios.get('/api/stats', { params: { date: statsDate } })
+      setStats(res.data)
+    } catch (err) {
+      console.error('Error fetching stats:', err)
+    } finally {
+      setStatsLoading(false)
+    }
+  }, [statsDate])
+
+  const fetchProducts = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await axios.get('/api/products')
+      setProducts(res.data)
+      localStorage.setItem('jalol_products_cache', JSON.stringify(res.data))
+    } catch (err) {
+      console.error('Error fetching products:', err)
+      const cached = localStorage.getItem('jalol_products_cache')
+      if (cached) {
+        setProducts(JSON.parse(cached))
+        toast.info('Oflayn rejim: Keshdan yuklandi')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchProducts()
     if (currentView === 'stats') {
@@ -202,55 +387,7 @@ function App() {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [currentView, statsDate])
-
-  const syncOfflineOrders = async () => {
-    const queue = JSON.parse(localStorage.getItem('offline_orders') || '[]')
-    if (queue.length === 0) return
-
-    toast.info(`${queue.length} ta oflayn buyurtma sinxronizatsiya qilinmoqda...`)
-    
-    for (const order of queue) {
-      try {
-        await axios.post('/api/orders', order)
-      } catch (err) {
-        console.error('Sync failed for order', order, err)
-      }
-    }
-    
-    localStorage.removeItem('offline_orders')
-    toast.success('Barcha buyurtmalar serverga yuborildi!')
-  }
-
-  const fetchStats = async () => {
-    setStatsLoading(true)
-    try {
-      const res = await axios.get('/api/stats', { params: { date: statsDate } })
-      setStats(res.data)
-    } catch (err) {
-      console.error('Error fetching stats:', err)
-    } finally {
-      setStatsLoading(false)
-    }
-  }
-
-  const fetchProducts = async () => {
-    setLoading(true)
-    try {
-      const res = await axios.get('/api/products')
-      setProducts(res.data)
-      localStorage.setItem('jalol_products_cache', JSON.stringify(res.data))
-    } catch (err) {
-      console.error('Error fetching products:', err)
-      const cached = localStorage.getItem('jalol_products_cache')
-      if (cached) {
-        setProducts(JSON.parse(cached))
-        toast.info('Oflayn rejim: Keshdan yuklandi')
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [currentView, fetchProducts, fetchStats, syncOfflineOrders])
 
   // Cart Logic
   const addToCart = (product) => {
@@ -273,12 +410,14 @@ function App() {
     )
   }
 
+  // Calculate Subtotal and Dynamic Tax from Settings
   const subtotal = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.qty, 0), [cart])
-  const tax = subtotal * 0.05
+  const taxRate = settings.pricing?.taxEnabled ? (settings.pricing.taxRate || 0) : 0
+  const tax = Math.round(subtotal * (taxRate / 100))
   const total = subtotal + tax
   const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.qty, 0), [cart])
   
-  // Smart Recommendations Logic
+  // Smart Recommendations
   const recommendedProducts = useMemo(() => {
     if (cart.length === 0) return []
     const cartCategories = new Set(cart.map(item => item.category))
@@ -293,23 +432,27 @@ function App() {
     }).slice(0, 4)
   }, [cart, products])
 
-  // Filtering
-  const filteredProducts = useMemo(() => {
-    return products.filter(p => {
-      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory = activeCategory === 'all' || p.category === activeCategory
-      return matchesSearch && matchesCategory
-    })
-  }, [products, activeCategory, searchQuery])
-
   // CRUD Handlers
   const handleOpenModal = (product = null) => {
     if (product) {
       setEditingProduct(product)
-      setFormData({ ...product })
+      setFormData({
+        ...product,
+        unit: product.unit || 'dona',
+        tag: product.tag || 'Standart'
+      })
     } else {
       setEditingProduct(null)
-      setFormData({ name: '', price: '', category: 'burgers', desc: '', tag: 'Non Veg', discount: '' })
+      const firstCat = INITIAL_CATEGORIES.find(c => c.id !== 'all')?.id || 'second_courses'
+      setFormData({
+        name: '',
+        price: '',
+        category: firstCat,
+        unit: 'porsiya',
+        desc: '',
+        tag: 'Standart',
+        discount: ''
+      })
     }
     setSelectedFile(null)
     setIsModalOpen(true)
@@ -330,15 +473,15 @@ function App() {
     try {
       if (editingProduct) {
         await axios.put(`/api/products/${editingProduct._id}`, data)
-        toast.success(t('update_success'))
+        toast.success(t('update_success') || 'Mahsulot yangilandi')
       } else {
         await axios.post('/api/products', data)
-        toast.success(t('added'))
+        toast.success(t('added') || 'Mahsulot qo‘shildi')
       }
       fetchProducts()
       setIsModalOpen(false)
     } catch (err) {
-      toast.error('Error: ' + err.message)
+      toast.error('Xatolik: ' + err.message)
     }
   }
 
@@ -347,11 +490,11 @@ function App() {
     try {
       await axios.delete(`/api/products/${productToDelete}`)
       fetchProducts()
-      toast.success(t('update_success'))
+      toast.success(t('update_success') || 'O‘chirildi')
       setShowConfirmModal(false)
       setProductToDelete(null)
     } catch (err) {
-      toast.error('Error: ' + err.message)
+      toast.error('Xatolik: ' + err.message)
     }
   }
 
@@ -360,15 +503,200 @@ function App() {
     setShowConfirmModal(true)
   }
 
+  // Table Actions
+  const handleSelectTable = (table) => {
+    setSelectedTable(table)
+    setOrderType('in_hall')
+    toast.info(`Stol #${table.tableNumber} tanlandi. Endi taomlarni belgilang.`, { icon: '🪑' })
+  }
+
+  const handleAddTable = async (newTableData) => {
+    try {
+      await axios.post('/api/tables', newTableData)
+      toast.success('Yangi stol qo‘shildi!')
+      fetchTables()
+    } catch (err) {
+      toast.error('Xatolik: ' + (err.response?.data?.message || err.message))
+    }
+  }
+
+  const handlePrintPreBill = async (table) => {
+    try {
+      await axios.post(`/api/tables/${table._id}/bill`)
+      if (table.currentOrder) {
+        setLastPlacedOrder(table.currentOrder)
+      } else {
+        setLastPlacedOrder({
+          orderNumber: table.currentOrderNumber || `#ST-${table.tableNumber}`,
+          tableNumber: table.tableNumber,
+          items: [],
+          total: table.currentTotal || 0,
+          subtotal: table.currentTotal || 0,
+          tax: 0,
+          orderType: 'Zalda (Pre-chek)',
+          paymentMethod: 'Hisob kutilmoqda'
+        })
+      }
+      setTimeout(() => {
+        window.print()
+      }, 150)
+      toast.info(`Stol #${table.tableNumber} uchun pre-chek chiqarildi`, { icon: '🧾' })
+      fetchTables()
+    } catch (err) {
+      toast.error('Pre-chek chiqarishda xatolik: ' + err.message)
+    }
+  }
+
+  const handleTransferTable = async (sourceId, targetId) => {
+    try {
+      const res = await axios.post(`/api/tables/${sourceId}/transfer`, { targetTableId: targetId })
+      toast.success(res.data.message || 'Stol muvaffaqiyatli ko‘chirildi!', { icon: '🔄' })
+      fetchTables()
+      if (selectedTable && String(selectedTable._id) === String(sourceId)) {
+        setSelectedTable(res.data.targetTable)
+      }
+    } catch (err) {
+      toast.error('Stol ko‘chirishda xatolik: ' + (err.response?.data?.message || err.message))
+    }
+  }
+
+  const handleCloseAndSettleTable = async (table, paymentMethod = 'Naqd') => {
+    try {
+      if (table.currentOrderId) {
+        await axios.put(`/api/orders/${table.currentOrderId}/status`, { 
+          status: 'Completed',
+          paymentMethod: paymentMethod 
+        })
+        setLastPlacedOrder(table.currentOrder ? {
+          ...table.currentOrder,
+          paymentMethod: paymentMethod
+        } : {
+          orderNumber: table.currentOrderNumber,
+          tableNumber: table.tableNumber,
+          total: table.currentTotal,
+          subtotal: table.currentTotal,
+          tax: 0,
+          orderType: 'Zalda',
+          paymentMethod: paymentMethod
+        })
+        setTimeout(() => {
+          window.print()
+        }, 150)
+      } else {
+        await axios.post(`/api/tables/${table._id}/clear`)
+      }
+      toast.success(`Stol #${table.tableNumber} hisobi to‘landi (${paymentMethod}) va stol bo‘shatildi!`, { icon: '✅' })
+      if (selectedTable && String(selectedTable._id) === String(table._id)) {
+        setSelectedTable(null)
+      }
+      setTableForDetail(null)
+      fetchTables()
+      if (currentView === 'stats') fetchStats()
+    } catch (err) {
+      toast.error('Hisobni yopishda xatolik: ' + err.message)
+    }
+  }
+
+  const handleForceClearTable = async (tableId) => {
+    try {
+      await axios.post(`/api/tables/${tableId}/clear`)
+      toast.info('Stol bo‘shatildi')
+      if (selectedTable && String(selectedTable._id) === String(tableId)) {
+        setSelectedTable(null)
+      }
+      fetchTables()
+    } catch (err) {
+      toast.error('Xatolik: ' + err.message)
+    }
+  }
+
   const handlePlaceOrder = async () => {
-    if (cart.length === 0) return
+    if (cart.length === 0) return false
+
+    // Senior Anti-Double-Submit Guard: Immediate synchronous lock
+    if (orderLockRef.current) {
+      console.warn('[Order Lock] Blocked concurrent duplicate order placement')
+      return false
+    }
+
+    // REQUIRE TABLE SELECTION FOR DINE-IN ORDERS
+    if (!isCustomerView && !isKiosk && orderType === 'in_hall' && !selectedTable) {
+      toast.warning('Iltimos, buyurtma biriktirish uchun avval stolni tanlang!', { icon: '🪑' })
+      setIsTableSelectorOpen(true)
+      return false
+    }
+
+    orderLockRef.current = true
+    setIsPlacingOrder(true)
+
+    // Append items workflow if table is already occupied
+    if (!isCustomerView && !isKiosk && orderType === 'in_hall' && selectedTable?.status === 'OCCUPIED' && selectedTable.currentOrderId) {
+      try {
+        const res = await axios.post(`/api/tables/${selectedTable._id}/append-items`, {
+          items: cart.map(item => ({
+            productId: item._id,
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+            unit: item.unit || 'dona',
+            tag: item.tag || '',
+            image: item.image
+          }))
+        })
+
+        const updatedOrder = res.data.order
+        const addedItems = res.data.addedItems || cart
+        flushSync(() => {
+          setLastPlacedOrder({
+            ...updatedOrder,
+            isAddon: true,
+            addonItems: addedItems,
+            tableNumber: selectedTable.tableNumber
+          })
+        })
+
+        toast.success(`Stol #${selectedTable.tableNumber} ga qo‘shimcha taomlar muvaffaqiyatli qo‘shildi!`, { icon: '🚀' })
+        setCart([])
+        setSelectedTable(null)
+        fetchTables()
+
+        // Dine-In: Chek faqat mijoz ketayotganda kassada hisob yopilganda chiqadi!
+        return updatedOrder
+      } catch (err) {
+        toast.error('Xatolik: ' + (err.response?.data?.message || err.message))
+        return false
+      } finally {
+        setTimeout(() => {
+          orderLockRef.current = false
+          setIsPlacingOrder(false)
+        }, 700)
+      }
+    }
+
+    orderLockRef.current = true
+    setIsPlacingOrder(true)
+
+    // Reuse session idempotency key for this cart checkout
+    if (!cartIdempotencyKeyRef.current) {
+      cartIdempotencyKeyRef.current = typeof crypto !== 'undefined' && crypto.randomUUID 
+        ? crypto.randomUUID() 
+        : `ord_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    }
+    const idempotencyKey = cartIdempotencyKeyRef.current
+
+    const effectiveTableNumber = isCustomerView 
+      ? tableParam 
+      : (orderType === 'in_hall' ? (selectedTable?.tableNumber || null) : null)
 
     const orderData = {
+      idempotencyKey,
       items: cart.map(item => ({
         productId: item._id,
         name: item.name,
         price: item.price,
         qty: item.qty,
+        unit: item.unit || 'dona',
+        tag: item.tag || '',
         image: item.image
       })),
       subtotal,
@@ -376,67 +704,111 @@ function App() {
       total,
       orderType: isCustomerView ? 'Zalda' : (orderType === 'in_hall' ? 'Zalda' : orderType === 'takeaway' ? 'Olib ketish' : 'Yetkazib'),
       paymentMethod: paymentMethod === 'cash' ? 'Naqd' : paymentMethod === 'card' ? 'Karta' : 'QR',
-      source: isCustomerView ? 'Customer' : 'POS',
-      tableNumber: tableParam || null,
+      source: isCustomerView ? 'Customer' : (isKiosk ? 'Kiosk' : 'POS'),
+      tableNumber: effectiveTableNumber,
       status: isCustomerView ? 'Pending' : 'Preparing'
     }
 
     try {
       if (!isOnline) {
+        const offlineOrder = {
+          ...orderData,
+          orderNumber: `#OFF-${Date.now().toString().slice(-4)}`,
+          createdAt: new Date().toISOString()
+        }
         const queue = JSON.parse(localStorage.getItem('offline_orders') || '[]')
-        queue.push(orderData)
-        localStorage.setItem('offline_orders', JSON.stringify(queue))
-        toast.info('Internet yo\'q. Buyurtma saqlandi va internet tiklanganda yuboriladi.', { icon: '💾' })
+        if (!queue.some(o => o.idempotencyKey === idempotencyKey)) {
+          queue.push(offlineOrder)
+          localStorage.setItem('offline_orders', JSON.stringify(queue))
+        }
+        toast.info('Internet yo\'q. Buyurtma oflayn saqlandi va internet tiklanganda yuboriladi.', { icon: '💾' })
+        cartIdempotencyKeyRef.current = null
+
+        flushSync(() => {
+          setLastPlacedOrder(offlineOrder)
+        })
         setCart([])
+
+        if (!isCustomerView && !isKiosk && orderType !== 'in_hall') {
+          setTimeout(() => {
+            window.print()
+          }, 150)
+        }
         return true
       }
 
       const res = await axios.post('/api/orders', orderData)
       const savedOrder = res.data
 
-      toast.success(t('order_success'), {
-        icon: '🚀',
-        style: { borderRadius: '12px', background: '#333', color: '#fff' }
+      // Senior State Synchronization: Flush state synchronously so receipt DOM is fully populated before printing
+      flushSync(() => {
+        setLastPlacedOrder(savedOrder)
       })
 
-      if (isCustomerView || isKiosk) {
-        setTimeout(() => setCart([]), 500)
-      } else {
+      toast.success(
+        effectiveTableNumber 
+          ? `Stol #${effectiveTableNumber} ga buyurtma biriktirildi!` 
+          : (t('order_success') || 'Buyurtma qabul qilindi!'), 
+        {
+          icon: '🚀',
+          style: { borderRadius: '12px', background: '#333', color: '#fff' }
+        }
+      )
+
+      // Order successfully submitted: reset key and cart
+      cartIdempotencyKeyRef.current = null
+      setCart([])
+      setSelectedTable(null)
+      fetchTables()
+
+      // Faqat tezkor kassada (Olib ketish / Yetkazib) darhol chek chiqadi.
+      // Zaldagi stollar uchun chek FAQAT mijoz ketayotganda kassa hisobni yopgach chiqadi!
+      if (!isCustomerView && !isKiosk && orderType !== 'in_hall') {
         setTimeout(() => {
           window.print()
-          setCart([])
-        }, 500)
+        }, 150)
       }
 
       if (currentView === 'stats') fetchStats()
       return savedOrder || { _id: Date.now().toString().slice(-4) }
     } catch (err) {
-      toast.error('Error: ' + err.message)
+      toast.error('Xatolik: ' + (err.response?.data?.message || err.message))
       return false
+    } finally {
+      // Debounced unlock to prevent rapid double-taps on touchscreens
+      setTimeout(() => {
+        orderLockRef.current = false
+        setIsPlacingOrder(false)
+      }, 700)
     }
   }
 
   const handleCompletePending = async (orderId) => {
     try {
       await axios.put(`/api/orders/${orderId}/status`, { status: 'Completed' })
-      toast.success(t('order_success') + ' (Bajarildi)')
+      toast.success((t('order_success') || 'Buyurtma') + ' (Bajarildi)')
       setPendingOrders(prev => prev.filter(o => o._id !== orderId))
       if (currentView === 'stats') fetchStats()
     } catch (err) {
-      toast.error('Error: ' + err.message)
+      toast.error('Xatolik: ' + err.message)
     }
   }
 
   return (
     <div className="pos-container">
-      {(!isAuthenticated && !isCustomerView && !isKiosk) ? (
+      {(!isAuthenticated && !isCustomerView && !isKiosk && !isStatusScreen && !isKitchen) ? (
         <LoginView onLogin={handleLogin} />
       ) : (
         <>
-          {(!isCustomerView && !isKiosk) && <Sidebar user={user} />}
+          {(!isCustomerView && !isKiosk && !isStatusScreen && !isKitchen && isAuthenticated) && (
+            <Sidebar 
+              user={user} 
+              onOpenSettings={() => setIsSettingsOpen(true)} 
+            />
+          )}
 
-          <div className={`pos-layout-main ${isKiosk ? 'kiosk-layout' : ''}`}>
-            {!isKiosk && (
+          <div className={`pos-layout-main ${isKiosk ? 'kiosk-layout' : isKitchen ? 'kitchen-layout' : isStatusScreen ? 'status-layout' : currentView === 'stats' ? 'stats-layout' : ''}`}>
+            {!isKiosk && !isKitchen && !isStatusScreen && (
               <Header
                 user={user}
                 searchQuery={searchQuery}
@@ -451,11 +823,13 @@ function App() {
                 pendingOrders={pendingOrders}
                 onCompleteOrder={handleCompletePending}
                 isOnline={isOnline}
+                onOpenSettings={() => setIsSettingsOpen(true)}
               />
             )}
 
             <main className="pos-viewport">
-              <Routes>
+              <Suspense fallback={<div style={{ padding: '60px', textAlign: 'center', color: 'var(--pos-text-dim)', fontWeight: 600 }}>Yuklanmoqda...</div>}>
+                <Routes>
                 <Route
                   path="/"
                   element={
@@ -472,6 +846,31 @@ function App() {
                       addToCart={addToCart}
                       updateQty={updateQty}
                       cart={cart}
+                      selectedTable={selectedTable}
+                      orderType={orderType}
+                      setOrderType={setOrderType}
+                      onSelectTable={handleSelectTable}
+                      onOpenTableSelector={() => setIsTableSelectorOpen(true)}
+                      onClearSelectedTable={() => setSelectedTable(null)}
+                      onOpenTableDetail={(t) => setTableForDetail(t)}
+                      onPrintPreBill={handlePrintPreBill}
+                      tables={tables}
+                      onAddTable={handleAddTable}
+                      onRefreshTables={fetchTables}
+                      isAdmin={user?.role === 'admin'}
+                    />
+                  }
+                />
+                <Route
+                  path="/tables"
+                  element={
+                    <TablesPage
+                      tables={tables}
+                      onSelectTableForOrder={handleSelectTable}
+                      onOpenTableDetail={(t) => setTableForDetail(t)}
+                      onAddTable={handleAddTable}
+                      onRefreshTables={fetchTables}
+                      isAdmin={user?.role === 'admin'}
                     />
                   }
                 />
@@ -496,6 +895,7 @@ function App() {
                       total={total}
                       clearCart={() => setCart([])}
                       handlePlaceOrder={handlePlaceOrder}
+                      isPlacingOrder={isPlacingOrder}
                       recommendedProducts={recommendedProducts}
                     />
                   }
@@ -522,12 +922,13 @@ function App() {
                           loading={statsLoading}
                           statsDate={statsDate}
                           setStatsDate={setStatsDate}
+                          onRefresh={fetchStats}
                         />
                       }
                     />
-                    <Route path="/kitchen" element={<KitchenPage />} />
                   </>
                 )}
+                <Route path="/kitchen" element={<KitchenPage />} />
                 <Route path="/status" element={<StatusPage />} />
                 <Route path="*" element={<PosPage
                   activeCategory={activeCategory}
@@ -542,8 +943,21 @@ function App() {
                   addToCart={addToCart}
                   updateQty={updateQty}
                   cart={cart}
+                  selectedTable={selectedTable}
+                  orderType={orderType}
+                  setOrderType={setOrderType}
+                  onSelectTable={handleSelectTable}
+                  onOpenTableSelector={() => setIsTableSelectorOpen(true)}
+                  onClearSelectedTable={() => setSelectedTable(null)}
+                  onOpenTableDetail={(t) => setTableForDetail(t)}
+                  onPrintPreBill={handlePrintPreBill}
+                  tables={tables}
+                  onAddTable={handleAddTable}
+                  onRefreshTables={fetchTables}
+                  isAdmin={user?.role === 'admin'}
                 />} />
-              </Routes>
+                </Routes>
+              </Suspense>
             </main>
           </div>
 
@@ -560,10 +974,14 @@ function App() {
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
                 handlePlaceOrder={handlePlaceOrder}
+                isPlacingOrder={isPlacingOrder}
                 setShowMobileCart={setShowMobileCart}
                 isCustomerView={isCustomerView}
                 recommendedProducts={recommendedProducts}
                 addToCart={addToCart}
+                selectedTable={selectedTable}
+                onOpenTableSelector={() => setIsTableSelectorOpen(true)}
+                onClearSelectedTable={() => setSelectedTable(null)}
               />
             </div>
           )}
@@ -572,16 +990,18 @@ function App() {
         </>
       )}
 
-      {/* Hidden Receipt for Printing */}
+      {/* Hidden Receipt for Thermal Printing */}
       <div className="print-only">
         <Receipt
-          cart={cart}
-          total={total}
-          subtotal={subtotal}
-          tax={tax}
-          orderType={orderType}
-          paymentMethod={paymentMethod}
+          order={lastPlacedOrder}
+          cart={lastPlacedOrder?.items || cart}
+          total={lastPlacedOrder ? lastPlacedOrder.total : total}
+          subtotal={lastPlacedOrder ? lastPlacedOrder.subtotal : subtotal}
+          tax={lastPlacedOrder ? lastPlacedOrder.tax : tax}
+          orderType={lastPlacedOrder?.orderType || orderType}
+          paymentMethod={lastPlacedOrder?.paymentMethod || paymentMethod}
           user={user}
+          orderNumber={lastPlacedOrder?.orderNumber}
         />
       </div>
 
@@ -597,6 +1017,45 @@ function App() {
         INITIAL_CATEGORIES={INITIAL_CATEGORIES}
       />
 
+      {/* Admin White-Label Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* Dine-In Table Floor Plan / Selection Modal */}
+      <TableSelectorModal
+        isOpen={isTableSelectorOpen}
+        onClose={() => setIsTableSelectorOpen(false)}
+        tables={tables}
+        selectedTable={selectedTable}
+        onSelectTable={handleSelectTable}
+        onOpenTableDetail={(t) => {
+          setIsTableSelectorOpen(false)
+          setTableForDetail(t)
+        }}
+        onAddTable={handleAddTable}
+        isAdmin={user?.role === 'admin'}
+      />
+
+      {/* Active Table Details, Move & Settle Modal */}
+      <TableDetailModal
+        table={tableForDetail}
+        isOpen={!!tableForDetail}
+        onClose={() => setTableForDetail(null)}
+        allTables={tables}
+        onAppendItemsToTable={(t) => {
+          setSelectedTable(t)
+          setOrderType('in_hall')
+          setTableForDetail(null)
+          toast.info(`Stol #${t.tableNumber} ga qo‘shimcha taomlar qo‘shish rejimi faollashdi`, { icon: '🍽️' })
+        }}
+        onPrintPreBill={handlePrintPreBill}
+        onTransferTable={handleTransferTable}
+        onCloseAndSettleTable={handleCloseAndSettleTable}
+        onForceClearTable={handleForceClearTable}
+      />
+
       <ConfirmModal
         isOpen={showConfirmModal}
         message={t('delete_confirm_msg')}
@@ -609,8 +1068,8 @@ function App() {
 
       {showSplash && <SplashScreen isExiting={isSplashExiting} />}
       <ToastContainer
-        position="top-right"
-        autoClose={3000}
+        position="bottom-right"
+        autoClose={2500}
         hideProgressBar={false}
         newestOnTop
         closeOnClick

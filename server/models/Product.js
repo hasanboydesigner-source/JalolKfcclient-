@@ -6,7 +6,8 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   category: { type: String, required: true },
   image: { type: String }, // Cloudinary URL
-  tag: { type: String, default: 'Non Veg' },
+  tag: { type: String, default: 'Standart' },
+  unit: { type: String, default: 'dona' }, // 'dona' | 'porsiya' | 'yarim' | 'kg' | 'litr' | 'choynak' | 'kosa'
   discount: { type: String },
   createdAt: { type: Date, default: Date.now }
 });

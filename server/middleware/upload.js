@@ -14,11 +14,21 @@ cloudinary.v2.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: {
-    folder: 'jalol_kfc_products',
+    folder: process.env.CLOUDINARY_FOLDER || 'restaurant_products',
     allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Faqat rasm fayllari (JPEG, PNG, WEBP) qabul qilinadi'), false);
+    }
+  }
+});
 
 export default upload;

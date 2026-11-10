@@ -1,39 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, CheckCircle2, Volume2, Info } from 'lucide-react';
+import { Clock, CheckCircle2 } from 'lucide-react';
 import { useSocket } from '../hooks/useSocket';
-
-const API_URL = '/api';
-const CHIME_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3';
+import { useSettings } from '../context/SettingsContext';
 
 const StatusPage = () => {
+  const { settings } = useSettings();
   const [orders, setOrders] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const fetchOrders = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/stats`);
-      const activeOrders = res.data.recentOrders.filter(o => 
-        ['Pending', 'Preparing', 'Ready'].includes(o.status)
-      );
-      setOrders(activeOrders);
-    } catch (err) {
-      console.error('Failed to fetch orders:', err);
-    }
-  };
+  const chimeSound = settings.statusScreen?.chimeSoundUrl || 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3';
+  const businessName = settings.business?.name || 'RESTORAN';
 
   const handleStatusUpdate = useCallback((updatedOrder) => {
-    if (updatedOrder.status === 'Ready') {
-      new Audio(CHIME_SOUND).play().catch(e => console.log('Audio blocked', e));
+    if (updatedOrder.status === 'Ready' && settings.statusScreen?.chimeSoundEnabled !== false) {
+      new Audio(chimeSound).play().catch(e => console.log('Audio blocked', e));
     }
     setOrders(prev => {
       if (['Completed', 'Cancelled'].includes(updatedOrder.status)) {
         return prev.filter(o => o._id !== updatedOrder._id);
       }
-      return prev.map(o => o._id === updatedOrder._id ? updatedOrder : o);
+      const exists = prev.some(o => o._id === updatedOrder._id);
+      if (exists) {
+        return prev.map(o => o._id === updatedOrder._id ? updatedOrder : o);
+      }
+      return [updatedOrder, ...prev];
     });
-  }, []);
+  }, [chimeSound, settings]);
 
   const handleNewOrder = useCallback((order) => {
     setOrders(prev => [order, ...prev]);
@@ -42,9 +36,22 @@ const StatusPage = () => {
   useSocket(handleNewOrder, handleStatusUpdate);
 
   useEffect(() => {
-    fetchOrders();
+    let isMounted = true;
+    axios.get('/api/orders?status=Pending,Preparing,Ready')
+      .then(res => {
+        if (isMounted) {
+          setOrders(res.data || []);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch orders for status screen:', err);
+      });
+
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
   }, []);
 
   const preparingOrders = orders.filter(o => ['Pending', 'Preparing'].includes(o.status));
@@ -53,7 +60,7 @@ const StatusPage = () => {
   return (
     <div className="cds-container">
       <header className="cds-header">
-        <div className="cds-logo">JALOL KFC</div>
+        <div className="cds-logo">{businessName}</div>
         <div className="cds-clock">
           {currentTime.toLocaleTimeString('en-US', { hour12: false })}
         </div>
@@ -77,7 +84,7 @@ const StatusPage = () => {
                   exit={{ opacity: 0, scale: 0.8 }}
                   className="cds-number"
                 >
-                  #{order._id.slice(-4).toUpperCase()}
+                  {order.orderNumber || `#${order._id.slice(-4).toUpperCase()}`}
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -98,23 +105,16 @@ const StatusPage = () => {
                   layout
                   initial={{ opacity: 0, y: 50, scale: 1.2 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                   className="cds-number pulse"
                 >
-                  #{order._id.slice(-4).toUpperCase()}
+                  {order.orderNumber || `#${order._id.slice(-4).toUpperCase()}`}
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
         </div>
       </main>
-
-      <footer className="cds-footer">
-        <div className="marquee">
-          <span> <Info size={16} /> Buyurtmangiz tayyor bo'lganda ekranimizda raqamingiz ko'rinadi va ovozli habar beriladi. </span>
-          <span> <Volume2 size={16} /> Iltimos, navbatingizni kuting. Yoqimli ishtaha! </span>
-        </div>
-      </footer>
     </div>
   );
 };

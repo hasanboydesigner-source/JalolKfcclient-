@@ -1,107 +1,181 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Delete, Sun, Moon, UtensilsCrossed } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import { useSettings } from '../context/SettingsContext'
+
+const KEYPAD_KEYS = [
+  { val: '1' },
+  { val: '2' },
+  { val: '3' },
+  { val: '4' },
+  { val: '5' },
+  { val: '6' },
+  { val: '7' },
+  { val: '8' },
+  { val: '9' },
+  { val: 'C', type: 'clear' },
+  { val: '0' },
+  { val: '⌫', type: 'backspace' }
+]
 
 const LoginView = ({ onLogin }) => {
   const { t } = useLanguage()
+  const { settings } = useSettings()
+
   const [pin, setPin] = useState('')
-  const [error, setError] = useState(false)
-  const [time, setTime] = useState(new Date())
+  const [errorMsg, setErrorMsg] = useState('')
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') || 
+           localStorage.getItem('pos_theme') || 
+           'light'
+  })
 
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000)
-    
-    const handleKeyDown = (e) => {
-      // Numbers 0-9
-      if (e.key >= '0' && e.key <= '9') {
-        handleDigit(e.key)
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(nextTheme)
+    document.documentElement.setAttribute('data-theme', nextTheme)
+    localStorage.setItem('pos_theme', nextTheme)
+  }
+
+  const checkPin = useCallback(async (code) => {
+    if (!code || code.length < 4 || isVerifying) return
+    setIsVerifying(true)
+    setErrorMsg('')
+    try {
+      const success = await onLogin(code)
+      if (!success) {
+        throw new Error('Invalid PIN')
       }
-      // Backspace
-      if (e.key === 'Backspace') {
-        handleBackspace()
-      }
+    } catch (_err) {
+      setErrorMsg('Noto‘g‘ri PIN-kod')
+      setIsVerifying(false)
+      setTimeout(() => {
+        setPin('')
+        setErrorMsg('')
+      }, 700)
     }
+  }, [isVerifying, onLogin])
 
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      clearInterval(timer)
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [pin]) // Re-bind when pin change to avoid stale closure in checkPin if needed, 
-            // though handleDigit usage here is fine since it doesn't rely on current pin state 
-            // directly but through setPin callback if modified. Let's keep it safe.
-
-  const handleDigit = (digit) => {
-    if (pin.length < 4) {
+  const handleDigit = useCallback((digit) => {
+    if (pin.length < 4 && !isVerifying) {
       const newPin = pin + digit
       setPin(newPin)
       if (newPin.length === 4) {
         checkPin(newPin)
       }
     }
-  }
+  }, [pin, isVerifying, checkPin])
 
-  const checkPin = async (code) => {
-    try {
-      const success = await onLogin(code)
-      if (!success) {
-        throw new Error('Invalid PIN')
+  const handleBackspace = useCallback(() => {
+    if (pin.length > 0 && !isVerifying) {
+      setPin(prev => prev.slice(0, -1))
+      setErrorMsg('')
+    }
+  }, [pin.length, isVerifying])
+
+  const handleClear = useCallback(() => {
+    if (!isVerifying) {
+      setPin('')
+      setErrorMsg('')
+    }
+  }, [isVerifying])
+
+  // Physical Keyboard listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key >= '0' && e.key <= '9') {
+        handleDigit(e.key)
+      } else if (e.key === 'Backspace') {
+        handleBackspace()
+      } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+        handleClear()
       }
-    } catch (err) {
-      setError(true)
-      setTimeout(() => {
-        setError(false)
-        setPin('')
-      }, 600)
     }
-  }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleDigit, handleBackspace, handleClear])
 
-  const handleBackspace = () => {
-    if (pin.length > 0) {
-      setPin(pin.slice(0, -1))
-    }
-  }
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-  }
+  const brandName = settings.business?.name || 'JALOL KFC'
 
   return (
-    <div className="login-screen">
-      <div className="login-card">
-        <header style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--slate-100)' }}>
-          <div style={{ textAlign: 'left' }}>
-            <h1 className="login-brand">JALOL KFC</h1>
-            <p className="login-subtitle" style={{ marginBottom: 0 }}>{t('terminal_entry')}</p>
+    <div className="pos-login-terminal">
+      <div className="login-minimal-container">
+        {/* Brand Icon & Name */}
+        <div className="login-brand-block">
+          <div className="login-brand-icon">
+            {settings.business?.logoUrl ? (
+              <img 
+                src={settings.business.logoUrl} 
+                alt={brandName} 
+                style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px' }} 
+              />
+            ) : (
+              <UtensilsCrossed size={24} />
+            )}
           </div>
-          <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--slate-800)', letterSpacing: '-0.02em' }}>
-            {formatTime(time)}
-          </div>
-        </header>
-
-        <div className="pin-display" style={{ marginBottom: '32px' }}>
-          {[...Array(4)].map((_, i) => (
-            <div 
-              key={i} 
-              className={`pin-dot ${i < pin.length ? 'active' : ''} ${error ? 'error' : ''}`}
-            />
-          ))}
+          <h1 className="login-brand-name">{brandName}</h1>
+          <span className="login-sub-text">Kassir PIN-kodini kiriting</span>
         </div>
 
-        <div className="numpad">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
-            <button key={num} className="num-btn" onClick={() => handleDigit(num.toString())}>
-              {num}
-            </button>
-          ))}
-          <div style={{ width: 64 }}></div>
-          <button className="num-btn" onClick={() => handleDigit('0')}>0</button>
-          <button className="num-btn clear" onClick={handleBackspace}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-              <line x1="18" y1="9" x2="12" y2="15"></line>
-              <line x1="12" y1="9" x2="18" y2="15"></line>
-            </svg>
+        {/* Discreet PIN Dots */}
+        <div className="login-pin-dots">
+          {[0, 1, 2, 3].map((idx) => {
+            const isFilled = idx < pin.length
+            return (
+              <div 
+                key={idx} 
+                className={`login-dot ${isFilled ? 'filled' : ''} ${errorMsg ? 'error' : ''}`}
+              />
+            )
+          })}
+        </div>
+
+        {/* Error notification */}
+        <div className="login-error-label">
+          {errorMsg || (isVerifying ? 'Tekshirilmoqda...' : '')}
+        </div>
+
+        {/* Minimalist Keypad */}
+        <div className="login-keypad-grid">
+          {KEYPAD_KEYS.map((k, idx) => {
+            const isClear = k.type === 'clear'
+            const isBack = k.type === 'backspace'
+
+            return (
+              <button
+                key={idx}
+                type="button"
+                className={`login-key-btn ${isClear || isBack ? 'action-key' : ''}`}
+                onClick={() => {
+                  if (isClear) handleClear()
+                  else if (isBack) handleBackspace()
+                  else handleDigit(k.val)
+                }}
+                disabled={isVerifying}
+                aria-label={isClear ? 'Tozalash' : isBack ? 'Orqaga' : `Raqam ${k.val}`}
+              >
+                {isBack ? (
+                  <Delete size={20} />
+                ) : (
+                  <span>{k.val}</span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Sleek Footer */}
+        <div className="login-terminal-foot">
+          <span>Kassa #1 • Onlayn</span>
+          <span>•</span>
+          <button 
+            type="button" 
+            className="login-theme-toggle"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? "Kunduzgi rejim" : "Tungi rejim"}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         </div>
       </div>

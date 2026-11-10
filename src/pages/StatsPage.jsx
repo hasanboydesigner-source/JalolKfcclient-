@@ -6,6 +6,7 @@ const StatsPage = ({
   loading,
   statsDate,
   setStatsDate,
+  onRefresh
 }) => {
   return (
     <StatsPanel
@@ -13,6 +14,7 @@ const StatsPage = ({
       loading={loading}
       statsDate={statsDate}
       setStatsDate={setStatsDate}
+      onRefresh={onRefresh}
     />
   )
 }

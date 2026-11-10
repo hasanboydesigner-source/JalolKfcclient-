@@ -1,38 +1,51 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
-import { formatDistanceToNow } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { 
-  ChefHat, 
   Clock, 
-  CheckCircle2, 
-  AlertCircle, 
-  Signal, 
-  SignalLow, 
-  Maximize2,
-  Package,
-  ShoppingCart,
-  Timer,
-  Play
+  Check, 
+  ArrowLeft, 
+  Volume2, 
+  VolumeX, 
+  Maximize2, 
+  Minimize2,
+  RefreshCw,
+  Sun,
+  Moon,
+  CheckCircle2
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import { useSocket } from '../hooks/useSocket';
-import { getBgRemovedUrl } from '../utils/imageUtils';
-
-const NEW_ORDER_SOUND = '/bell.wav'; // Local custom bell sound
 
 const KitchenPage = () => {
+  const navigate = useNavigate();
+  const { settings } = useSettings();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isConnected, setIsConnected] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { t } = useLanguage();
+  const [checkedItems, setCheckedItems] = useState({});
+  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'ready' | 'all'
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [theme, setTheme] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') || 
+           localStorage.getItem('pos_theme') || 
+           'light';
+  });
+
+  const [isMuted, setIsMuted] = useState(() => {
+    return localStorage.getItem('kds_muted') === 'true';
+  });
+
   const audio = useMemo(() => {
-    const a = new Audio(NEW_ORDER_SOUND);
+    const soundUrl = settings?.kds?.soundUrl || '/bell.wav';
+    const a = new Audio(soundUrl);
     a.volume = 0.8;
     return a;
-  }, []);
+  }, [settings?.kds?.soundUrl]);
 
   // Live Clock
   useEffect(() => {
@@ -40,79 +53,47 @@ const KitchenPage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchOrders = async () => {
+  // Fetch orders
+  const fetchOrders = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
-      const res = await axios.get('/api/orders');
-      // Ensure we only show active orders in the kitchen
-      const activeOrders = res.data.filter(o => 
-        ['Pending', 'Preparing', 'Ready'].includes(o.status)
-      );
-      setOrders(activeOrders);
-      setLoading(false);
+      const res = await axios.get('/api/orders?status=Pending,Preparing,Ready');
+      setOrders(res.data || []);
     } catch (err) {
-      console.error('Failed to fetch orders:', err);
-      // Fallback to stats if orders endpoint fails, but it usually doesn't have items
-      try {
-        const res = await axios.get('/api/stats');
-        const activeOrders = (res.data.recentOrders || []).filter(o => 
-          ['Pending', 'Preparing', 'Ready'].includes(o.status)
-        );
-        setOrders(activeOrders);
-      } catch (e) {
-        toast.error("Ma'lumotlarni yuklashda xatolik", { theme: "dark" });
-      } finally {
-        setLoading(false);
-      }
+      console.error('KDS fetch error:', err);
+      if (!silent) toast.error("Buyurtmalarni yuklashda xatolik yuz berdi");
+    } finally {
+      setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    await fetchOrders(true);
+    setTimeout(() => setRefreshing(false), 500);
   };
 
-  const playNotification = useCallback(() => {
-    // 1. Play bell chime
-    if (audio) {
-      audio.currentTime = 0;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Audio playback failed:", error);
-        });
-      }
-    }
+  // Sound playback on new order
+  const playSound = useCallback(() => {
+    if (isMuted || !audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  }, [isMuted, audio]);
 
-    // 2. Voice notification in Uzbek
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech to avoid queueing
-      window.speechSynthesis.cancel();
-
-      const msg = new SpeechSynthesisUtterance("Yangi buyurtma");
-      
-      const voices = window.speechSynthesis.getVoices();
-      const preferredVoices = ['uz', 'tr', 'ru', 'en'];
-      
-      let selectedVoice = null;
-      for (const lang of preferredVoices) {
-        selectedVoice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
-        if (selectedVoice) break;
-      }
-      
-      if (selectedVoice) msg.voice = selectedVoice;
-      msg.lang = selectedVoice ? selectedVoice.lang : 'uz-UZ';
-      msg.rate = 0.9;
-      msg.pitch = 1.0;
-      msg.volume = 1.0;
-      
-      window.speechSynthesis.speak(msg);
-    }
-  }, [audio]);
-
-  const handleNewOrder = useCallback((newOrder) => {
-    setOrders(prev => [newOrder, ...prev]);
-    playNotification();
-    toast.success(`YANGI BUYURTMA: #${newOrder._id.slice(-4).toUpperCase()}`, {
-      icon: <ShoppingCart size={18} />,
-      position: "top-right",
-      theme: "dark"
+  // WebSocket Live Updates
+  const handleNewOrder = useCallback((order) => {
+    playSound();
+    setOrders(prev => {
+      if (prev.some(o => o._id === order._id)) return prev;
+      return [order, ...prev];
     });
-  }, [playNotification]);
+    const num = (order.orderNumber || order._id.slice(-4)).replace(/^#+/, '');
+    toast.info(`Yangi buyurtma: #${num}`, { autoClose: 2000 });
+  }, [playSound]);
 
   const handleStatusUpdate = useCallback((updatedOrder) => {
     setOrders(prev => {
@@ -123,320 +104,323 @@ const KitchenPage = () => {
     });
   }, []);
 
-  const [audioEnabled, setAudioEnabled] = useState(() => {
-    return sessionStorage.getItem('kds_audio_active') === 'true';
-  });
+  const { isConnected } = useSocket(handleNewOrder, handleStatusUpdate);
 
-  const socket = useSocket(handleNewOrder, handleStatusUpdate);
-
-  const activateAudio = () => {
-    // Prime the audio object with a silent play or immediate play
-    audio.play()
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        setAudioEnabled(true);
-        sessionStorage.setItem('kds_audio_active', 'true');
-        toast.success("Ovozli tizim faollashtirildi", { theme: "dark", autoClose: 1500 });
-        // Also prime speech synthesis
-        if ('speechSynthesis' in window) {
-          const m = new SpeechSynthesisUtterance("");
-          window.speechSynthesis.speak(m);
-        }
-      })
-      .catch(e => {
-        console.error("Audio activation failed:", e);
-        toast.error("Ovozni yoqib bo'lmadi. Brauzer sozlamalarini tekshiring.");
-      });
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pos_theme', next);
   };
 
-  useEffect(() => {
-    if (socket) {
-      setIsConnected(socket.connected);
-      socket.on('connect', () => setIsConnected(true));
-      socket.on('disconnect', () => setIsConnected(false));
+  const toggleMute = () => {
+    setIsMuted(prev => {
+      const next = !prev;
+      localStorage.setItem('kds_muted', String(next));
+      return next;
+    });
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+      setIsFullscreen(false);
     }
-  }, [socket]);
+  };
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const updateStatus = async (orderId, newStatus) => {
-    // Optimistic UI Update (Instant Feedback)
+  // Status Bump
+  const updateStatus = useCallback(async (orderId, nextStatus) => {
     setOrders(prev => {
-      if (['Completed', 'Cancelled'].includes(newStatus)) {
+      if (['Completed', 'Cancelled'].includes(nextStatus)) {
         return prev.filter(o => o._id !== orderId);
       }
-      return prev.map(o => o._id === orderId ? { ...o, status: newStatus } : o);
+      return prev.map(o => o._id === orderId ? { ...o, status: nextStatus } : o);
     });
 
     try {
-      await axios.put(`/api/orders/${orderId}/status`, { status: newStatus });
+      await axios.put(`/api/orders/${orderId}/status`, { status: nextStatus });
     } catch (err) {
-      console.error('Status update failed:', err);
-      // If the API call fails, fetch fresh data to revert the optimistic update
-      fetchOrders();
+      console.error('Status error:', err);
+      fetchOrders(true);
     }
+  }, [fetchOrders]);
+
+  // Toggle item line
+  const toggleItemDone = (orderId, itemIdx) => {
+    const key = `${orderId}_${itemIdx}`;
+    setCheckedItems(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const preparingOrders = orders.filter(o => ['Pending', 'Preparing'].includes(o.status));
-  const readyOrders = orders.filter(o => o.status === 'Ready');
+  // Elapsed time
+  const getElapsed = useCallback((createdAt) => {
+    if (!createdAt) return { text: '00:00', mins: 0 };
+    const diffSec = Math.max(0, Math.floor((currentTime.getTime() - new Date(createdAt).getTime()) / 1000));
+    const mins = Math.floor(diffSec / 60);
+    const secs = diffSec % 60;
+    return {
+      text: `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`,
+      mins
+    };
+  }, [currentTime]);
 
-  const [activeTab, setActiveTab] = useState('active'); // 'active' or 'ready'
+  const preparingOrders = useMemo(() => orders.filter(o => ['Pending', 'Preparing'].includes(o.status)), [orders]);
+  const readyOrders = useMemo(() => orders.filter(o => o.status === 'Ready'), [orders]);
 
-  if (loading) {
-    return (
-      <div className="kds-loader-wrap">
-        <div className="kds-custom-loader" />
-        <span style={{ fontSize: '0.85rem', color: '#71717a', fontWeight: 500 }}>INITIALIZING SYSTEM...</span>
-      </div>
-    );
-  }
+  const displayedOrders = useMemo(() => {
+    if (activeTab === 'active') return preparingOrders;
+    if (activeTab === 'ready') return readyOrders;
+    return orders;
+  }, [activeTab, preparingOrders, readyOrders, orders]);
+
+  // Spacebar to bump first order
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space' && displayedOrders.length > 0) {
+        e.preventDefault();
+        const first = displayedOrders[0];
+        const next = ['Pending', 'Preparing'].includes(first.status) ? 'Ready' : 'Completed';
+        updateStatus(first._id, next);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [displayedOrders, updateStatus]);
+
+  const brandName = settings.business?.name || 'KFC';
 
   return (
-    <div className="kds-container">
-      {!audioEnabled && (
-        <div className="kds-audio-overlay">
-          <div className="kds-overlay-content">
-            <div className="kds-overlay-icon">
-              <ChefHat size={32} color="#e4002b" />
-            </div>
-            <h2>KDS TAYYOR</h2>
-            <p>Ovozli bildirishnomalar va sinxronizatsiyani boshlash uchun bosing</p>
-            <button className="kds-start-btn" onClick={activateAudio}>
-              <Play size={18} fill="white" />
-              TIZIMNI YUKLASH
-            </button>
-          </div>
-        </div>
-      )}
-
-      <header className="kds-header">
-        <div className="kds-brand-section">
-          <div className="kds-brand">
-            <ChefHat size={20} color="#e4002b" />
-            <h1>KDS BOARD</h1>
-          </div>
-          <div className={`kds-status-tag ${isConnected ? 'live' : 'reconnecting'}`}>
-            <Signal size={10} />
-            <span>{isConnected ? 'LIVE' : 'OFFLINE'}</span>
-          </div>
-        </div>
-
-        <div className="kds-stats-center">
-          <div className="kds-stat-item">
-            <span className="val">{preparingOrders.length}</span>
-            <span className="lbl">PREPARING</span>
-          </div>
-          <div className="kds-stat-divider"></div>
-          <div className="kds-stat-item">
-            <span className="val success">{readyOrders.length}</span>
-            <span className="lbl">READY</span>
-          </div>
-        </div>
-
-        <div className="kds-header-right">
+    <div className="kds-root">
+      {/* 3-Column Header: Never Overflows, Always Symmetrical */}
+      <header className="kds-topbar">
+        {/* Left: Back button + Brand + Live Pill */}
+        <div className="kds-topbar-left">
           <button 
-            className="kds-audio-btn" 
-            onClick={activateAudio}
-            title="Ovozni faollashtirish"
+            type="button" 
+            className="kds-back-btn" 
+            onClick={() => navigate('/')}
+            title="Kassaga qaytish"
           >
-            <SignalLow size={16} />
-            <span>OVOZ</span>
+            <ArrowLeft size={15} />
+            <span>Kassa</span>
           </button>
-          <div className="kds-time-box">
-            <span className="time">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
-            <span className="date">{currentTime.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>
+
+          <div className="kds-brand-info">
+            <span className="kds-brand-title">{brandName}</span>
+            <span className="kds-brand-sub">Oshxona</span>
+            <span className="kds-online-pill">
+              <span className="kds-online-dot" />
+              <span>{isConnected ? 'Onlayn' : 'Ulanmoqda'}</span>
+            </span>
           </div>
-          <button className="kds-fullscreen-btn" onClick={() => document.documentElement.requestFullscreen()}>
-            <Maximize2 size={14} />
+        </div>
+
+        {/* Center: Perfectly Centered Segmented Control */}
+        <div className="kds-center-tabs">
+          <button 
+            type="button" 
+            className={`kds-tab-btn ${activeTab === 'active' ? 'active' : ''}`}
+            onClick={() => setActiveTab('active')}
+          >
+            <span>Tayyorlanmoqda</span>
+            <span className="kds-tab-badge">{preparingOrders.length}</span>
+          </button>
+
+          <button 
+            type="button" 
+            className={`kds-tab-btn ${activeTab === 'ready' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ready')}
+          >
+            <span>Tayyor</span>
+            <span className="kds-tab-badge">{readyOrders.length}</span>
+          </button>
+
+          <button 
+            type="button" 
+            className={`kds-tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveTab('all')}
+          >
+            <span>Barchasi</span>
+            <span className="kds-tab-badge">{orders.length}</span>
+          </button>
+        </div>
+
+        {/* Right: Clock & Operational Tools */}
+        <div className="kds-topbar-right">
+          <div className="kds-clock-box">
+            <Clock size={13} style={{ opacity: 0.6 }} />
+            <span className="kds-clock-text">
+              {currentTime.toLocaleTimeString('en-US', { hour12: false })}
+            </span>
+          </div>
+
+          <div className="kds-tool-divider" />
+
+          <button 
+            type="button" 
+            className={`kds-icon-btn ${isMuted ? 'is-muted' : ''}`}
+            onClick={toggleMute}
+            title={isMuted ? "Ovozni yoqish" : "Ovozni o‘chirish"}
+          >
+            {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
+
+          <button 
+            type="button" 
+            className={`kds-icon-btn ${refreshing ? 'is-spinning' : ''}`}
+            onClick={handleManualRefresh}
+            title="Yangilash"
+          >
+            <RefreshCw size={14} className={refreshing ? 'spin-anim' : ''} />
+          </button>
+
+          <button 
+            type="button" 
+            className="kds-icon-btn"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Kichiklashtirish" : "To‘liq ekran"}
+          >
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+          </button>
+
+          <button 
+            type="button" 
+            className="kds-icon-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? "Kunduzgi rejim" : "Tungi rejim"}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         </div>
       </header>
 
-      <div className="kds-mobile-tabs show-mobile">
-        <button 
-          className={`kds-tab-btn ${activeTab === 'active' ? 'active' : ''}`}
-          onClick={() => setActiveTab('active')}
-        >
-          <Timer size={16} />
-          <span>FAOL ({preparingOrders.length})</span>
-        </button>
-        <button 
-          className={`kds-tab-btn ${activeTab === 'ready' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ready')}
-        >
-          <CheckCircle2 size={16} />
-          <span>TAYYOR ({readyOrders.length})</span>
-        </button>
-      </div>
+      {/* Main Content Area: Tickets Rack */}
+      {settings?.kds?.enabled === false && (
+        <div style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e', padding: '12px 20px', borderRadius: '12px', margin: '14px 20px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '1.2rem' }}>ℹ️</span>
+            <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>
+              Oshxona displeyi (KDS) tizim sozlamalarida o‘chirilgan. Choyxona/kafe rejimida buyurtmalar kassa tomonidan to‘g‘ridan-to‘g‘ri boshqariladi.
+            </span>
+          </div>
+          <button
+            type="button"
+            className="pos-action-btn-secondary"
+            style={{ height: '32px', fontSize: '0.8rem', padding: '0 14px', background: '#ffffff', color: '#92400e', borderColor: '#fde68a' }}
+            onClick={() => navigate('/')}
+          >
+            Kassaga qaytish
+          </button>
+        </div>
+      )}
 
-      <main className="kds-main">
-        {(activeTab === 'active' || window.innerWidth > 900) && (
-          <section className="kds-shelf active-orders">
-            <div className="kds-shelf-header">
-              <div className="shelf-title">
-                <Timer size={14} color="#f59e0b" />
-                <h2>FAOL BUYURTMALAR</h2>
-              </div>
-              <span className="shelf-count">{preparingOrders.length}</span>
-            </div>
-            <div className="kds-scroll-area">
-              <AnimatePresence mode="popLayout">
-                {preparingOrders.map(order => (
-                  <Ticket 
-                    key={order._id} 
-                    order={order} 
-                    onAction={() => updateStatus(order._id, 'Ready')}
-                    btnLabel="TAYYOR"
-                    btnClass="primary"
-                  />
-                ))}
-              </AnimatePresence>
-              {preparingOrders.length === 0 && (
-                <div className="kds-empty-box">
-                  <div className="empty-icon-wrap">
-                    <Package size={32} />
-                  </div>
-                  <p>Oshxona bo'sh</p>
-                  <span>Yangi buyurtmalar kutilmoqda</span>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
+      <main className="kds-content-area">
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px', color: '#94a3b8', fontWeight: 600 }}>
+            Yuklanmoqda...
+          </div>
+        ) : displayedOrders.length === 0 ? (
+          <div className="kds-empty-box">
+            <CheckCircle2 size={44} style={{ color: '#10b981', marginBottom: '12px' }} />
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 4px 0', color: 'inherit' }}>
+              Buyurtmalar navbati bo‘sh
+            </h2>
+            <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
+              Yangi buyurtmalar kelganda bu yerda avtomatik ko‘rinadi.
+            </p>
+          </div>
+        ) : (
+          <div className="kds-tickets-grid">
+            {displayedOrders.map((order) => {
+              const { text: timerText, mins } = getElapsed(order.createdAt);
+              const isReady = order.status === 'Ready';
+              const timerVariant = isReady ? 'normal' : mins >= 10 ? 'late' : mins >= 5 ? 'warning' : 'normal';
 
-        {(activeTab === 'ready' || window.innerWidth > 900) && (
-          <section className="kds-shelf ready-orders">
-            <div className="kds-shelf-header">
-              <div className="shelf-title">
-                <CheckCircle2 size={14} color="#10b981" />
-                <h2>TAYYOR BUYURTMALAR</h2>
-              </div>
-              <span className="shelf-count">{readyOrders.length}</span>
-            </div>
-            <div className="kds-scroll-area">
-              <AnimatePresence mode="popLayout">
-                {readyOrders.map(order => (
-                  <Ticket 
-                    key={order._id} 
-                    order={order} 
-                    onAction={() => updateStatus(order._id, 'Completed')}
-                    btnLabel="TOPSHIRILDI"
-                    btnClass="success"
-                  />
-                ))}
-              </AnimatePresence>
-              {readyOrders.length === 0 && (
-                <div className="kds-empty-box">
-                  <div className="empty-icon-wrap success">
-                    <CheckCircle2 size={32} />
+              const rawNum = String(order.orderNumber || (order._id ? order._id.slice(-4) : '001')).replace(/^#+/, '');
+              const cleanOrderNum = `#${rawNum}`;
+
+              return (
+                <div key={order._id} className="kds-ticket-card">
+                  {/* Top Row: #Number, Type, Timer */}
+                  <div className="ticket-top-row">
+                    <span className="ticket-number-tag">
+                      {cleanOrderNum}
+                    </span>
+
+                    <div className="ticket-meta-badges">
+                      <span className="ticket-type-pill">
+                        {order.orderType || 'Zalda'} {order.tableNumber ? `(#${order.tableNumber})` : ''}
+                      </span>
+                      <span className={`ticket-timer-badge ${timerVariant}`}>
+                        <Clock size={11} />
+                        <span>{timerText}</span>
+                      </span>
+                    </div>
                   </div>
-                  <p>Tayyor buyurtmalar yo'q</p>
+
+                  {/* Items Body */}
+                  <div className="ticket-items-body">
+                    {(order.items || []).map((item, idx) => {
+                      const itemKey = `${order._id}_${idx}`;
+                      const isDone = !!checkedItems[itemKey];
+
+                      return (
+                        <div 
+                          key={idx}
+                          className={`ticket-item-line ${isDone ? 'is-done' : ''}`}
+                          onClick={() => toggleItemDone(order._id, idx)}
+                          title="Belgilash uchun bosing"
+                        >
+                          <div className="item-quantity-box">
+                            {item.qty || 1}
+                          </div>
+                          <div className="item-details-box">
+                            <span className="item-title-name">
+                              {item.name}
+                            </span>
+                            {item.tag && item.tag !== 'Standart' && item.tag !== 'Non Veg' && (
+                              <span className="item-custom-note">
+                                • {item.tag}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Single Clean Bump Action */}
+                  <div className="ticket-footer-action">
+                    {order.status === 'Ready' ? (
+                      <button 
+                        type="button"
+                        className="btn-kds-bump completed-btn"
+                        onClick={() => updateStatus(order._id, 'Completed')}
+                      >
+                        <Check size={16} />
+                        <span>Topshirildi</span>
+                      </button>
+                    ) : (
+                      <button 
+                        type="button"
+                        className="btn-kds-bump"
+                        onClick={() => updateStatus(order._id, 'Ready')}
+                      >
+                        <Check size={16} />
+                        <span>Tayyor</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-          </section>
+              );
+            })}
+          </div>
         )}
       </main>
     </div>
-  );
-};
-
-const Ticket = ({ order, onAction, btnLabel, btnClass }) => {
-  const [timeStr, setTimeStr] = useState('');
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (!order?.createdAt) return;
-    
-    const update = () => {
-      const created = new Date(order.createdAt);
-      const now = new Date();
-      if (isNaN(created.getTime())) return;
-      
-      const diffMs = now - created;
-      const diffMins = diffMs / 60000;
-      
-      setTimeStr(formatDistanceToNow(created, { addSuffix: true }));
-      setProgress(Math.min((diffMins / 20) * 100, 100));
-    };
-    update();
-    const itv = setInterval(update, 10000); // 10s is enough for relative time
-    return () => clearInterval(itv);
-  }, [order?.createdAt]);
-
-  const orderIdShort = order?._id ? (typeof order._id === 'string' ? order._id.slice(-4).toUpperCase() : String(order._id).slice(-4)) : '????';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className="kds-ticket"
-    >
-      <div 
-        className="kds-ticket-urgency" 
-        style={{ 
-          width: `${progress}%`, 
-          background: progress > 75 ? '#ef4444' : (progress > 50 ? '#f59e0b' : '#3b82f6'),
-          minHeight: '4px'
-        }} 
-      />
-      
-      <div className="kds-ticket-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="id">#{orderIdShort}</div>
-          {order?.tableNumber && (
-            <div className="kds-table-badge">
-              STOL #{order.tableNumber}
-            </div>
-          )}
-        </div>
-        <div className="time">
-          <Clock size={12} />
-          {timeStr}
-        </div>
-      </div>
-
-      <div className="kds-ticket-body">
-        {order?.items?.length > 0 ? (
-          order.items.map((item, i) => (
-            <div key={i} className="kds-item-row">
-              <div className="kds-item-qty">{item.qty}</div>
-              <div className="kds-item-img-wrap">
-                <img src={getBgRemovedUrl(item.image)} alt={item.name} className="kds-item-img" />
-              </div>
-              <div className="kds-item-details">
-                <div className="kds-item-name">{item.name}</div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--slate-400)', fontSize: '0.8rem' }}>
-            No items in order
-          </div>
-        )}
-        
-        {order?.note && (
-          <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(245, 158, 11, 0.05)', borderRadius: '8px', borderLeft: '3px solid #f59e0b', fontSize: '0.8rem', color: '#71717a' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: 700, color: '#f59e0b', fontSize: '0.65rem', textTransform: 'uppercase' }}>
-              <AlertCircle size={10} /> Note
-            </div>
-            {order.note}
-          </div>
-        )}
-      </div>
-
-      <div className="kds-ticket-footer">
-        <button className={`kds-action-btn ${btnClass}`} onClick={onAction}>
-          {btnClass === 'success' ? <CheckCircle2 size={18} /> : <ChefHat size={18} />}
-          {btnLabel}
-        </button>
-      </div>
-    </motion.div>
   );
 };
 

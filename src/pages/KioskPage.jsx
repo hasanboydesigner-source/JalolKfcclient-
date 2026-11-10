@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../components/Icons';
 import PosPage from './PosPage';
-import Cart from '../components/Cart';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 
 const KioskPage = (props) => {
   const { 
     cart,
     clearCart,
-    handlePlaceOrder
+    handlePlaceOrder,
+    isPlacingOrder
   } = props;
 
   const { t, language, changeLanguage } = useLanguage();
+  const { settings } = useSettings();
   const [step, setStep] = useState('welcome'); // welcome, dining_choice, menu, checkout_success
-  const [diningOption, setDiningOption] = useState(null); // eat_in, take_away
-  const [showCart, setShowCart] = useState(false);
+  const [_diningOption, setDiningOption] = useState(null); // eat_in, take_away
   const [completedOrderId, setCompletedOrderId] = useState(null);
 
-  // Auto-reset kiosk after 2 minutes of inactivity on welcome screen
+  // Auto-reset kiosk after configured timeout of inactivity
   useEffect(() => {
+    const timeoutMs = (settings.kiosk?.idleTimeoutSeconds || 120) * 1000;
     if (step !== 'welcome' && cart.length === 0) {
-      const timer = setTimeout(() => setStep('welcome'), 120000);
+      const timer = setTimeout(() => setStep('welcome'), timeoutMs);
       return () => clearTimeout(timer);
     }
-  }, [step, cart]);
+  }, [step, cart, settings]);
 
   const startOrdering = () => setStep('dining_choice');
   
@@ -34,9 +35,10 @@ const KioskPage = (props) => {
   };
 
   const onCheckout = async () => {
+    if (isPlacingOrder) return;
     const orderData = await handlePlaceOrder();
     if (orderData) {
-      setCompletedOrderId(orderData._id ? String(orderData._id).slice(-4).toUpperCase() : '0000');
+      setCompletedOrderId(orderData.orderNumber || (orderData._id ? String(orderData._id).slice(-4).toUpperCase() : '0001'));
       setStep('checkout_success');
       setTimeout(() => {
         setStep('welcome');
@@ -44,6 +46,11 @@ const KioskPage = (props) => {
       }, 10000);
     }
   };
+
+  const businessName = settings.business?.name || 'RESTORAN';
+  const welcomeHeading = settings.kiosk?.welcomeHeading || 'Taste the Excellence.';
+  const welcomeSub = settings.kiosk?.welcomeSubheading || "O'zgacha ta'm va sifat uyg'unligi";
+  const heroImage = settings.kiosk?.heroImageUrl || '/images/hero-burger.png';
 
   if (step === 'welcome') {
     return (
@@ -54,8 +61,8 @@ const KioskPage = (props) => {
           <div className="editorial-left">
             <div className="editorial-nav">
               <div className="editorial-brand">
-                <span className="brand-label">Premium Quality</span>
-                <h1>Jalol<span>KFC</span></h1>
+                <span className="brand-label">Premium Sifat</span>
+                <h1>{businessName}</h1>
               </div>
               
               <div className="editorial-langs" onClick={(e) => e.stopPropagation()}>
@@ -78,26 +85,23 @@ const KioskPage = (props) => {
                 transition={{ duration: 0.8 }}
               >
                 <h2 className="editorial-heading">
-                  Taste the<br />
-                  <span>Excellence.</span>
+                  {welcomeHeading}
                 </h2>
                 <p className="editorial-sub">
-                  {language === 'uz' ? 'O\'zgacha ta\'m va sifat uyg\'unligi' : 
-                   language === 'ru' ? 'Сочетание вкуса и качества' : 
-                   'Where taste meets quality'}
+                  {welcomeSub}
                 </p>
                 
                 <div className="editorial-action">
                   <div className="action-wrapper">
                     <button className="editorial-start-btn">
-                      <span>{t('start_ordering')}</span>
+                      <span>{t('start_ordering') || 'Buyurtma berish'}</span>
                       <div className="btn-arrow">
                         <Icon name="arrow_right" size={24} />
                       </div>
                     </button>
                     <div className="minimal-hint">
                       <Icon name="mouse_pointer" size={12} />
-                      <span>{t('touch_to_start')}</span>
+                      <span>{t('touch_to_start') || 'Boshlash uchun bosing'}</span>
                     </div>
                   </div>
                 </div>
@@ -107,11 +111,11 @@ const KioskPage = (props) => {
             <div className="editorial-bottom">
               <div className="footer-stat">
                 <span className="stat-val">100%</span>
-                <span className="stat-label">Fresh Chicken</span>
+                <span className="stat-label">Tabiiy Mahsulot</span>
               </div>
               <div className="footer-stat">
-                <span className="stat-val">20m</span>
-                <span className="stat-label">Fast Service</span>
+                <span className="stat-val">15m</span>
+                <span className="stat-label">Tez Xizmat</span>
               </div>
             </div>
           </div>
@@ -123,7 +127,7 @@ const KioskPage = (props) => {
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
             >
-              <img src="/images/hero-burger.png" alt="Signature Burger" />
+              <img src={heroImage} alt="Mahsulot" />
               <div className="image-shadow" />
             </motion.div>
           </div>
@@ -143,7 +147,7 @@ const KioskPage = (props) => {
               <Icon name="arrow_left" size={24} />
               <span>{t('back')}</span>
             </button>
-            <div className="editorial-step-brand">Jalol<span>KFC</span></div>
+            <div className="editorial-step-brand">{businessName}</div>
           </header>
 
           <main className="editorial-step-main">
@@ -157,35 +161,38 @@ const KioskPage = (props) => {
                  language === 'ru' ? 'Где будете кушать?' : 
                  'Where will you eat?'}
               </h2>
-              
-              <div className="dining-options">
-                <motion.button 
-                  className="dining-card"
-                  whileHover={{ y: -10 }}
-                  onClick={() => selectDining('eat_in')}
-                >
-                  <div className="card-visual">
-                    <Icon name="home" size={22} />
-                  </div>
-                  <div className="card-info">
-                    <h3>{t('in_hall')}</h3>
-                    <p>{language === 'uz' ? 'Issiq va mazali' : language === 'ru' ? 'Горячо и вкусно' : 'Hot & Fresh'}</p>
-                  </div>
-                </motion.button>
+              <p className="editorial-step-desc">
+                {language === 'uz' ? 'Iltimos, o‘zingizga qulay xizmat turini tanlang' :
+                 language === 'ru' ? 'Пожалуйста, выберите удобный тип обслуживания' :
+                 'Please select your preferred dining option'}
+              </p>
 
-                <motion.button 
-                  className="dining-card"
-                  whileHover={{ y: -10 }}
-                  onClick={() => selectDining('take_away')}
-                >
-                  <div className="card-visual">
-                    <Icon name="package" size={22} />
+              <div className="editorial-cards-grid">
+                <div className="editorial-choice-card" onClick={() => selectDining('eat_in')}>
+                  <div className="choice-visual">
+                    <Icon name="tables" size={48} />
                   </div>
-                  <div className="card-info">
-                    <h3>{t('takeaway')}</h3>
-                    <p>{language === 'uz' ? 'Yo\'l-yo\'lakay' : language === 'ru' ? 'С собой в дорогу' : 'On the go'}</p>
+                  <div className="choice-content">
+                    <h3>{t('in_hall') || 'Shu yerda'}</h3>
+                    <p>Zalda qulay muhitda ovqatlanish</p>
                   </div>
-                </motion.button>
+                  <div className="choice-indicator">
+                    <Icon name="arrow_right" size={20} />
+                  </div>
+                </div>
+
+                <div className="editorial-choice-card" onClick={() => selectDining('take_away')}>
+                  <div className="choice-visual">
+                    <Icon name="package" size={48} />
+                  </div>
+                  <div className="choice-content">
+                    <h3>{t('takeaway') || 'Olib ketish'}</h3>
+                    <p>O‘zingiz bilan olib ketish uchun qadoqlash</p>
+                  </div>
+                  <div className="choice-indicator">
+                    <Icon name="arrow_right" size={20} />
+                  </div>
+                </div>
               </div>
             </motion.div>
           </main>
@@ -196,54 +203,44 @@ const KioskPage = (props) => {
 
   if (step === 'checkout_success') {
     return (
-      <div className="kiosk-minimal-success">
-        <div className="success-receipt-wrapper">
-          <div className="receipt-content">
-            <div className="receipt-check-icon"><Icon name="check" size={32} /></div>
-            <h1 className="receipt-title">{t('order_success')}</h1>
-            
-            <div className="receipt-divider"></div>
-            
-            <div className="receipt-order-label">{t('order_num')}</div>
-            <div className="receipt-order-number">#{completedOrderId || '0482'}</div>
-            
-            <div className="receipt-divider"></div>
-            
-            <div className="receipt-barcode"></div>
-            
-            <p className="receipt-footer-text">{language === 'uz' ? '10 soniyadan so\'ng qaytamiz' : 'Returning in 10s'}</p>
+      <div className="kiosk-success-screen">
+        <motion.div 
+          className="success-modal-content"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <div className="success-icon-badge">
+            <Icon name="check" size={54} color="#10b981" />
           </div>
-        </div>
+          <h2>Buyurtmangiz Qabul Qilindi!</h2>
+          <p className="success-order-id">
+            Raqamingiz: <strong>{completedOrderId}</strong>
+          </p>
+          <p className="success-hint">
+            Iltimos, buyurtmangiz tayyor bo‘lishini ekranda kuting. Chekingiz chop etilmoqda.
+          </p>
+          <button className="success-return-btn" onClick={() => setStep('welcome')}>
+            Bosh sahifaga qaytish
+          </button>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="kiosk-minimal-main">
-      <div className="kiosk-minimal-content">
-        <header className="kiosk-minimal-header">
-          <button onClick={() => setStep('dining_choice')}><Icon name="chevron_left" size={20} /> {t('back')}</button>
-          <div className="dining-badge">{diningOption === 'eat_in' ? t('eat_in') : t('take_away')}</div>
-        </header>
-        <div className="kiosk-minimal-pos">
-          <PosPage {...props} />
+    <div className="kiosk-menu-layout">
+      <header className="kiosk-nav-top">
+        <button className="kiosk-exit-btn" onClick={() => setStep('welcome')}>
+          <Icon name="arrow_left" size={20} />
+          <span>{t('back')}</span>
+        </button>
+        <div className="kiosk-top-title">{businessName}</div>
+        <div className="kiosk-top-cart-indicator">
+          <Icon name="shopping_bag" size={20} />
+          <span>{cart.length} ta mahsulot</span>
         </div>
-      </div>
-      
-      <div className={`kiosk-minimal-cart ${showCart ? 'open' : ''}`}>
-        <Cart 
-          {...props}
-          onCheckout={onCheckout}
-          isKiosk={true}
-          setShowMobileCart={setShowCart}
-        />
-      </div>
-
-      <button className="kiosk-mobile-toggle" onClick={() => setShowCart(true)}>
-        <Icon name="shopping_bag" size={20} /> {t('cart')} ({cart.length})
-      </button>
-
-      {showCart && <div className="kiosk-overlay" onClick={() => setShowCart(false)} />}
+      </header>
+      <PosPage {...props} isKiosk={true} onCheckout={onCheckout} />
     </div>
   );
 };
