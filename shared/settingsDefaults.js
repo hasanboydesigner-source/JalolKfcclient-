@@ -109,7 +109,7 @@ export const DEFAULT_SETTINGS = {
     accentColor: '#F59E0B',
     themeMode: 'light', // 'light' | 'dark' | 'auto'
     borderRadius: 'rounded', // 'sharp' | 'rounded' | 'pill'
-    faviconUrl: '/chicken.png'
+    faviconUrl: '/favicon.png'
   },
   localization: {
     defaultLanguage: 'uz', // 'uz' | 'ru' | 'en'
@@ -206,7 +206,7 @@ export const settingsSchema = z.object({
     accentColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/),
     themeMode: z.enum(['light', 'dark', 'auto']).default('light'),
     borderRadius: z.enum(['sharp', 'rounded', 'pill']).default('rounded'),
-    faviconUrl: z.string().optional().default('/chicken.png')
+    faviconUrl: z.string().optional().default('/favicon.png')
   }).default(DEFAULT_SETTINGS.branding),
 
   localization: z.object({
