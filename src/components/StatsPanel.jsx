@@ -215,13 +215,14 @@ const StatsPanel = ({ stats, loading: _loading, statsDate, setStatsDate, onRefre
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `hisobot_kfc_${statsDate}.csv`);
+    const safePrefix = (settings.business?.name || 'hisobot').toLowerCase().replace(/[^a-z0-9]/g, '_');
+    link.setAttribute("download", `${safePrefix}_${statsDate}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const businessName = settings.business?.name || 'JALOL KFC';
+  const businessName = settings.business?.name || 'POS Tizimi';
 
   return (
     <div className="reports-container">

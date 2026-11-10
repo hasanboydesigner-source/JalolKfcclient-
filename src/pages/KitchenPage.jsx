@@ -190,7 +190,7 @@ const KitchenPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [displayedOrders, updateStatus]);
 
-  const brandName = settings.business?.name || 'KFC';
+  const brandName = settings.business?.name || 'Oshxona';
 
   return (
     <div className="kds-root">

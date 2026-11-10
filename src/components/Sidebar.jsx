@@ -25,7 +25,7 @@ const Sidebar = ({ user, onOpenSettings }) => {
     location.pathname === '/tables' ? 'tables' : 'pos'
   const isAdmin = user?.role === 'admin'
   const isKdsEnabled = settings.kds?.enabled !== false
-  const brandName = settings.business?.name || 'Osh Markazi'
+  const brandName = settings.business?.name || 'POS Tizimi'
 
   const navItems = [
     { id: 'pos', path: '/', label: t('pos') || 'POS Terminal', icon: LayoutGrid, visible: true },

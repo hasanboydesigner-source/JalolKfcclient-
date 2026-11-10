@@ -96,7 +96,7 @@ const LoginView = ({ onLogin }) => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleDigit, handleBackspace, handleClear])
 
-  const brandName = settings.business?.name || 'JALOL KFC'
+  const brandName = settings.business?.name || 'POS Tizimi'
 
   return (
     <div className="pos-login-terminal">

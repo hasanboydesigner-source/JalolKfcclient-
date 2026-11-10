@@ -9,9 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Jalol KFC',
-        short_name: 'KFC',
-        description: 'Jalol KFC POS System',
+        name: 'Smart POS CRM',
+        short_name: 'POS',
+        description: 'Smart POS CRM System',
         theme_color: '#EF4444',
         icons: [
           {

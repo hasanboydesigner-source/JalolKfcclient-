@@ -95,7 +95,7 @@ export const INDUSTRY_TEMPLATES = {
 
 export const DEFAULT_SETTINGS = {
   business: {
-    name: 'Jalol Restoran',
+    name: 'Oshxona / Milliy Taomlar',
     tagline: 'Milliy taomlar, Oshxona va Kafe',
     businessType: 'restaurant', // 'restaurant' | 'teahouse' | 'cafe' | 'fastfood' | 'custom'
     logoUrl: '',
