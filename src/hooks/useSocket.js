@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || undefined;
+const DEFAULT_PROD_SOCKET_URL = 'https://jalolkfc.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 
+  (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') ? DEFAULT_PROD_SOCKET_URL : undefined);
 
 export const useSocket = (onNewOrder, onStatusUpdate, onSettingsUpdate, onTableUpdate) => {
   const socketRef = useRef(null);

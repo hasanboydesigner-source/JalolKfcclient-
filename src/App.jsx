@@ -6,8 +6,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
 
 // Configure Axios with dynamic URL and Authorization header
+const DEFAULT_PROD_API_URL = 'https://jalolkfc.onrender.com';
+
 if (import.meta.env.VITE_API_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+} else if (typeof window !== 'undefined' && (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('onrender.com'))) {
+  axios.defaults.baseURL = DEFAULT_PROD_API_URL;
 }
 
 axios.interceptors.request.use((config) => {
